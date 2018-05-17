@@ -1,0 +1,62 @@
+/*!
+*flex外壳
+*/
+display-flex()
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+display-inline-flex()
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: -webkit-inline-flex;
+  display: inline-flex;
+//  flex的排列方向 row | row-reverse | column | column-reverse
+flex-direction(n)
+  -webkit-flex-direction: n;
+  -moz-flex-direction: n;
+  -ms-flex-direction: n;
+  -o-flex-direction: n;
+  flex-direction: n;
+//  flex的换行 nowrap | wrap | wrap-reverse
+flex-warp(n)
+  -webkit-flex-wrap: n;
+  -moz-flex-wrap: n;
+  -ms-flex-wrap: n;
+  -o-flex-wrap: n;
+  flex-wrap: n;
+//  flex-start | flex-end | center | space-between | space-around
+flex-justify-content(n)
+  -webkit-justify-content: n;
+  -moz-justify-content: n;
+  -ms-justify-content: n;
+  -o-justify-content: n;
+  justify-content: n;
+//  flex-start | flex-end | center | baseline | stretch
+flex-align-item(n)
+  -webkit-align-items: n;
+  -moz-align-items: n;
+  -ms-align-items: n;
+  -o-align-items: n;
+  align-items: n;
+//  flex-start | flex-end | center | space-between | space-around | stretch
+flex-align-content(n)
+  -webkit-align-content: n;
+  -moz-align-content: n;
+  -ms-align-content: n;
+  -o-align-content: n;
+  align-content: n;
+//  flex排序
+flex-order(n)
+  -webkit-box-ordinal-group: n;
+  -ms-flex-order: n;
+  -webkit-order: n;
+  order: n;
+//  flex伸缩性
+flex-flex()
+  -webkit-box-flex: arguments;
+  -ms-flex: arguments;
+  -webkit-flex: arguments;
+  flex: arguments;
+
