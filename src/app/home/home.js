@@ -4,12 +4,8 @@
 
 import Vue from 'vue'
 import App from './App'
-import BaiduMap from 'vue-baidu-map'
 
-Vue.use(BaiduMap,{
-  ak:'typ1x3lN5VDX79HI0TCITCnml2MHjlDfg'
-})
-// eslint-disable-next-line
+
 new Vue({
   el: '#app',
   components: { App },

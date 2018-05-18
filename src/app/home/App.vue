@@ -7,16 +7,22 @@
   .mui-content
     .mui-content-padded
       button.mu-btn.mui-btn-primary.mui-btn-block(type='button', v-on:tap='openAxios') 打开 Axios 测试页
-    baidu-map(ak="typ1x3lN5VDX79HI0TCITCnml2MHjlDfg" :zoom="zoom" @ready="handler" :center="center")
+    baidu-map.baiduMap(ak='yp1x3lN5VDX79HI0TCITCnml2MHjlDfg' :center="center" :zoom="zoom" @ready="handler")
+      bm-geolocation(anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true" :autoLocation="true")
 </template>
 <style lang="stylus">
   h1{
     color #2ac845
   }
+  .baiduMap{
+    width 100%
+    height 3rem
+  }
 </style>
 <script>
 /* global mui */
-import BaiduMap from 'vue-baidu-map/components/map/Map'
+import BaiduMap from '../../components/BaiduMap/map/Map'
+import BmGeolocation from '../../components/BaiduMap/controls/Geolocation'
 
 export default {
   name: 'home',
@@ -33,17 +39,17 @@ export default {
         id: 'axios'
       })
     },handler ({BMap, map}) {
-      console.log(BMap, map);
       this.center.lng = 116.404;
       this.center.lat = 39.915;
       this.zoom = 15
     }
   },
   components: {
-    BaiduMap
+    'BaiduMap':BaiduMap,
+    'BmGeolocation':BmGeolocation
   },
   mounted () {
-    mui.init()
+    mui.init();
   }
 }
 </script>
