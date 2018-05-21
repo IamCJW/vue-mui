@@ -3,7 +3,7 @@
 <template lang="pug">
   nav.mui-bar.mui-bar-tab
     a.mui-tab-item(v-for='tab in tabs', :class='{ "mui-active": activeIndex === tab.index }', v-on:tap='openTabPage(tab.index)')
-      span.mui-icon(:class='tab.icon')
+      span.mui-icon.iconfont(:class='tab.icon')
       span.mui-tab-label {{ tab.name }}
 </template>
 <style lang="stylus" scoped>
@@ -18,11 +18,11 @@
         // 当前激活的 tab 序号
         activeIndex: 0,
         tabs: [
-          { index: 0, id: 'home', name: '首页', icon: 'mui-icon-home', url: './home.html' },
-          { index: 1, id: 'tab2', name: '消息', icon: 'mui-icon-email', url: 'http://www.dcloud.io/hellomui/examples/tableviews.html' },
-          { index: 2, id: 'tab3', name: '通讯录', icon: 'mui-icon-contact', url: 'http://www.dcloud.io/hellomui/examples/indexed-list-select.html' },
-          { index: 3, id: 'tab4', name: '设置', icon: 'mui-icon-gear', url: 'http://www.dcloud.io/hellomui/examples/icons.html' },
-          { index: 4, id: 'tab4', name: '设置', icon: 'mui-icon-gear', url: 'http://www.dcloud.io/hellomui/examples/icons.html' },
+          { index: 0, id: 'home', name: '首页', icon: 'icon-ai-home', url: './home.html' },
+          { index: 1, id: 'tab2', name: '消息', icon: 'icon-news', url: 'http://www.dcloud.io/hellomui/examples/tableviews.html' },
+          { index: 2, id: 'tab3', name: '查询', icon: 'icon-INQUIRE', url: 'http://www.dcloud.io/hellomui/examples/indexed-list-select.html' },
+          { index: 3, id: 'tab4', name: '服务', icon: 'icon-SERVICE', url: 'http://www.dcloud.io/hellomui/examples/icons.html' },
+          { index: 4, id: 'tab4', name: '我的', icon: 'icon-ME-copy', url: 'http://www.dcloud.io/hellomui/examples/icons.html' },
         ]
       }
     },

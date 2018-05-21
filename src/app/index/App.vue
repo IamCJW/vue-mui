@@ -15,7 +15,7 @@
       return {}
     },
     mounted() {
-      let navHeight = this.changeRem(0.45);
+      let navHeight = this.changeRem(0.49);
       mui.init({
         wipeBack: true,
         subpages: [{
