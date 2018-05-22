@@ -1,8 +1,47 @@
 @import "_variable.styl"
 .iconfont
   font-size: .16rem
+//顶部状态栏////////////////////////////////////////////////////////////////////////
 .header-full
   height .2rem
   background-color $main-color
   display none
-
+//搜索的顶部栏///////////////////////////////////////////////////////////////////
+.header-nav-search
+  display-flex()
+  flex-align-item(center)
+  flex-justify-content(space-between)
+  position fixed
+  top 0
+  left 0
+  right 0
+  z-index $z-index-navigation
+  background $main-color
+  height .44rem
+  color #fff
+  padding 0 $cell-left-right-space
+  .iconfont
+    font-size .18rem
+  .search-input
+    height .36rem
+    background #fff
+    border-radius .06rem
+    overflow hidden
+    display-flex()
+    flex-align-item(center)
+    .iconfont
+      font-size .2rem
+      color $text-color-light-xx
+      padding 0 .2rem
+    input
+      border none
+      color $text-color-light-x
+  .search
+    font-size .12rem
+.header-nav-search~.mui-content
+  padding-top .44rem
+//背景颜色///////////////////////////////////////////////////
+.bg-white
+  background-color #ffffff
+.bg-gary
+  background-color #f4f4f4

@@ -5,9 +5,9 @@
     .header-full
     .home-header
       .home-search-wrapper
-        .home-location
+        .home-location( @tap="openWindow('selectLocation')")
           i.iconfont.icon-site
-          span 深圳市-福田区
+          span {{localLocation}}
           i.iconfont.icon-TRIANGLE
         .home-search
           div 请输入要查询的项目名称
@@ -123,36 +123,47 @@
 <script>
   /* global mui */
   /* global BMap */
+  import {lsKey, ssKey} from '../../assets/js/app.js'
+
   export default {
     name: 'home',
     data() {
       return {
-        pageKey: '0'
+        pageKey: '0',
+        localLocation: '正在定位'
       }
     },
     methods: {
+      // 跳转页面
+      openWindow (route) {
+        mui.openWindow({
+          url: `./${route}.html`,
+          id: route
+        })
+      },
       //页面切换
       jumpTo(key) {
         this.pageKey = key;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },
-      // 自动定位
+      //自动定位
       location() {
-
-      },
-      addressDetail() { //获取地理位置
+        let _this = this;
         //全局的this在方法中不能使用，需要重新定义一下
-        var geolocation = new BMap.Geolocation();
+        let geolocation = new BMap.Geolocation();
         //调用百度地图api 中的获取当前位置接口
-        geolocation.getCurrentPosition(function(r) {
-          // let point = {lat:r.latitude,lon:r.longitude}
+        geolocation.getCurrentPosition(function (r) {
           let point = new BMap.Point(r.longitude, r.latitude);
           console.log(point);
           let geoc = new BMap.Geocoder();
           geoc.getLocation(point, function (rs) {
-            console.log(rs)
-            // alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+            let address = rs.addressComponents;
+            _this.localLocation = `${address.city}-${address.district}`;
+            //将定位存入本地缓存
+            localStorage.setItem(lsKey.locationProvince, address.province);
+            localStorage.setItem(lsKey.locationCity, address.city);
+            localStorage.setItem(lsKey.locationDistrict, address.district);
           });
         });
       }
@@ -163,13 +174,8 @@
       this.jumpTo(this.pageKey);
       mui('.mui-scroll-wrapper').scroll();
     },
-    created(){
-      // this.addressDetail()
-      // let myGeo = new BMap.Geocoder();
-      // console.log(myGeo);
-      // let point = new BMap.Point(114.02597366, 22.54605355);
-
-      this.addressDetail();
+    created() {
+      this.location();
     }
   }
 </script>

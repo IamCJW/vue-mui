@@ -1,0 +1,91 @@
+@import "../../stylus/_mixin.styl"
+$cell-padding = .27rem
+.border-box
+  border $border-default
+  border-radius $border-radius-xx
+  padding .07rem
+  min-width .66rem
+  display inline-block
+  text-align center
+
+.mui-content
+  position relative
+  .selected-box
+    padding 0 $cell-padding
+    background #ffffff
+    font-size .14rem
+    height .5rem
+    display-flex()
+    flex-align-item(center)
+    flex-justify-content(space-between)
+  .oldSelect-box
+    padding .1rem $cell-padding
+    border-bottom $border-default
+    .oldSelect-title
+      font-size .12rem
+      margin-bottom .06rem
+    .oldSelect-group
+      .border-box
+        margin-right .15rem
+  .indexed-list
+    position: absolute
+    border-top: $border-default
+    border-bottom: $border-default
+    overflow: hidden;
+    background-color: #fff;
+    height: 100vh;
+    width: 100%;
+    cursor: default;
+    top: 0;
+    z-index: -1;
+    padding-top 1.76rem
+    .indexed-content
+      height 100%
+      position relative
+      .indexed-list-alert
+        position fixed
+        bottom  2rem
+        left 50%
+        margin-left -.2rem
+        border-radius 100%
+        width .4rem
+        height .4rem
+        display-flex()
+        flex-align-item(center)
+        flex-justify-content(center)
+        background rgba(0,0,0,.4)
+        color #ffffff
+        font-size .18rem
+      .indexed-list-bar
+        width .3rem
+        position fixed
+        right 0
+        bottom .4rem
+        font-size .12rem
+        line-height .16rem
+        display-flex()
+        flex-direction(column)
+        flex-align-item(center)
+        a
+          color #396902
+          &:active
+            opacity .5
+      .indexed-list-inner
+        height 100%
+        overflow-y auto
+        .indexed-table-view
+          li
+            list-style none
+          .indexed-list-group
+            font-size .12rem
+            line-height .3rem
+            padding 0 $cell-padding
+            background-color #f4f4f4
+            color $text-color-light-x
+            .indexed-item
+              padding 0 $cell-padding
+              margin 0 (-($cell-padding))
+              background-color #fff
+              font-size .16rem
+              line-height .43rem
+              border-bottom $border-default
