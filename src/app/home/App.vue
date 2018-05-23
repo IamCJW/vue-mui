@@ -122,23 +122,25 @@
 </style>
 <script>
   /* global mui */
-  /* global BMap */
-  import {lsKey, ssKey} from '../../assets/js/app.js'
+  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
 
   export default {
     name: 'home',
     data() {
       return {
         pageKey: '0',
-        localLocation: '正在定位'
+        localLocation: '正在定位',
+        province:'',
+        city:'',
+        district:'',
       }
     },
     methods: {
       // 跳转页面
-      openWindow (route) {
+      openWindow(route) {
         mui.openWindow({
           url: `./${route}.html`,
-          id: route
+          id: route,
         })
       },
       //页面切换
@@ -149,30 +151,47 @@
       },
       //自动定位
       location() {
-        let _this = this;
-        //全局的this在方法中不能使用，需要重新定义一下
-        let geolocation = new BMap.Geolocation();
-        //调用百度地图api 中的获取当前位置接口
-        geolocation.getCurrentPosition(function (r) {
-          let point = new BMap.Point(r.longitude, r.latitude);
-          console.log(point);
-          let geoc = new BMap.Geocoder();
-          geoc.getLocation(point, function (rs) {
-            let address = rs.addressComponents;
-            _this.localLocation = `${address.city}-${address.district}`;
-            //将定位存入本地缓存
-            localStorage.setItem(lsKey.locationProvince, address.province);
-            localStorage.setItem(lsKey.locationCity, address.city);
-            localStorage.setItem(lsKey.locationDistrict, address.district);
+        if (localStorage.getItem(lsKey.locationProvince) === null) {
+          let _this = this;
+          //全局的this在方法中不能使用，需要重新定义一下
+          let geolocation = new BMap.Geolocation();
+          //调用百度地图api 中的获取当前位置接口
+          geolocation.getCurrentPosition(function (r) {
+            let point = new BMap.Point(r.longitude, r.latitude);
+            console.log(point);
+            let geoc = new BMap.Geocoder();
+            geoc.getLocation(point, function (rs) {
+              let address = rs.addressComponents;
+              _this.localLocation = `${address.city}-${address.district}`;
+              //将定位存入本地缓存
+              localStorage.setItem(lsKey.locationProvince, address.province);
+              localStorage.setItem(lsKey.locationCity, address.city);
+              localStorage.setItem(lsKey.locationDistrict, address.district);
+            });
           });
-        });
+        }else {
+          this.province = localStorage.getItem(lsKey.locationProvince);
+          this.city = localStorage.getItem(lsKey.locationCity);
+          this.district = localStorage.getItem(lsKey.locationDistrict);
+          this.localLocation = `${this.city} - ${this.district}`
+        }
       }
     },
     components: {},
     mounted() {
-      mui.init();
+      mui.init({
+        preloadPages:[
+          {
+            url:'./selectLocation.html',
+            id:'selectLocation',
+          }
+        ]
+      });
       this.jumpTo(this.pageKey);
       mui('.mui-scroll-wrapper').scroll();
+      window.addEventListener('refresh', function(e){//执行刷新
+        location.reload();
+      });
     },
     created() {
       this.location();

@@ -3,11 +3,10 @@ $cell-padding = .27rem
 .border-box
   border $border-default
   border-radius $border-radius-xx
-  padding .07rem
+  padding .1rem .07rem
   min-width .66rem
   display inline-block
   text-align center
-
 .mui-content
   position relative
   .selected-box
@@ -21,6 +20,8 @@ $cell-padding = .27rem
   .oldSelect-box
     padding .1rem $cell-padding
     border-bottom $border-default
+    height .85rem
+    overflow hidden
     .oldSelect-title
       font-size .12rem
       margin-bottom .06rem
@@ -32,13 +33,14 @@ $cell-padding = .27rem
     border-top: $border-default
     border-bottom: $border-default
     overflow: hidden;
-    background-color: #fff;
+    background-color #f4f4f4
     height: 100vh;
     width: 100%;
     cursor: default;
     top: 0;
     z-index: -1;
-    padding-top 1.76rem
+    $indexed-padding-top = 1.78rem
+    padding-top $indexed-padding-top
     .indexed-content
       height 100%
       position relative
@@ -56,6 +58,7 @@ $cell-padding = .27rem
         background rgba(0,0,0,.4)
         color #ffffff
         font-size .18rem
+        z-index $z-index-popout
       .indexed-list-bar
         width .3rem
         position fixed
@@ -63,6 +66,7 @@ $cell-padding = .27rem
         bottom .4rem
         font-size .12rem
         line-height .16rem
+        z-index $z-index-navigation
         display-flex()
         flex-direction(column)
         flex-align-item(center)
@@ -71,6 +75,7 @@ $cell-padding = .27rem
           &:active
             opacity .5
       .indexed-list-inner
+        position relative
         height 100%
         overflow-y auto
         .indexed-table-view
@@ -80,12 +85,35 @@ $cell-padding = .27rem
             font-size .12rem
             line-height .3rem
             padding 0 $cell-padding
-            background-color #f4f4f4
-            color $text-color-light-x
+            color $text-color-light-xx
             .indexed-item
+              color #333
               padding 0 $cell-padding
               margin 0 (-($cell-padding))
-              background-color #fff
-              font-size .16rem
-              line-height .43rem
-              border-bottom $border-default
+              font-size .14rem
+              line-height .4rem
+              &.active
+                background-color $main-color
+        .indexed-table-view-child
+          position fixed
+          bottom  0
+          right 0
+          height 100%
+          width 68%
+          padding-top $indexed-padding-top
+          background-color #fff
+          z-index $z-index-content
+          .indexed-child-group
+            box-sizing border-box
+            width 50%
+            height 100%
+            float left
+            border-left $border-default
+            overflow-y auto
+            .indexed-item
+              text-align center
+              font-size .14rem
+              line-height .4rem
+              &.active
+                background-color $main-color
+

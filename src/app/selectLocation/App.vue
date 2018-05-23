@@ -9,7 +9,7 @@
     .mui-content.bg-gary
       .selected-box
         span 当前选择
-        span.border-box 赣州市(章贡区)
+        span.border-box {{location}}
       .oldSelect-box
         .oldSelect-title 最近访问
         .oldSelect-group
@@ -24,26 +24,41 @@
           .indexed-list-inner
             .indexed-table-view
               li.indexed-list-group(v-for="(item,key) in nation" :data-group="key") {{key}}
-                div.indexed-item(v-for="p in item") {{p.name}}
+                div.indexed-item(v-for="p in item" :class="{active:p.name === province}" @tap="selectLocation(p.name,1)") {{p.name}}
+            .indexed-table-view-child
+              .indexed-child-group
+                div.indexed-item(v-for="item in provinceSel.city" :class="{active:item.name === city}" @tap="selectLocation(item.name,2)") {{item.name}}
+              .indexed-child-group
+                div.indexed-item(v-for="item in citySel.district" :class="{active:item.name === district}" @tap="selectLocation(item.name,3)") {{item.name}}
+
 </template>
 <style lang="stylus" scoped>
   @import "selectLocation.styl"
 </style>
 <script>
   /* global mui */
+  /* global mui plus */
   import axios from 'axios'
+  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import api from '../../assets/js/api'
 
   export default {
     name: 'selectlocation',
     data() {
       return {
-        letter: [],
-        nation: {},
-        alertFlag: {
+        location: '',//当前选择
+        nationData: [],//初始数据
+        letter: [],//城市首字母
+        nation: {},//城市分类数据
+        alertFlag: {//字母标签
           code: false,
           letter: ''
-        }
+        },
+        provinceSel: '',//选择的省数据
+        citySel: '',//选择的市数据
+        province: '',//选择的省
+        city: '',//选择的市
+        district: '',//选择的区
       }
     },
     methods: {
@@ -53,6 +68,7 @@
         axios.get(`${api.baseApi}${api.apiList.nation}`)
           .then(function (response) {
             let data = response.data.data;
+            _this.nationData = data;
             data.forEach((item) => {
               if (_this.letter.indexOf(item.prefix)) {
                 _this.letter.push(item.prefix)
@@ -68,24 +84,85 @@
                 }
               })
             });
+            _this.selectInit();
           })
           .catch(function (error) {
             console.log(error);
           });
       },
+      //地址选择锚点定位//////////////////////////////////////////
       chooseGroup(type) {
-        console.log(type)
         this.alertFlag.code = true;
         this.alertFlag.letter = type;
-        let scrollTop = document.querySelector("[data-group="+type+"]");
-        this.$refs.indexed.scrollTop = `${scrollTop.offsetTop}px`;
+        let scrollTop = document.querySelector(`[data-group=${type}]`);
+        let indexTop = document.querySelector('.indexed-list-inner');
+        indexTop.scrollTop = scrollTop.offsetTop;
         setTimeout(() => {
           this.alertFlag.code = false;
-        }, 500)
-      }
+        }, 200)
+      },
+      //选择器初始化//////////////////////////////////////////////////////
+      selectInit() {
+        let locationSel = this.nation[this.letter[0]][0];
+      },
+      //数据初始化////////////////////////////////////////////////////
+      dataInit() {
+        let province = localStorage.getItem(lsKey.locationProvince);
+        let city = localStorage.getItem(lsKey.locationCity);
+        let district = localStorage.getItem(lsKey.locationDistrict);
+        this.location = `${province} / ${city} / ${district}`
+      },
+      //选择器选择///////////////////////////////////////////////////
+      selectLocation(key, type) {
+        switch (type) {
+          case 1:
+            this.province = key;
+            this.city = '';
+            this.district = '';
+            this.citySel = '';
+            this.nationData.map((item) => {
+              if (item.name === this.province) {
+                this.provinceSel = item;
+                return
+              }
+            });
+            this.location = `${this.province} / ${this.city} / ${this.district}`;
+            break;
+          case 2:
+            this.city = key;
+            this.district = '';
+            let cityArr = this.provinceSel.city;
+            cityArr.map((item) => {
+              if (item.name === this.city) {
+                this.citySel = item;
+                return
+              }
+            });
+            this.location = `${this.province} / ${this.city} / ${this.district}`;
+            break;
+          case 3:
+            this.district = key;
+            this.location = `${this.province} / ${this.city} / ${this.district}`;
+            //将定位存入本地缓存
+            localStorage.setItem(lsKey.locationProvince, this.province);
+            localStorage.setItem(lsKey.locationCity, this.city);
+            localStorage.setItem(lsKey.locationDistrict, this.district);
+            mui.back();
+        }
+      },
     },
     mounted() {
-      mui.init();
+      mui.init({
+        beforeback: function(){
+          //获得列表界面的webview
+          let home = plus.webview.getWebviewById('home');
+          //触发列表界面的自定义事件（refresh）,从而进行数据刷新
+          mui.fire(home,'refresh');
+          //返回true，继续页面关闭逻辑
+          return true
+        }
+      });
+      this.dataInit();
       this.getNation();
     }
   }
