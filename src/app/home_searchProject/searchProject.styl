@@ -1,0 +1,36 @@
+@import "../../stylus/_mixin.styl"
+.pro-group
+  padding-top .12rem
+  .pro-item
+    $cell-padding=.12rem
+    width 100%
+    border-radius .06rem
+    box-shadow $box-shadow-default
+    border $border-default
+    margin-bottom $cell-padding
+    padding .09rem $cell-padding
+    display-flex()
+    flex-align-items(center)
+    .pro-assist
+      display-flex()
+      flex-direction(column)
+      flex-align-item(flex-start)
+      flex-flex(0,0,.82rem)
+      flex-justify-content(center)
+      border-right $border-default
+      div
+        width .7rem
+        height .3rem
+        display-flex()
+        flex-align-item(center)
+        &:last-child
+          border-top $border-default
+        .iconfont
+          font-size .18rem
+          margin-right .05rem
+    .pro-main
+      padding-left $cell-padding
+      display-flex()
+      flex-align-item(center)
+
+

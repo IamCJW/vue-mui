@@ -44,7 +44,9 @@
       background none
       border none
       color #fff
-      font-size .16rem
+      font-size .14rem
+      &.active
+        font-size .16rem
       &:active
         color rgba(255,255,255,.4)
 .content-wrapper
@@ -107,7 +109,6 @@
             .pro-main-sign
               padding 0 .1rem
               .pro-style
-                color #0e972f
                 .iconfont
                   font-size .16rem
               .pro-location
@@ -161,6 +162,41 @@
             padding 0 .15rem 0 0
             .pro-location
               margin-left 0
+.mask
+  height 84.3vh
+  top auto
+  .popout-wrapper
+    position relative
+    overflow auto
+    height 100%
+    width 100%
+    right 0
+    .popout-filter-close
+      width 10%
+      height 100%
+      float left
+    .popout-filter
+      box-sizing border-box
+      border-bottom $border-default
+      width 90%
+      height 100%
+      background #ffffff
+      position absolute
+      right 0
+      float left
+      .popout-filter-btnGroup
+        position absolute
+        bottom 0
+        left 0
+        right 0
+        button
+          background #f4f4f4
+          border none
+          width 50%
+          height .45rem
+          border-radius 0
+          &:last-child
+            background $main-color
 
 
 
