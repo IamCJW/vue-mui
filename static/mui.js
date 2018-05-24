@@ -427,8 +427,8 @@ var mui = (function (document, undefined) {
     };
   };
   $.now = Date.now || function () {
-    return +new Date();
-  };
+      return +new Date();
+    };
   var class2type = {};
   $.each(['Boolean', 'Number', 'String', 'Function', 'Array', 'Date', 'RegExp', 'Object', 'Error'], function (i, name) {
     class2type["[object " + name + "]"] = name.toLowerCase();
@@ -846,9 +846,9 @@ var mui = (function (document, undefined) {
     };
   }
   Object.setPrototypeOf = Object.setPrototypeOf || function (obj, proto) {
-    obj['__proto__'] = proto;
-    return obj;
-  };
+      obj['__proto__'] = proto;
+      return obj;
+    };
 
 })();
 /**
@@ -858,10 +858,10 @@ var mui = (function (document, undefined) {
   if (typeof window.CustomEvent === 'undefined') {
     function CustomEvent(event, params) {
       params = params || {
-        bubbles: false,
-        cancelable: false,
-        detail: undefined
-      };
+          bubbles: false,
+          cancelable: false,
+          detail: undefined
+        };
       var evt = document.createEvent('Events');
       var bubbles = true;
       for (var name in params) {
@@ -875,31 +875,31 @@ var mui = (function (document, undefined) {
   }
 })();
 /*
-	A shim for non ES5 supporting browsers.
-	Adds function bind to Function prototype, so that you can do partial application.
-	Works even with the nasty thing, where the first word is the opposite of extranet, the second one is the profession of Columbus, and the version number is 9, flipped 180 degrees.
-*/
+ A shim for non ES5 supporting browsers.
+ Adds function bind to Function prototype, so that you can do partial application.
+ Works even with the nasty thing, where the first word is the opposite of extranet, the second one is the profession of Columbus, and the version number is 9, flipped 180 degrees.
+ */
 
 Function.prototype.bind = Function.prototype.bind || function (to) {
-  // Make an array of our arguments, starting from second argument
-  var partial = Array.prototype.splice.call(arguments, 1),
-    // We'll need the original function.
-    fn = this;
-  var bound = function () {
-    // Join the already applied arguments to the now called ones (after converting to an array again).
-    var args = partial.concat(Array.prototype.splice.call(arguments, 0));
-    // If not being called as a constructor
-    if (!(this instanceof bound)) {
-      // return the result of the function called bound to target and partially applied.
-      return fn.apply(to, args);
+    // Make an array of our arguments, starting from second argument
+    var partial = Array.prototype.splice.call(arguments, 1),
+      // We'll need the original function.
+      fn = this;
+    var bound = function () {
+      // Join the already applied arguments to the now called ones (after converting to an array again).
+      var args = partial.concat(Array.prototype.splice.call(arguments, 0));
+      // If not being called as a constructor
+      if (!(this instanceof bound)) {
+        // return the result of the function called bound to target and partially applied.
+        return fn.apply(to, args);
+      }
+      // If being called as a constructor, apply the function bound to self.
+      fn.apply(this, args);
     }
-    // If being called as a constructor, apply the function bound to self.
-    fn.apply(this, args);
-  }
-  // Attach the prototype of the function to our newly created function.
-  bound.prototype = fn.prototype;
-  return bound;
-};
+    // Attach the prototype of the function to our newly created function.
+    bound.prototype = fn.prototype;
+    return bound;
+  };
 /**
  * mui fixed classList
  * @param {type} document
@@ -961,17 +961,17 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
   if (!window.requestAnimationFrame) {
     var lastTime = 0;
     window.requestAnimationFrame = window.webkitRequestAnimationFrame || function (callback, element) {
-      var currTime = new Date().getTime();
-      var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
-      var id = window.setTimeout(function () {
-        callback(currTime + timeToCall);
-      }, timeToCall);
-      lastTime = currTime + timeToCall;
-      return id;
-    };
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+        var id = window.setTimeout(function () {
+          callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+      };
     window.cancelAnimationFrame = window.webkitCancelAnimationFrame || window.webkitCancelRequestAnimationFrame || function (id) {
-      clearTimeout(id);
-    };
+        clearTimeout(id);
+      };
   }
   ;
 }(window));
@@ -2964,21 +2964,24 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
       var options = $.options;
       var pullRefreshOptions = options.pullRefresh || {};
       pullRefreshOptions = Object.prototype.toString.call(pullRefreshOptions) == '[object Array]' ? pullRefreshOptions : [pullRefreshOptions];
+      console.log(pullRefreshOptions);
       for (var pp in pullRefreshOptions) {
-        pullRefreshOptions = pullRefreshOptions[pp];
-        var hasPulldown = pullRefreshOptions.down && pullRefreshOptions.down.hasOwnProperty('callback');
-        var hasPullup = pullRefreshOptions.up && pullRefreshOptions.up.hasOwnProperty('callback');
+        _pullRefreshOptions = pullRefreshOptions[pp];
+        console.log(pullRefreshOptions.down)
+        var hasPulldown = _pullRefreshOptions.down && _pullRefreshOptions.down.hasOwnProperty('callback');
+        var hasPullup = _pullRefreshOptions.up && _pullRefreshOptions.up.hasOwnProperty('callback');
+
         if (hasPulldown || hasPullup) {
-          var container = pullRefreshOptions.container;
+          var container = _pullRefreshOptions.container;
           if (container) {
             var $container = $(container);
             if ($container.length === 1) {
               if ($.os.plus) { //5+环境
-                if (hasPulldown && pullRefreshOptions.down.style == "circle") { //原生转圈
+                if (hasPulldown && _pullRefreshOptions.down.style == "circle") { //原生转圈
                   $.plusReady(function () {
                     //这里改写$.fn.pullRefresh
                     $.fn.pullRefresh = $.fn.pullRefresh_native;
-                    $container.pullRefresh(pullRefreshOptions);
+                    $container.pullRefresh(_pullRefreshOptions);
                   });
 
                 } else if ($.os.android) { //非原生转圈，但是Android环境
@@ -2987,12 +2990,12 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
                     $.fn.pullRefresh = $.fn.pullRefresh_native
                     var webview = plus.webview.currentWebview();
                     if (window.__NWin_Enable__ === false) { //不支持多webview
-                      $container.pullRefresh(pullRefreshOptions);
+                      $container.pullRefresh(_pullRefreshOptions);
                     } else {
                       if (hasPullup) {
                         //当前页面初始化pullup
                         var upOptions = {};
-                        upOptions.up = pullRefreshOptions.up;
+                        upOptions.up = _pullRefreshOptions.up;
                         upOptions.webviewId = webview.id || webview.getURL();
                         $container.pullRefresh(upOptions);
                       }
@@ -3008,7 +3011,7 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
                           var downOptions = {
                             webviewId: id//子页面id
                           };
-                          downOptions.down = $.extend({}, pullRefreshOptions.down);
+                          downOptions.down = $.extend({}, _pullRefreshOptions.down);
                           downOptions.down.callback = '_CALLBACK';
                           //改写父页面的$.fn.pullRefresh
                           parent.evalJS("mui.fn.pullRefresh=mui.fn.pullRefresh_native");
@@ -3019,10 +3022,10 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
                     }
                   });
                 } else { //非原生转圈，iOS环境
-                  $container.pullRefresh(pullRefreshOptions);
+                  $container.pullRefresh(_pullRefreshOptions);
                 }
               } else {
-                $container.pullRefresh(pullRefreshOptions);
+                $container.pullRefresh(_pullRefreshOptions);
               }
             }
           }
@@ -3135,9 +3138,9 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
       mime = mime.split(';', 2)[0];
     }
     return mime && (mime === htmlType ? 'html' :
-      mime === jsonType ? 'json' :
-        scriptTypeRE.test(mime) ? 'script' :
-          xmlTypeRE.test(mime) && 'xml') || 'text';
+        mime === jsonType ? 'json' :
+          scriptTypeRE.test(mime) ? 'script' :
+            xmlTypeRE.test(mime) && 'xml') || 'text';
   };
   var parseArguments = function (url, data, success, dataType) {
     if ($.isFunction(data)) {
@@ -5352,8 +5355,8 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
         //双webview的下拉刷新，需要修改父窗口提示信息
         if (_wv.parent() && this.options.down.style !== "circle") {
           _wv.parent().evalJS("mui&&mui(document.querySelector('.mui-content')).pullRefresh('" + JSON.stringify({
-            webviewId: _wv.id
-          }) + "')._endPulldownToRefresh()");
+              webviewId: _wv.id
+            }) + "')._endPulldownToRefresh()");
         } else {
           _wv.endPullToRefresh();
         }
@@ -7506,9 +7509,9 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
       close: function (index, animate) {
         if (popupElement) {
           var result = callback && callback({
-            index: index || 0,
-            value: input && input.value || ''
-          });
+              index: index || 0,
+              value: input && input.value || ''
+            });
           if (result === false) { //返回false则不关闭当前popup
             return;
           }
@@ -7822,8 +7825,8 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
   var Input = function (element, options) {
     this.element = element;
     this.options = options || {
-      actions: 'clear'
-    };
+        actions: 'clear'
+      };
     if (~this.options.actions.indexOf('slider')) { //slider
       this.sliderActionClass = CLASS_TOOLTIP + ' ' + CLASS_HIDDEN;
       this.sliderActionSelector = SELECTOR_TOOLTIP;

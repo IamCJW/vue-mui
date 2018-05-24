@@ -192,7 +192,6 @@
           _this.pageIndex2.data = data.success_tender_list;
           console.log(_this.pageIndex2)
         })
-        mui.init({})
       },
       // 跳转页面
       openWindow(route) {
@@ -270,6 +269,10 @@
               console.log('我上啦了');
               this.endPullupToRefresh(false);
             } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+          },down:{
+            callback:function () {
+
+            }
           }
         },{
           container:'#pulll',//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
@@ -279,6 +282,11 @@
               console.log('我上啦了了了');
               this.endPullupToRefresh(false);
             } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+          },
+          down:{
+            callback:function () {
+
+            }
           }
         }]
       });
