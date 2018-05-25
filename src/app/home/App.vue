@@ -21,8 +21,8 @@
       .content-wrapper
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
-            .mui-scroll-wrapper#pull
-              .mui-scroll.cell-row
+            .scroll-wrapper#page1
+              .scroll-box
                 .filter-wrapper
                   .filter(@tap="popoutFilter(true)")
                     span 订阅管理&nbsp;
@@ -38,8 +38,10 @@
                         .pro-main-sign.mui-ellipsis
                           span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                             i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
-                            span  {{item.tender_type}}
-                          span.pro-location {{item.province}} / {{item.city}} / {{item.area}}
+                            span &nbsp;{{item.tender_type}}
+                          span.pro-location {{item.province}}
+                            template(v-if="item.city") / {{item.city}}
+                              template(v-if='item.district')  / {{item.district}}
                       .pro-assist
                         .pro-endTime {{item.end_datetime}}
                         .pro-price
@@ -47,34 +49,35 @@
                           | 万
           //公告
           .content-page(@swipeleft="contentSwipeleft()" @swiperight="contentSwiperight()")
-            .mui-scroll-wrapper
-              .mui-scroll.cell-row
+            .scroll-wrapper.cell-row#page2
+              .scroll-box
                 .filter-wrapper
                   .filter
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item
+                  .pro-item(v-for="item in pageIndex1.data")
                     .pro-time
                       i.iconfont.icon-time
-                      span  &nbsp;2018.05.06
+                      span  &nbsp;{{item.info_date}}
                     .pro-content
                       .pro-main
-                        .pro-name.mui-ellipsis-2 间隙省赣州经济技术开
-                        .pro-main-sign
-                          span.pro-style
-                            i.iconfont.icon-SUPERVISION
-                            span 监理
-                          span.pro-location 江西 / 赣州 / 兴国
+                        .pro-name.mui-ellipsis-2 {{item.name}}
+                        .pro-main-sign.mui-ellipsis
+                          span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
+                            i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
+                            span &nbsp;{{item.tender_type}}
+                          span.pro-location {{item.province}} / {{item.city}}
+                            template(v-if='item.district')  / {{item.district}}
                       .pro-assist
-                        .pro-endTime 33天截止报名
+                        .pro-endTime {{item.end_datetime}}
                         .pro-price
-                          span 65878.67
+                          span {{item.amount}}
                           | 万
           //中标
           .content-page(@swipeleft="contentSwipeleft()" @swiperight="contentSwiperight()")
-            .mui-scroll-wrapper#pulll
-              .mui-scroll.cell-row
+            .scroll-wrapper.cell-row#page3
+              .scroll-box
                 .filter-wrapper
                   .filter
                     span 筛选&nbsp;
@@ -90,35 +93,37 @@
                         .pro-main-sign
                           span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                             i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
-                            span {{item.tender_type}}
+                            span &nbsp;{{item.tender_type}}
                           span.pro-location {{item.company_name}}
                       .pro-assist
                         .pro-price
                           span {{item.tender_je}}
                           | 万
-                        .pro-endTime {{item.province}} / {{item.city}} / {{item.area}}
+                        .pro-endTime {{item.province}} / {{item.city}}
+                          template(v-if='item.district')  / {{item.district}}
           //更多
           .content-page(@swiperight="contentSwiperight()")
-            .mui-scroll-wrapper
-              .mui-scroll.cell-row.more
+            .scroll-wrapper#page4
+              .scroll-box
                 .filter-wrapper
                   .filter
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item
+                  .pro-item.more(v-for='item in pageIndex3.data')
                     .pro-time
                       i.iconfont.icon-time
-                      span  &nbsp;2018.05.06
+                      span  &nbsp;{{item.info_date}}
                     .pro-content
                       .pro-assist
-                        div.pro-style
-                          i.iconfont.icon-SUPERVISION
-                          span 监理
+                        div.pro-style(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标'}")
+                          i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标'}")
+                          span &nbsp;{{item.info_type}}
                       .pro-main
-                        .pro-name.mui-ellipsis-2 间隙省赣州经济技术开间隙省赣州经济技术开间隙省赣州经济技术开
+                        .pro-name.mui-ellipsis-2 {{item.name}}
                         .pro-main-sign
-                          span.pro-location 江西 / 赣州 / 兴国
+                          span.pro-location {{item.province}} / {{item.city}}
+                            template(v-if='item.district')  / {{item.district}}
     transition(name='filter')
       .mask(v-if="filterFlag")
         .popout-wrapper(v-if="filterFlag")
@@ -142,7 +147,7 @@
 <script>
   /* global mui */
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
-  import axios from 'axios'
+  import http from '../../assets/js/http'
   import api from '../../assets/js/api'
 
   export default {
@@ -151,23 +156,29 @@
       return {
         iconMsg: {
           "监理": {
-            iconClass: "icon-SUPERVISION",
-            color: "＃0E972F"
+            iconClass: "icon-SUPERVISION"
           }, "设计": {
-            iconClass: "icon-design",
-            color: "＃0E972F"
+            iconClass: "icon-design"
           }, "勘察": {
-            iconClass: "icon-INVESTIGATE",
-            color: "＃0968BA"
+            iconClass: "icon-INVESTIGATE"
           }, "施工": {
-            iconClass: "icon-THECONSTRUCTIONOFTHE",
-            color: "＃0968BA"
+            iconClass: "icon-THECONSTRUCTIONOFTHE"
           }, "一体化": {
-            iconClass: "icon-INTEGRATION",
-            color: "＃B5D750"
+            iconClass: "icon-INTEGRATION"
           }, "其他": {
-            iconClass: "icon-OTHER",
-            color: "＃00419A"
+            iconClass: "icon-CHANGE"
+          }, "答疑": {
+            iconClass: "icon-ANSWERINGQUESTIONS"
+          }, "变更": {
+            iconClass: "icon-OTHER"
+          }, "澄清": {
+            iconClass: "icon-clarify"
+          }, "资审": {
+            iconClass: "icon-investigate_money"
+          }, "流标": {
+            iconClass: "icon-FLOWSTANDARD"
+          }, "废标": {
+            iconClass: "icon-THESCRAP"
           },
         },
         pageKey: 0,//页面状态
@@ -176,22 +187,27 @@
         city: '',//选择的城市
         district: '',//选择的地区
         filterFlag: false,//筛选状态
-        pageIndex0: {data: '', pageNum: 1},//招标订阅信息
-        pageIndex1: {data: '', pageNum: 1},//招标公示信息
-        pageIndex2: {data: '', pageNum: 1},//中标公示信息
-        pageIndex3: {data: '', pageNum: 1},//更多信息
+        pageIndex0: {data: [], pageNum: 1},//招标订阅信息
+        pageIndex1: {data: [], pageNum: 1},//招标公示信息
+        pageIndex2: {data: [], pageNum: 1},//中标公示信息
+        pageIndex3: {data: [], pageNum: 1},//更多信息
       }
     },
     methods: {
       //获取初始数据
       getData() {
-        let _this = this;
-        axios.get(`${api.baseApi}${api.apiList.home}`).then((res) => {
-          let data = res.data.data;
-          _this.pageIndex0.data = data.subscribe_list;
-          _this.pageIndex2.data = data.success_tender_list;
-          console.log(_this.pageIndex2)
-        })
+        http({
+          url: api.home,
+          success: (data) => {
+            this.pageIndex0.data = data.subscribe_list;
+            this.pageIndex1.data = data.tender_list;
+            this.pageIndex2.data = data.success_tender_list;
+            this.pageIndex3.data = data.more_list;
+            window.addEventListener('refresh', () => {
+              location.reload()
+            })
+          }
+        });
       },
       // 跳转页面
       openWindow(route) {
@@ -255,45 +271,105 @@
     },
     components: {},
     mounted() {
+      let vueThis = this;
       mui.init({
         preloadPages: [
           {
             url: './selectLocation.html',
             id: 'selectLocation',
           }
-        ],pullRefresh : [{
-          container:'#pull',//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
-          up : {
-            contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
-            callback :function () {
-              console.log('我上啦了');
-              this.endPullupToRefresh(false);
-            } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-          },down:{
-            callback:function () {
-
+        ], pullRefresh: [{
+          container: '#page1',
+          up: {
+            contentrefresh: "正在加载...",
+            callback: function () {
+              vueThis.pageIndex0.pageNum += 1;
+              http({
+                url: api.tender_subscribe,
+                data: {
+                  province: vueThis.province,
+                  cur_page: vueThis.pageIndex0.pageNum
+                }, success: (data) => {
+                  vueThis.pageIndex0.data = vueThis.pageIndex0.data.concat(data.result);
+                  if (data.total_page === vueThis.pageIndex0.pageNum) {
+                    this.endPullupToRefresh(true);
+                  } else {
+                    this.endPullupToRefresh(false);
+                  }
+                }
+              });
             }
           }
-        },{
-          container:'#pulll',//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
-          up : {
-            contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
-            callback :function () {
-              console.log('我上啦了了了');
-              this.endPullupToRefresh(false);
-            } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-          },
-          down:{
-            callback:function () {
-
+        }, {
+          container: '#page2',
+          up: {
+            contentrefresh: "正在加载...",
+            callback: function () {
+              vueThis.pageIndex1.pageNum += 1;
+              http({
+                url: api.tender,
+                data: {
+                  province: vueThis.province,
+                  cur_page: vueThis.pageIndex1.pageNum
+                }, success: (data) => {
+                  vueThis.pageIndex1.data = vueThis.pageIndex1.data.concat(data.result);
+                  if (data.total_page === vueThis.pageIndex1.pageNum) {
+                    this.endPullupToRefresh(true);
+                  } else {
+                    this.endPullupToRefresh(false);
+                  }
+                }
+              });
+            }
+          }
+        }, {
+          container: '#page3',
+          up: {
+            contentrefresh: "正在加载...",
+            callback: function () {
+              vueThis.pageIndex2.pageNum += 1;
+              http({
+                url: api.tender_success,
+                data: {
+                  province: vueThis.province,
+                  cur_page: vueThis.pageIndex2.pageNum
+                }, success: (data) => {
+                  vueThis.pageIndex2.data = vueThis.pageIndex2.data.concat(data.result);
+                  if (data.total_page === vueThis.pageIndex2.pageNum) {
+                    this.endPullupToRefresh(true);
+                  } else {
+                    this.endPullupToRefresh(false);
+                  }
+                }
+              });
+            }
+          }
+        }, {
+          container: '#page4',
+          up: {
+            contentrefresh: "正在加载...",
+            callback: function () {
+              vueThis.pageIndex3.pageNum += 1;
+              http({
+                url: api.tender_more,
+                data: {
+                  province: vueThis.province,
+                  cur_page: vueThis.pageIndex3.pageNum
+                }, success: (data) => {
+                  vueThis.pageIndex3.data = vueThis.pageIndex3.data.concat(data.result);
+                  if (data.total_page === vueThis.pageIndex3.pageNum) {
+                    this.endPullupToRefresh(true);
+                  } else {
+                    this.endPullupToRefresh(false);
+                  }
+                }
+              });
             }
           }
         }]
       });
       this.jumpTo(this.pageKey);
-      mui('.mui-scroll-wrapper').scroll({
-        indicators: false
-      });
+      mui('.mui-scroll-wrapper').scroll();
     },
     created() {
       this.location();

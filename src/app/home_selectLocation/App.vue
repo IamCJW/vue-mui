@@ -9,13 +9,11 @@
     .mui-content.bg-gary
       .selected-box
         span 当前选择
-        span.border-box {{location}}
+        span {{location}}
       .oldSelect-box
         .oldSelect-title 最近访问
         .oldSelect-group
-          span.border-box 深圳
-          span.border-box 赣州市(章贡区)
-          span.border-box 广东
+          span.border-box(v-for="item in oldSelects" @tap="selectLocationOld(item.province,item.city,item.district)") {{item.city}}{{item.district}}
       .indexed-list
         .indexed-content(ref='indexed')
           .indexed-list-alert(v-show="alertFlag.code") {{alertFlag.letter}}
@@ -38,9 +36,9 @@
 <script>
   /* global mui */
   /* global mui plus */
-  import axios from 'axios'
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
-  import api from '../../assets/js/api'
+  import http from '../../assets/js/http.js'
+  import api from '../../assets/js/api.js'
 
   export default {
     name: 'selectlocation',
@@ -59,36 +57,34 @@
         province: '',//选择的省
         city: '',//选择的市
         district: '',//选择的区
+        oldSelects: [],//最近访问
       }
     },
     methods: {
       //获取地址信息/////////////////////////////////////////////////////////////////
       getNation() {
-        let _this = this;
-        axios.get(`${api.baseApi}${api.apiList.nation}`)
-          .then(function (response) {
-            let data = response.data.data;
-            _this.nationData = data;
+        http({
+          url: api.nation,
+          success: (data) => {
+            this.nationData = data;
             data.forEach((item) => {
-              if (_this.letter.indexOf(item.prefix)) {
-                _this.letter.push(item.prefix)
+              if (this.letter.indexOf(item.prefix)) {
+                this.letter.push(item.prefix)
               }
             });
-            _this.letter = _this.letter.sort();
-            _this.letter.forEach((item) => {
+            this.letter = this.letter.sort();
+            this.letter.forEach((item) => {
               let _item = item;
-              _this.nation[_item] = [];
+              this.nation[_item] = [];
               data.forEach((item) => {
                 if (item.prefix === _item) {
-                  _this.nation[_item].push(item)
+                  this.nation[_item].push(item)
                 }
               })
             });
-            _this.selectInit();
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+            this.selectInit();
+          }
+        });
       },
       //地址选择锚点定位//////////////////////////////////////////
       chooseGroup(type) {
@@ -101,16 +97,14 @@
           this.alertFlag.code = false;
         }, 200)
       },
-      //选择器初始化//////////////////////////////////////////////////////
-      selectInit() {
-        let locationSel = this.nation[this.letter[0]][0];
-      },
       //数据初始化////////////////////////////////////////////////////
       dataInit() {
         let province = localStorage.getItem(lsKey.locationProvince);
         let city = localStorage.getItem(lsKey.locationCity);
         let district = localStorage.getItem(lsKey.locationDistrict);
-        this.location = `${province} / ${city} / ${district}`
+        this.location = `${province}${city}${district}`;
+        this.oldSelects = localStorage.getItem(lsKey.locationOldSelect) ? JSON.parse(localStorage.getItem(lsKey.locationOldSelect)) : [];
+        console.log(this.oldSelects)
       },
       //选择器选择///////////////////////////////////////////////////
       selectLocation(key, type) {
@@ -126,7 +120,7 @@
                 return
               }
             });
-            this.location = `${this.province} / ${this.city} / ${this.district}`;
+            this.location = `${this.province}${this.city}${this.district}`;
             break;
           case 2:
             this.city = key;
@@ -138,26 +132,50 @@
                 return
               }
             });
-            this.location = `${this.province} / ${this.city} / ${this.district}`;
+            this.location = `${this.province}${this.city}${this.district}`;
             break;
           case 3:
             this.district = key;
-            this.location = `${this.province} / ${this.city} / ${this.district}`;
+            this.location = `${this.province}${this.city}${this.district}`;
             //将定位存入本地缓存
             localStorage.setItem(lsKey.locationProvince, this.province);
             localStorage.setItem(lsKey.locationCity, this.city);
             localStorage.setItem(lsKey.locationDistrict, this.district);
+            //历史查询存入缓存
+            if (this.oldSelects.length < 1) {
+              this.oldSelects.unshift({province: this.province, city: this.city, district: this.district})
+            }
+            this.oldSelects.forEach((item) => {
+              if (item.district !== this.district) {
+                if (this.oldSelects.length < 3) {
+                  this.oldSelects.unshift({province: this.province, city: this.city, district: this.district});
+                } else {
+                  this.oldSelects.shift();
+                  this.oldSelects.unshift({province: this.province, city: this.city, district: this.district});
+                }
+              }
+            });
+            console.log(this.oldSelects);
+            localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
             mui.back();
         }
       },
+      //历史记录访问//////////////////////////////////////////
+      selectLocationOld(province,city,district){
+        //将定位存入本地缓存
+        localStorage.setItem(lsKey.locationProvince, province);
+        localStorage.setItem(lsKey.locationCity, city);
+        localStorage.setItem(lsKey.locationDistrict, district);
+        mui.back()
+      }
     },
     mounted() {
       mui.init({
-        beforeback: function(){
+        beforeback: function () {
           //获得列表界面的webview
           let home = plus.webview.getWebviewById('home');
           //触发列表界面的自定义事件（refresh）,从而进行数据刷新
-          mui.fire(home,'refresh');
+          mui.fire(home, 'refresh');
           //返回true，继续页面关闭逻辑
           return true
         }

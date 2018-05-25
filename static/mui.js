@@ -7,6 +7,7 @@
  * MUI核心JS
  * @type _L4.$|Function
  */
+var h5pullDown = true;
 var mui = (function (document, undefined) {
   var readyRE = /complete|loaded|interactive/;
   var idSelectorRE = /^#([\w-]+)$/;
@@ -2967,10 +2968,8 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
       console.log(pullRefreshOptions);
       for (var pp in pullRefreshOptions) {
         _pullRefreshOptions = pullRefreshOptions[pp];
-        console.log(pullRefreshOptions.down)
         var hasPulldown = _pullRefreshOptions.down && _pullRefreshOptions.down.hasOwnProperty('callback');
         var hasPullup = _pullRefreshOptions.up && _pullRefreshOptions.up.hasOwnProperty('callback');
-
         if (hasPulldown || hasPullup) {
           var container = _pullRefreshOptions.container;
           if (container) {
@@ -2984,7 +2983,7 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
                     $container.pullRefresh(_pullRefreshOptions);
                   });
 
-                } else if ($.os.android) { //非原生转圈，但是Android环境
+                } else if ($.os.android && !h5pullDown) { //非原生转圈，但是Android环境
                   $.plusReady(function () {
                     //这里改写$.fn.pullRefresh
                     $.fn.pullRefresh = $.fn.pullRefresh_native
@@ -5187,7 +5186,7 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
  * @returns {undefined}
  */
 (function ($, document) {
-  if (!($.os.plus)) { //仅在5+android支持多webview的使用
+  if (!($.os.plus)|| h5pullDown) { //仅在5+android支持多webview的使用
     return;
   }
   $.plusReady(function () {

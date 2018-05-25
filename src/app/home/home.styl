@@ -63,14 +63,16 @@
     position relative
     overflow hidden
     left 0
-    transition 500ms left
+    transition .3s left
     .content-page
       position relative
       float left
       width 100vw
       height 100%
       padding 0 .12rem
-      overflow hidden
+      overflow-y auto
+      .scroll-wrapper
+        height 100%
       .filter-wrapper
         overflow hidden
         .filter
@@ -108,6 +110,7 @@
               padding 0 .1rem
             .pro-main-sign
               padding 0 .1rem
+              width: 2.3rem
               .pro-style
                 .iconfont
                   font-size .16rem
@@ -137,31 +140,30 @@
             .pro-price
               span
                 color $assist-color
-      .mui-scroll.cell-row.more
-        .pro-time
-          flex-justify-content(flex-end)
-          padding .07rem .15rem 0
-        .pro-assist
-          flex-justify-content(flex-start)
-          flex-flex(0 .8rem)
-          padding 0 .15rem
-          font-size .14rem
-          .pro-style
-            flex-align-item(baseline)
+        &.more
+          .pro-time
+            flex-justify-content(flex-end)
+            padding .07rem .15rem 0
+          .pro-assist
             flex-justify-content(flex-start)
-            border none
-            color #0e972f
-            .iconfont
-              font-size .16rem
-        .pro-main
-          border-right none
-          .pro-name
-            flex-align-item(flex-start)
-            padding 0 .15rem 0 0
-          .pro-main-sign
-            padding 0 .15rem 0 0
-            .pro-location
-              margin-left 0
+            flex-flex(0 .8rem)
+            padding 0 .15rem
+            font-size .14rem
+            .pro-style
+              flex-align-item(baseline)
+              flex-justify-content(flex-start)
+              border none!important
+              .iconfont
+                font-size .16rem
+          .pro-main
+            border-right none
+            .pro-name
+              flex-align-item(flex-start)
+              padding 0 .15rem 0 0
+            .pro-main-sign
+              padding 0 .15rem 0 0
+              .pro-location
+                margin-left 0
 .mask
   height 84.3vh
   top auto
