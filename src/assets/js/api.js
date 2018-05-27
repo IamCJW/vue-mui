@@ -13,4 +13,5 @@ export default (config => {
   tender:'/project/tender',//招标公告分页数据
   tender_more:'/project/tender/more',//更多招标信息分页数据
   tender_subscribe:'/project/tender/subscribe',//订阅分页数据
+  common_dict:'/common/dict',//基础数据字典
 })

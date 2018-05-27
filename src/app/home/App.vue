@@ -1,5 +1,7 @@
 // src/app/home/App.vue
 
+
+
 <template lang="pug">
   #app
     .header-full
@@ -13,10 +15,10 @@
           div 请输入要查询的项目名称
           i.iconfont.icon-SEARCH
       .home-bar-nav
-        button.home-bar-item(@tap="jumpTo(0)" :class="{active: pageKey===0}") 招标订阅
-        button.home-bar-item(@tap="jumpTo(1)" :class="{active: pageKey===1}") 招标公告
-        button.home-bar-item(@tap="jumpTo(2)" :class="{active: pageKey===2}") 中标公示
-        button.home-bar-item(@tap="jumpTo(3)" :class="{active: pageKey===3}") 更多信息
+        button.home-bar-item(@tap="jumpTo(0)", :class="{active: pageKey===0}") 招标订阅
+        button.home-bar-item(@tap="jumpTo(1)", :class="{active: pageKey===1}") 招标公告
+        button.home-bar-item(@tap="jumpTo(2)", :class="{active: pageKey===2}") 中标公示
+        button.home-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 更多信息
     .mui-content
       .content-wrapper
         .content-full-scroll(ref='barscroll')
@@ -24,7 +26,7 @@
             .scroll-wrapper#page1
               .scroll-box
                 .filter-wrapper
-                  .filter(@tap="popoutFilter(true)")
+                  .filter(@tap="")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
@@ -48,11 +50,11 @@
                           span {{item.amount}}
                           | 万
           //公告
-          .content-page(@swipeleft="contentSwipeleft()" @swiperight="contentSwiperight()")
+          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper.cell-row#page2
               .scroll-box
                 .filter-wrapper
-                  .filter
+                  .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
@@ -75,11 +77,11 @@
                           span {{item.amount}}
                           | 万
           //中标
-          .content-page(@swipeleft="contentSwipeleft()" @swiperight="contentSwiperight()")
+          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper.cell-row#page3
               .scroll-box
                 .filter-wrapper
-                  .filter
+                  .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
@@ -106,7 +108,7 @@
             .scroll-wrapper#page4
               .scroll-box
                 .filter-wrapper
-                  .filter
+                  .filter(@tap="popoutFilter(true,true)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
@@ -129,6 +131,23 @@
         .popout-wrapper(v-if="filterFlag")
           .popout-filter-close(@tap="popoutFilter(false)")
           .popout-filter
+            .popout-filter-content
+              .filter-typeGroup
+                .filter-type 招标地域
+                .filter-keyGrouup
+                  span(v-if='filterLocation.index !== 0') 上一级
+                  span(v-for="(item,index) in filterLocation.data", :class="{active:province === item.name || city === item.name || district === item.name}") {{item.name}}
+              template( v-if="!isMore")
+                .filter-typeGroup(v-for="(value,key) in commonDict" v-if="key !== 'info_dict'")
+                  .filter-type(v-if="key === 'amount_dict'") 招标金额
+                  .filter-type(v-else-if="key === 'tender_dict'") 行业类型
+                  .filter-type(v-else-if="key === 'construction_dict'") 专业类型
+                  .filter-keyGrouup
+                    span(v-for="item in value",:class="{active:filterSelect[key].value === item.value}") {{item.name}}
+              .filter-typeGroup(v-else)
+                .filter-type 信息类型
+                .filter-keyGroup
+                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_dict'].value === item.value}") {{item.name}}
             .popout-filter-btnGroup
               button 重置
               button 确定
@@ -186,16 +205,31 @@
         province: '',//选择的省份
         city: '',//选择的城市
         district: '',//选择的地区
-        filterFlag: false,//筛选状态
+        filterFlag: true,//筛选状态
         pageIndex0: {data: [], pageNum: 1},//招标订阅信息
         pageIndex1: {data: [], pageNum: 1},//招标公示信息
         pageIndex2: {data: [], pageNum: 1},//中标公示信息
         pageIndex3: {data: [], pageNum: 1},//更多信息
+        commonDict: {},//数据字典
+        isMore: false,//是否为更多筛选
+        filterLocation: {
+          index: 0,
+          data: ''
+        },//地址筛选数据
+        filterSelect: {
+          location: {province:'',city:'',district:''},
+          amount_dict: '',
+          construction_dict:'',
+          info_dict:'',
+          tender_dict:''
+        },
+        nation: '',//地址数据
       }
     },
     methods: {
       //获取初始数据
       getData() {
+        //获取项目数据
         http({
           url: api.home,
           success: (data) => {
@@ -208,6 +242,48 @@
             })
           }
         });
+        http({
+          url: api.common_dict,
+          success: (data) => {
+            this.commonDict = data;
+            for(let item in data){
+                this.filterSelect[item] = data[item][0];
+            }
+          }
+        });
+        http({
+          url: api.nation,
+          success: (data) => {
+            this.nation = data;
+            this.filterLocation.data = data;
+            if(this.city !== ''){
+              let flag = true;
+              this.filterLocation.data.forEach((item)=>{
+                if(item.name === this.province){
+                  this.filterLocation.index = 1;
+                  this.filterLocation.data = item.city;
+                  flag = false;
+                }
+              });
+              if (flag){
+                this.filterLocation.data = data;
+                return
+              }
+            }
+            if(this.district !== ''){
+              this.filterLocation.index = 2;
+              this.filterLocation.data.forEach((item)=>{
+                if(item.name === this.city){
+                  this.filterLocation.data = item.district;
+                }
+              });
+            }
+
+          }
+        });
+      },
+      filterSelectPro(key,value){
+
       },
       // 跳转页面
       openWindow(route) {
@@ -250,8 +326,9 @@
         }
       },
       //筛选弹窗
-      popoutFilter(station) {
+      popoutFilter(station, isMore) {
         this.filterFlag = station;
+        this.isMore = isMore;
         if (!station) return
       },
       //左滑事件
@@ -261,7 +338,7 @@
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },
-      //左滑事件
+      //右滑事件
       contentSwiperight() {
         this.pageKey = this.pageKey - 1;
         let key = this.pageKey;
