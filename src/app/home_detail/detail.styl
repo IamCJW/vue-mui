@@ -1,0 +1,118 @@
+@import "../../stylus/_mixin.styl"
+.detail-header
+  //position fixed
+  top 0
+  left 0
+  right 0
+  z-index $z-index-navigation
+  background-color $main-color
+  .header-title
+    display-flex()
+    flex-align-item(flex-start)
+    flex-justify-content(space-between)
+    min-height .44rem
+    color #fff
+    padding .12rem $cell-left-right-space
+    font-size .16rem
+    .iconfont
+      font-size .18rem
+    .detail-title
+      flex-flex(0,0,2.5rem)
+  .header-sign
+    position relative
+    overflow auto
+    color rgba(255,255,255,.8)
+    font-size .12rem
+    padding 0 .12rem .12rem
+    line-height 1
+    box-shadow 0 0.03rem 0.02rem rgba(0, 0, 0, 0.06)
+    .fl
+      span
+        margin-right .1rem
+  .detail-nav-bar
+    background-color $main-color-x
+    min-width 100%
+    height .46rem
+    display-flex()
+    flex-justify-content(flex-start)
+    overflow-x auto
+    span
+      height .46rem
+      display inline-block
+      font-size .14rem
+      padding .14rem .12rem .12rem
+      color rgba(255,255,255,.75)
+      white-space nowrap
+      position relative
+      transition color .5s
+      &.active
+        color #fff
+        &::before
+          position absolute
+          content ''
+          top 0.01rem
+          left 0
+          right 0
+          height .02rem
+          background-color $main-color
+          border-radius .03rem
+.content-table
+  width 100%
+  line-height .4rem
+  color $text-color-light-x
+  .th
+    width .9rem
+    color #333
+  tr
+    border-bottom $border-default
+    td
+      border-right $border-default
+      text-align center
+      .time
+        font-size .12rem
+        text-align right
+        line-height .22rem
+        padding .07rem .12rem
+      .orContent
+        text-align left
+        text-indent 2em
+        line-height .22rem
+        padding .12rem
+    td:last-chid
+      border-right none
+      border-bottom none
+footer
+  position fixed
+  bottom 0
+  left 0
+  right 0
+  background #fff
+  .btn-group
+    height .48rem
+    display-flex()
+    flex-align-item(center)
+    box-shadow 0 -.02rem .02rem rgba(0,0,0,.03)
+    .btn-item
+      display-flex()
+      flex-direction(column)
+      flex-justify-content(center)
+      flex-align-item(center)
+      height 100%
+      font-size .1rem
+      line-height 1
+      flex-flex(0,0,.7rem)
+      color $text-color-light-xx
+      .iconfont
+        font-size .18rem
+        margin-bottom .05rem
+    .buy
+      flex-flex(1)
+      background-color $assist-color
+      color #ffffff
+      font-size .14rem
+
+
+
+
+
+

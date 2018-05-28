@@ -1,7 +1,6 @@
 // src/app/home/App.vue
 
 
-
 <template lang="pug">
   #app
     .header-full
@@ -58,7 +57,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex1.data")
+                  .pro-item(v-for="item in pageIndex1.data" @tap="openWindow('detail',{rid:item.rid})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -126,6 +125,7 @@
                         .pro-main-sign
                           span.pro-location {{item.province}} / {{item.city}}
                             template(v-if='item.district')  / {{item.district}}
+    //筛选
     transition(name='filter')
       .mask(v-if="filterFlag")
         .popout-wrapper(v-if="filterFlag")
@@ -135,22 +135,22 @@
               .filter-typeGroup
                 .filter-type 招标地域
                 .filter-keyGrouup
-                  span(v-if='filterLocation.index !== 0') 上一级
-                  span(v-for="(item,index) in filterLocation.data", :class="{active:province === item.name || city === item.name || district === item.name}") {{item.name}}
+                  span(v-if='filterLocation.index !== 0',@tap="filterBack()") 上一级
+                  span(v-for="(item,index) in filterLocation.data", :class="{active:filterSelect.location.province === item.name || filterSelect.location.city === item.name || filterSelect.location.district === item.name}", @tap="filterSelectPro(filterLocation.index,item.name)") {{item.name}}
               template( v-if="!isMore")
                 .filter-typeGroup(v-for="(value,key) in commonDict" v-if="key !== 'info_dict'")
                   .filter-type(v-if="key === 'amount_dict'") 招标金额
                   .filter-type(v-else-if="key === 'tender_dict'") 行业类型
                   .filter-type(v-else-if="key === 'construction_dict'") 专业类型
                   .filter-keyGrouup
-                    span(v-for="item in value",:class="{active:filterSelect[key].value === item.value}") {{item.name}}
+                    span(v-for="item in value",:class="{active:filterSelect[key].value === item.value}", @tap="filterSelectPro(key,item)") {{item.name}}
               .filter-typeGroup(v-else)
                 .filter-type 信息类型
-                .filter-keyGroup
-                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_dict'].value === item.value}") {{item.name}}
+                .filter-keyGrouup
+                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_dict'].value === item.value}", @tap="filterSelectPro('info_dict',item)") {{item.name}}
             .popout-filter-btnGroup
-              button 重置
-              button 确定
+              button(@tap="filterReset()") 重置
+              button(@tap="filterSubmit()") 确定
 </template>
 <style lang="stylus" scoped>
   @import "home.styl"
@@ -205,7 +205,7 @@
         province: '',//选择的省份
         city: '',//选择的城市
         district: '',//选择的地区
-        filterFlag: true,//筛选状态
+        filterFlag: false,//筛选状态
         pageIndex0: {data: [], pageNum: 1},//招标订阅信息
         pageIndex1: {data: [], pageNum: 1},//招标公示信息
         pageIndex2: {data: [], pageNum: 1},//中标公示信息
@@ -217,11 +217,11 @@
           data: ''
         },//地址筛选数据
         filterSelect: {
-          location: {province:'',city:'',district:''},
+          location: {province: '', city: '', district: ''},
           amount_dict: '',
-          construction_dict:'',
-          info_dict:'',
-          tender_dict:''
+          construction_dict: '',
+          info_dict: '',
+          tender_dict: ''
         },
         nation: '',//地址数据
       }
@@ -246,57 +246,168 @@
           url: api.common_dict,
           success: (data) => {
             this.commonDict = data;
-            for(let item in data){
-                this.filterSelect[item] = data[item][0];
+            for (let item in data) {
+              this.filterSelect[item] = data[item][0];
             }
           }
         });
-        http({
-          url: api.nation,
-          success: (data) => {
-            this.nation = data;
-            this.filterLocation.data = data;
-            if(this.city !== ''){
-              let flag = true;
-              this.filterLocation.data.forEach((item)=>{
-                if(item.name === this.province){
-                  this.filterLocation.index = 1;
-                  this.filterLocation.data = item.city;
-                  flag = false;
-                }
-              });
-              if (flag){
-                this.filterLocation.data = data;
+        if (localStorage.getItem(lsKey.nationData) !== null) {
+          this.nation = JSON.parse(localStorage.getItem(lsKey.nationData));
+          this.initFilterLocation()
+        } else {
+          http({
+            url: api.nation,
+            success: (data) => {
+              localStorage.setItem(lsKey.nationData, JSON.stringify(data));
+              this.nation = data;
+              this.initFilterLocation()
+            }
+          });
+        }
+      },
+      //筛选地址初始化
+      initFilterLocation() {
+        this.filterLocation.data = this.nation;
+        if (this.city !== '') {
+          let flag = true;
+          this.filterLocation.data.forEach((item) => {
+            if (item.name === this.province) {
+              this.filterLocation.index = 1;
+              this.filterLocation.data = item.city;
+              flag = false;
+            }
+          });
+          if (flag) {
+            this.filterLocation.data = this.nation;
+            return
+          }
+        }
+        if (this.district !== '') {
+          this.filterLocation.index = 2;
+          this.filterLocation.data.forEach((item) => {
+            if (item.name === this.city) {
+              this.filterLocation.data = item.district;
+            }
+          });
+        }
+      },
+      // 筛选选择
+      filterSelectPro(key, value) {
+        switch (key) {
+          case 0:
+            this.filterSelect.location.province = value;
+            this.filterLocation.index = 1;
+            for (let key in this.filterLocation.data) {
+              if (this.filterLocation.data[key].name === value) {
+                this.filterLocation.data = this.filterLocation.data[key].city;
                 return
               }
             }
-            if(this.district !== ''){
-              this.filterLocation.index = 2;
-              this.filterLocation.data.forEach((item)=>{
-                if(item.name === this.city){
-                  this.filterLocation.data = item.district;
-                }
-              });
+            break;
+          case 1:
+            this.filterSelect.location.city = value;
+            this.filterLocation.index = 2;
+            for (let key in this.filterLocation.data) {
+              if (this.filterLocation.data[key].name === value) {
+                this.filterLocation.data = this.filterLocation.data[key].district;
+                return
+              }
             }
-
-          }
-        });
+            break;
+          case 2:
+            this.filterSelect.location.district = value;
+            break;
+          default:
+            this.filterSelect[key] = value;
+        }
       },
-      filterSelectPro(key,value){
-
+      //地址返回
+      filterBack() {
+        switch (this.filterLocation.index) {
+          case 1:
+            this.filterLocation.index = 0;
+            this.filterLocation.data = this.nation;
+            break;
+          case 2:
+            this.filterLocation.index = 1;
+            for (let key in this.filterLocation.data) {
+              if (this.filterLocation.data[key].name === this.filterSelect.location.province) {
+                this.filterLocation.data = this.filterLocation.data[key].city;
+                return
+              }
+            }
+            break;
+        }
+      },
+      //条件提交
+      filterSubmit() {
+        let filterSelect = this.filterSelect;
+        let data = {
+          amount: filterSelect.amount,
+          city: filterSelect.location.city,
+          construction: filterSelect.construction_dict,
+          cur_page: 1,
+          district: filterSelect.location.district,
+          province: filterSelect.location.province,
+          tender: filterSelect.tender_dict
+        };
+        switch (this.pageKey) {
+          case 1:
+            http({
+              url: api.tender,
+              data: data,
+              success: (data) => {
+                this.pageIndex1.data = data.result;
+                this.filterFlag = false;
+              }
+            });
+            break;
+          case 2:
+            http({
+              url: api.tender_success,
+              data: data,
+              success: (data) => {
+                this.pageIndex2.data = data.result;
+                this.filterFlag = false;
+              }
+            });
+            break;
+          case 3:
+            http({
+              url: api.tender_more,
+              data: data,
+              success: (data) => {
+                this.pageIndex3.data = data.result;
+                this.filterFlag = false;
+              }
+            });
+            break;
+        }
+      },
+      //条件重置
+      filterReset() {
+        this.filterSelect = {
+          location: {province: '', city: '', district: ''},
+          amount_dict: '',
+          construction_dict: '',
+          info_dict: '',
+          tender_dict: ''
+        }
       },
       // 跳转页面
-      openWindow(route) {
+      openWindow(route,data) {
         mui.openWindow({
           url: `./${route}.html`,
           id: route,
+          extras:data
         })
       },
       //页面切换
       jumpTo(key) {
+        this.filterFlag = false;
         this.pageKey = key;
         let leftValue = 100 * key;
-        this.$refs.barscroll.style.left = `-${leftValue}vw`
+        this.$refs.barscroll.style.left = `-${leftValue}vw`;
       },
       //自动定位
       location() {

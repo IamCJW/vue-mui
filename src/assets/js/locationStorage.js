@@ -8,7 +8,7 @@ let lsKey = {
   filterProvince: 'localStorage_filter_province',//筛选的省
   filterCity: 'localStorage_filter_city',//筛选的省
   filterDistrict: 'localStorage_filter_district',//筛选的省
-
+  nationData:'localStorage_naiton_data',//城市数据
 };
 let ssKey = {
   locationProvince: 'localStorage_location_province',//定位的省
