@@ -1,6 +1,14 @@
 import axios from 'axios'
-const myMethods = {
 
+const myMethods = {
+  // 跳转页面
+  openWindow(route, data) {
+    mui.openWindow({
+      url: `./${route}.html`,
+      id: route,
+      extras: data
+    })
+  }
 
 };
 

@@ -20,7 +20,7 @@
         tabs: [
           { index: 0, id: 'home', name: '首页', icon: 'icon-ai-home', url: './home.html' },
           { index: 1, id: 'tab2', name: '消息', icon: 'icon-news', url: 'http://www.dcloud.io/hellomui/examples/tableviews.html' },
-          { index: 2, id: 'tab3', name: '查询', icon: 'icon-INQUIRE', url: 'http://www.dcloud.io/hellomui/examples/indexed-list-select.html' },
+          { index: 2, id: 'search', name: '查询', icon: 'icon-INQUIRE', url: './search.html' },
           { index: 3, id: 'tab4', name: '服务', icon: 'icon-SERVICE', url: 'http://www.dcloud.io/hellomui/examples/icons.html' },
           { index: 4, id: 'tab4', name: '我的', icon: 'icon-ME-copy', url: 'http://www.dcloud.io/hellomui/examples/icons.html' },
         ]

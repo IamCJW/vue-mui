@@ -1,0 +1,158 @@
+@import "../../stylus/_mixin.styl"
+.search-header
+  position fixed
+  width 100%
+  top 0
+  z-index $z-index-navigation
+  background-color $main-color
+  color #ffffff
+  font-size .16rem
+  letter-spacing -.5
+  .search-nav-list
+    display-flex()
+    flex-justify-content(space-around)
+    flex-align-item(center)
+    position relative
+    .search-item
+      display-flex()
+      flex-align-item(center)
+      position relative
+      height .44rem
+      &.active:after
+        content: ''
+        left .1rem
+        right .1rem
+        height .05rem
+        background-color $third-color
+        position absolute
+        bottom 0
+        border-radius .05rem
+.content-wrapper
+  position absolute
+  top 0
+  width 100%
+  height 100vh
+  padding-top .44rem
+  overflow hidden
+  z-index $z-index-content
+  .content-full-scroll
+    width 300vw
+    height 100%
+    position relative
+    overflow hidden
+    left 0
+    transition .3s left
+    .content-page
+      position relative
+      float left
+      width 100vw
+      height 100%
+      padding 0 .12rem
+      overflow hidden
+      overflow-y auto
+      .scroll-wrapper
+        height 100%
+        .scroll-box
+          .search-wrapper
+            padding .12rem 0 0
+            .search-box
+              position relative
+              display-flex()
+              flex-align-item(center)
+              flex-justify-content(center)
+              width 3.2rem
+              height .35rem
+              margin 0 auto .12rem
+              box-shadow $box-shadow-default
+              border $border-default
+              border-radius $border-radius-default
+              color $text-color-light-xx
+              .iconfont
+                position absolute
+                color #333333
+                right .3rem
+          .search-result
+            background $main-color
+            color rgba(255,255,255,.8)
+            font-size .1rem
+            line-height .25rem
+            text-align center
+            padding 0 .12rem
+            margin 0 -.24rem
+          .com-group
+            padding-top .12rem
+            .com-item
+              border-radius $border-radius-default
+              border $border-default
+              padding .05rem .12rem
+              margin-bottom .12rem
+              .com-name
+                font-weight 600
+              .com-sign
+                font-size .12rem
+                color $text-color-light-xx
+                span
+                  display inline-block
+                  min-width .6rem
+              .com-records
+                overflow auto
+                span
+                  font-size .1rem
+                  float left
+                  width .75rem
+                  display-inline-flex()
+                  flex-align-item(center)
+                  .iconfont.z
+                    color $third-color-x
+                  .iconfont.b
+                    color $fourth-color
+          .bui-group
+            padding-top .12rem
+            .bui-item
+              border-radius $border-radius-default
+              border $border-default
+              padding .05rem .12rem
+              margin-bottom .12rem
+              color $text-color-light-xx
+              font-size .12rem
+              .bui-top
+                display-flex()
+                flex-align-item(baseline)
+                .bui-name
+                  font-size .14rem
+                  color #333333
+                  font-weight 600
+                  margin-right .12rem
+                .bui-id
+                  flex-flex(1)
+              .bui-mid
+                margin .03rem 0
+                overflow auto
+                span
+                  display inline-block
+                .bui-sign
+                  background-color $main-color
+                  color #fff
+                  padding 0 .05rem
+                  border-radius $border-radius-x
+                .fr
+                  span
+                    margin-left .15rem
+              .bui-records
+                overflow auto
+                span
+                  font-size .1rem
+                  float left
+                  width .75rem
+                  display-inline-flex()
+                  flex-align-item(center)
+                  .iconfont.z
+                    color $third-color-x
+                  .iconfont.b
+                    color $fourth-color
+
+
+
+
+
+

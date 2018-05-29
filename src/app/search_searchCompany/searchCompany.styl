@@ -1,0 +1,65 @@
+@import "../../stylus/_mixin.styl"
+.pro-group
+  float left
+  width 100vw
+  height 100vh
+  padding .44rem .12rem 0
+  overflow hidden
+  overflow-y auto
+  .scroll-wrapper
+    height 100%
+    .scroll-box
+      .search-wrapper
+        padding .12rem 0 0
+        .search-box
+          position relative
+          display-flex()
+          flex-align-item(center)
+          flex-justify-content(center)
+          width 3.2rem
+          height .35rem
+          margin 0 auto .12rem
+          box-shadow $box-shadow-default
+          border $border-default
+          border-radius $border-radius-default
+          color $text-color-light-xx
+          .iconfont
+            position absolute
+            color #333333
+            right .3rem
+      .search-result
+        background $btn-gradient
+        color rgba(255, 255, 255, .8)
+        font-size .1rem
+        line-height .25rem
+        text-align center
+        padding 0 .12rem
+        margin 0 -.24rem
+      .com-group
+        padding-top .12rem
+        .com-item
+          border-radius $border-radius-default
+          border $border-default
+          padding .05rem .12rem
+          margin-bottom .12rem
+          .com-name
+            font-weight 600
+          .com-sign
+            font-size .12rem
+            color $text-color-light-xx
+            span
+              display inline-block
+              min-width .6rem
+          .com-records
+            overflow auto
+            span
+              font-size .1rem
+              float left
+              width .75rem
+              display-inline-flex()
+              flex-align-item(center)
+              .iconfont.z
+                color $third-color-x
+              .iconfont.b
+                color $fourth-color
+
