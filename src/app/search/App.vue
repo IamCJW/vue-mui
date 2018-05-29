@@ -32,7 +32,7 @@
           .scroll-wrapper#page2
             .scroll-box
               .search-wrapper
-                .search-box
+                .search-box(@tap="openWindow('searchBuilder')")
                   span 请输入建造职师或证件号
                   i.iconfont.icon-SEARCH
               .search-result 某招标共收录建造师{{builderData.total}}家
@@ -52,6 +52,18 @@
                     span(v-for="sign in item.province_list")
                       i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
                       span {{sign.name}}
+        .content-page(@swiperight="contentSwiperight()")
+          ul.media-view
+            li.media
+              .media-content.iconfont.icon-more
+                span.media-lable 选择省份
+                span.media-value 请选择省份
+            li.media
+              .media-content.iconfont.icon-more
+                span.media-lable 选择省份
+                span.media-value 请选择省份
+
+
 
 
 
@@ -74,7 +86,7 @@
     name: 'selectlocation',
     data() {
       return {
-        pageFlag:1,
+        pageFlag:2,
         companyData:{},//建筑企业信息
         builderData:{},//建造师信息
       }
@@ -110,7 +122,7 @@
             callback: function () {
               vueThis.builderData.cur_page += 1;
               http({
-                url: api.search_company,
+                url: api.search_builder_search,
                 data: {
                   cur_page: vueThis.builderData.cur_page,
                 }, success: (data) => {
