@@ -65,7 +65,7 @@
                     div(@tap="companySelect(1)")
                       i.iconfont(:class="[condition===1?'icon-select':'icon-CIRCLE']")
                       span 不限
-                    div(v-if="province.shortName" @tap="companySelect(2)")
+                    div(v-if="province.shortName", @tap="companySelect(2)")
                       i.iconfont(:class="[condition===2?'icon-select':'icon-CIRCLE']")
                       span 入{{province.shortName}}企业
                     div(@tap="companySelect(3)")

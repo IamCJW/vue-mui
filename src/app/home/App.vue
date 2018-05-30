@@ -57,7 +57,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex1.data" @tap="openWindow('detail',{rid:item.rid})")
+                  .pro-item(v-for="item in pageIndex1.data", @tap="openWindow('detail',{rid:item.rid})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}

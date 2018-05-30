@@ -1,6 +1,6 @@
 @import "../../stylus/_mixin.styl"
 .detail-header
-  //position fixed
+  position relative
   top 0
   left 0
   right 0
@@ -61,60 +61,47 @@
           height .02rem
           background-color $third-color
           border-radius .03rem
-.content-table
-  width 100%
-  line-height .4rem
-  color $text-color-light-x
-  .th
-    width .9rem
-    color #333
-  tr
-    border-bottom $border-default
-    td
-      border-right $border-default
-      text-align center
-      .time
-        font-size .12rem
-        text-align right
-        line-height .22rem
-        padding .07rem .12rem
-      .orContent
-        text-align left
-        text-indent 2em
-        line-height .22rem
-        padding .12rem
-    td:last-chid
-      border-right none
-      border-bottom none
-footer
-  position fixed
-  bottom 0
-  left 0
-  right 0
-  background #fff
-  .btn-group
-    height .48rem
-    display-flex()
-    flex-align-item(center)
-    box-shadow 0 -.02rem .02rem rgba(0,0,0,.03)
-    .btn-item
-      display-flex()
-      flex-direction(column)
-      flex-justify-content(center)
-      flex-align-item(center)
+.mui-content
+  position relative
+  .content-wrapper
+    position absolute
+    top 0
+    width 100%
+    height 100vh
+    padding-top 1.16rem
+    margin-top -1.16rem
+    overflow hidden
+    z-index $z-index-content
+    .content-full-scroll
+      width 500vw
       height 100%
-      font-size .1rem
-      line-height 1
-      flex-flex(0,0,.7rem)
-      color $text-color-light-xx
-      .iconfont
-        font-size .18rem
-        margin-bottom .05rem
-    .buy
-      flex-flex(1)
-      background-color $assist-color
-      color #ffffff
-      font-size .14rem
+      position relative
+      overflow hidden
+      left 0
+      transition .3s left
+      .content-page
+        position relative
+        float left
+        width 100vw
+        height 100%
+        overflow-y auto
+        .scroll-wrapper
+          height 100%
+          .media-value
+            .com-records
+              overflow auto
+              span
+                font-size .1rem
+                float left
+                display-inline-flex()
+                flex-align-item(center)
+                .iconfont
+                  margin-left .12rem
+                .iconfont.z
+                  color $third-color-x
+                .iconfont.b
+                  color $fourth-color
+
 
 
 

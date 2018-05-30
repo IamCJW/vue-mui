@@ -124,8 +124,6 @@
     padding: .12rem
     -webkit-touch-callout: none;
     border-bottom $border-default
-    height .46rem
-    box-sizing border-box
     .media-content
       font-size .14rem
       overflow auto
@@ -134,7 +132,13 @@
         color $text-color-light-xx
       .media-value
         float right
-    .icon-right:before
+    .media-alert
+      margin .12rem -.12rem -.12rem
+      .media-view
+        background-color #f4f4f4
+        .media
+          padding .12rem .24rem
+    .icon-right:before,.icon-down:before,.icon-Unfold:before
       font-size .16rem
       float right
       color $text-color-light-xx
