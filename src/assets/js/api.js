@@ -18,4 +18,6 @@ export default (config => {
   common_dict:'/common/dict',//基础数据字典
   search_company:'/search/company',//建筑企业
   search_builder_search:'/search/builder/search',//查找建造师
+  common_base_qualify:'/common/base_qualify',//企业资质数据
+  search_company_qualify_search:'/search/company/qualify_search',//根据企业资质查找建筑企业
 })

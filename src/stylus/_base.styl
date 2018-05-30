@@ -37,9 +37,34 @@
     input
       border none
       color $text-color-light-x
+      flex-flex(1)
   .search
     font-size .12rem
 .header-nav-search~.mui-content
+  padding-top .44rem
+//常规二级页面头部/////////////////////////////////////////
+.header-nav
+  display-flex()
+  flex-align-item(center)
+  position fixed
+  top 0
+  left 0
+  right 0
+  z-index $z-index-navigation
+  background $main-color
+  height .44rem
+  color #fff
+  padding 0 $cell-left-right-space
+  box-shadow $box-shadow-default
+  .iconfont
+    font-size .18rem
+  .header-title
+    left .4rem
+    right .4rem
+    position absolute
+    font-size .16rem
+    text-align center
+.header-nav-search~.mui-content,.header-nav~.mui-content
   padding-top .44rem
 //背景颜色///////////////////////////////////////////////////
 .bg-white
@@ -97,16 +122,22 @@
   .media
     overflow: hidden;
     padding: .12rem
-    margin 0 -.12rem
     -webkit-touch-callout: none;
     border-bottom $border-default
+    height .46rem
+    box-sizing border-box
     .media-content
+      font-size .14rem
+      overflow auto
       .media-lable
+        float left
         color $text-color-light-xx
       .media-value
         float right
-    .icon-more:before
+    .icon-right:before
+      font-size .16rem
       float right
-    .icon-more
+      color $text-color-light-xx
+    .icon-right
       .media-value
-        margin-right .12rem
+        margin-right 0

@@ -1,0 +1,82 @@
+@import "../../stylus/_mixin.styl"
+$cell-padding = .27rem
+.border-box
+  border $border-default
+  border-radius $border-radius-xx
+  padding .07rem .12rem
+  min-width .66rem
+  display inline-block
+  text-align center
+.mui-content
+  position relative
+  .indexed-list
+    position: absolute
+    border-top: $border-default
+    border-bottom: $border-default
+    overflow: hidden;
+    background-color #f4f4f4
+    height: 100vh;
+    width: 100%;
+    cursor: default;
+    top: 0;
+    z-index: -1;
+    $indexed-padding-top = .44rem
+    padding-top $indexed-padding-top
+    .indexed-content
+      height 100%
+      position relative
+      .indexed-list-alert
+        position fixed
+        bottom  2rem
+        left 50%
+        margin-left -.2rem
+        border-radius 100%
+        width .4rem
+        height .4rem
+        display-flex()
+        flex-align-item(center)
+        flex-justify-content(center)
+        background rgba(0,0,0,.4)
+        color #ffffff
+        font-size .18rem
+        z-index $z-index-popout
+      .indexed-list-bar
+        width .3rem
+        position fixed
+        right 0
+        bottom .4rem
+        font-size .12rem
+        line-height .16rem
+        z-index $z-index-navigation
+        display-flex()
+        flex-direction(column)
+        flex-align-item(center)
+        a
+          color #396902
+          &:active
+            opacity .5
+      .indexed-list-inner
+        position relative
+        height 100%
+        overflow-y auto
+        .indexed-table-view
+          li
+            list-style none
+          .indexed-list-group
+            font-size .12rem
+            line-height .3rem
+            padding 0 $cell-padding
+            color $text-color-light-xx
+            .indexed-item
+              color #333
+              padding 0 $cell-padding
+              margin 0 (-($cell-padding))
+              font-size .14rem
+              line-height .4rem
+              background-color #ffffff
+              border-bottom $border-default
+              &:last-child
+                border none
+              &.active
+                background-color $main-color
+

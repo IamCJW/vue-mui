@@ -1,0 +1,63 @@
+@import "../../stylus/_mixin.styl"
+.selected-content
+  .selected-title
+    padding 0 $cell-left-right-space
+    background $main-color-x
+    color rgba(255,255,255,.9)
+    line-height .44rem
+    .iconfont
+      display-inline-flex()
+      flex-align-item(center)
+      font-size .18rem
+      span
+        font-size .14rem
+.select-content
+  width 100%
+  position fixed
+  bottom 0
+  background #fbfbfb
+  overflow hidden
+  .select-show
+    background $main-color-x
+    color rgba(255,255,255,.9)
+    text-align center
+  .select-group
+    width 100%
+    overflow auto
+    height 3rem
+    color $text-color-light-xx
+    .category-content,.level-content
+      width 25%
+    .qualify-content
+      box-sizing border-box
+      border-left $border-default
+      border-right $border-default
+      width 50%
+    .select-item
+      float left
+      height 100%
+      overflow-y scroll
+      ul
+        min-height 100%
+        overflow-y scroll
+        list-style none
+        padding 0
+        margin 0
+        text-align center
+        li
+          padding .12rem 0
+          &.active
+            background $main-color
+            color #fff
+  .select-btnGroup
+    box-shadow 0 0 .06rem rgba(0,0,0,.03)
+    button
+      border none
+      width 50%
+      padding .12rem
+      border-radius 0
+      font-size .14rem
+      &:last-child
+        background-color $main-color-x
+        color #fff
+
