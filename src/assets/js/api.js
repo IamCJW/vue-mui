@@ -21,4 +21,9 @@ export default (config => {
   common_base_qualify: '/common/base_qualify',//企业资质数据
   search_company_qualify_search: '/search/company/qualify_search',//根据企业资质查找建筑企业
   search_company_detail: '/search/company/detail',//企业详情
+  search_company_legal: '/search/company/legal',//企业法律诉讼数据分页
+  search_company_tender_success: '/search/company/tender_success',//企业中标信息数据分页
+  search_company_builder: '/search/company/builder',//企业建造师数据分页
+  search_builder_detail: '/search/builder/detail',//建造师详情
+  search_builder_tender_success:'/search/builder/tender_success',//建造师中标数据分页
 })

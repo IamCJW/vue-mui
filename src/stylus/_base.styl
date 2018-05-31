@@ -82,6 +82,9 @@
   height 100vh
   background rgba(0,0,0,.3)
   z-index $z-index-mask
+//颜色///////////////////////////////////////
+.text-color-black
+  color #333!important
 //字符颜色///////////////////////////////////////
 .color-icon-SUPERVISION
   color #0E972F
@@ -121,7 +124,7 @@
   border-top $border-default
   .media
     overflow: hidden;
-    padding: .12rem
+    padding: .1rem .12rem
     -webkit-touch-callout: none;
     border-bottom $border-default
     .media-content
@@ -132,16 +135,36 @@
         color $text-color-light-xx
       .media-value
         float right
-    .media-alert
-      margin .12rem -.12rem -.12rem
-      .media-view
-        background-color #f4f4f4
-        .media
-          padding .12rem .24rem
+      &.media-column
+        .media-lable
+          float none
+          margin-bottom .05rem
+        .media-value
+          float none
     .icon-right:before,.icon-down:before,.icon-Unfold:before
       font-size .16rem
       float right
-      color $text-color-light-xx
     .icon-right
       .media-value
         margin-right 0
+  .media-more
+    background-color $main-color
+    color #fff
+    margin-bottom .01rem
+    .media-content
+      .media-lable
+        color #fff
+    .media-alert
+      margin .12rem -.12rem -.12rem
+      .media-view
+        border-top none
+        color #333
+        background-color #fff
+        .media
+          .media-lable
+            color $text-color-light-xx
+          .media-value
+            color #333
+          padding .12rem .24rem
+          &:last-child
+            border none
