@@ -1,0 +1,90 @@
+@import "../../stylus/_mixin.styl"
+.search-header
+  position fixed
+  width 100%
+  top 0
+  z-index $z-index-navigation
+  background-color $main-color
+  color #ffffff
+  font-size .16rem
+  letter-spacing -.5
+  .search-nav-list
+    display-flex()
+    flex-justify-content(space-around)
+    flex-align-item(center)
+    position relative
+    .search-item
+      display-flex()
+      flex-align-item(center)
+      position relative
+      height .44rem
+      &.active:after
+        content: ''
+        left .1rem
+        right .1rem
+        height .05rem
+        background-color $third-color
+        position absolute
+        bottom 0
+        border-radius .05rem
+.content-wrapper
+  position absolute
+  top 0
+  width 100%
+  height 100vh
+  padding-top .44rem
+  overflow hidden
+  z-index $z-index-content
+  .content-full-scroll
+    width 200vw
+    height 100%
+    position relative
+    overflow hidden
+    left 0
+    transition .3s left
+    .content-page
+      position relative
+      float left
+      width 100vw
+      height 100%
+      overflow hidden
+      overflow-y auto
+      .scroll-wrapper
+        height 100%
+        .scroll-box
+          width auto
+          .media
+            color $text-color-light-xx
+            .module-top
+              font-size .12rem
+              .fl
+                background-color $text-color-light-x
+                border-radius $border-radius-xx
+                padding 0 .1rem
+                color #fff
+              .fr
+                display-flex()
+                flex-align-item(center)
+                .iconfont
+                  font-size .14rem
+                  margin-right .03rem
+            .module-content
+              margin-top .1rem
+            &.active
+              .fl
+                background-color $assist-color
+              .module-content
+                color #333333
+.type-message
+  top .44rem
+  .filter-box
+    background-color #ffffff
+    padding .12rem .12rem 0
+    .module
+      button
+        border $border-default
+        font-size .14rem
+        margin 0 .12rem .12rem 0
+        padding .06rem .1rem
+        &.active
+          background $main-color

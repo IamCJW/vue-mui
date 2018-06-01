@@ -1,0 +1,86 @@
+@import "../../stylus/_mixin.styl"
+.header-me
+  width 100%
+  position fixed
+  z-index $z-index-navigation
+  background $main-color
+  background linear-gradient($main-color, #0398dd)
+  text-align center
+  color #fff
+  padding .1rem .12rem
+  .user-setting
+    position absolute
+    right .12rem
+    top .12rem
+    font-size .18rem
+  .user-msg
+    display-flex()
+    flex-direction(column)
+    flex-justify-content(center)
+    flex-align-item(center)
+    .user-head
+      width .5rem
+      height .5rem
+      overflow hidden
+      border-radius 100%
+      img
+        max-width 100%
+    .user-name
+      font-size .16rem
+      margin-top .03rem
+    .user-loginStation
+      font-size .12rem
+      line-height .18rem
+      color rgba(255,255,255,.9)
+  .me-nav
+    display-flex()
+    flex-justify-content(space-between)
+    margin-top .26rem
+    .me-nav-item
+      width .5rem
+      display-flex()
+      flex-direction(column)
+      line-height 1
+      text-align center
+      font-size .12rem
+      .iconfont
+        font-size .26rem
+      span
+        margin-top .05rem
+        margin-bottom .06rem
+.mui-content
+  padding 1.88rem $cell-left-right-space 0
+  .order-box
+    margin-top .12rem
+    border-radius $border-radius-default
+    border $border-default
+    box-shadow $box-shadow-default
+    .order-title
+      border-bottom $border-default
+      line-height .3rem
+      color #000
+      padding 0 .12rem
+    .order-type-group
+      overflow auto
+      padding .1rem 0
+      .type-item
+        text-align center
+        width 20%
+        float left
+        display-flex()
+        flex-direction(column)
+        line-height 1
+        .iconfont
+          font-size .3rem
+          margin-bottom .03rem
+          color $main-color-x
+          text-shadow 0.02rem 0.02rem 0.02rem rgba(4, 160, 233, 0.4)
+        span
+          font-size .12rem
+  .funList
+    margin-top .12rem
+    border-radius $border-radius-default
+    border $border-default
+    box-shadow $box-shadow-default
+    overflow hidden
+

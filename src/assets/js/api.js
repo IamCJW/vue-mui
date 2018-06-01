@@ -26,4 +26,7 @@ export default (config => {
   search_company_builder: '/search/company/builder',//企业建造师数据分页
   search_builder_detail: '/search/builder/detail',//建造师详情
   search_builder_tender_success:'/search/builder/tender_success',//建造师中标数据分页
+  message_del:'/message/del',//消息删除
+  message_subscribe_notify:'/message/subscribe_notify',//关注提醒列表
+  message_system_notify:'/message/system_notify',//系统通知列表
 })
