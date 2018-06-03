@@ -4,20 +4,23 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入要查询的项目")
-      span.search 搜索
+        input(placeholder="请输入要查询的项目", v-model='searchMsg')
+      span.search(@tap="searchPro") 搜索
     .mui-content
-      .pro-group.cell-row
-        .pro-item
-          .pro-assist
-            div
-              i.iconfont.icon-SUPERVISION
-              | 监理摸
-            div
-              i.iconfont.icon-SUPERVISION
-              | 监理
-          .pro-main
-            .pro-name 江西省赣州经济技术开发区保障性安居工程与标准厂房app项目监理公式
+      .content-page
+        .scroll-wrapper#page1
+          .scroll-box
+            .pro-group.cell-row
+              .pro-item(v-for="item in proData.data")
+                .pro-assist
+                  div(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
+                    i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
+                    | {{item.tender_type}}
+                  div(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标'}")
+                    i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标'}")
+                    | {{item.info_type}}
+                .pro-main
+                  .pro-name {{item.name}}
 </template>
 <style lang="stylus" scoped>
   @import "searchProject.styl"
@@ -25,132 +28,71 @@
 <script>
   /* global mui */
   /* global mui plus */
-  import axios from 'axios'
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import api from '../../assets/js/api'
+  import http from '../../assets/js/http.js'
 
   export default {
     name: 'searchProject',
     data() {
       return {
-        location: '',//当前选择
-        nationData: [],//初始数据
-        letter: [],//城市首字母
-        nation: {},//城市分类数据
-        alertFlag: {//字母标签
-          code: false,
-          letter: ''
-        },
-        provinceSel: '',//选择的省数据
-        citySel: '',//选择的市数据
-        province: '',//选择的省
-        city: '',//选择的市
-        district: '',//选择的区
+        searchMsg: '',
+        province: '',
+        city: '',
+        district: '',
+        proData: {
+          pageNum: 1,
+          data: []
+        }
       }
     },
-    methods: {
-      //获取地址信息/////////////////////////////////////////////////////////////////
-      getNation() {
-        let _this = this;
-        axios.get(`${api.baseApi}${api.apiList.nation}`)
-          .then(function (response) {
-            let data = response.data.data;
-            _this.nationData = data;
-            data.forEach((item) => {
-              if (_this.letter.indexOf(item.prefix)) {
-                _this.letter.push(item.prefix)
-              }
-            });
-            _this.letter = _this.letter.sort();
-            _this.letter.forEach((item) => {
-              let _item = item;
-              _this.nation[_item] = [];
-              data.forEach((item) => {
-                if (item.prefix === _item) {
-                  _this.nation[_item].push(item)
-                }
-              })
-            });
-            _this.selectInit();
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      },
-      //地址选择锚点定位//////////////////////////////////////////
-      chooseGroup(type) {
-        this.alertFlag.code = true;
-        this.alertFlag.letter = type;
-        let scrollTop = document.querySelector(`[data-group=${type}]`);
-        let indexTop = document.querySelector('.indexed-list-inner');
-        indexTop.scrollTop = scrollTop.offsetTop;
-        setTimeout(() => {
-          this.alertFlag.code = false;
-        }, 200)
-      },
-      //选择器初始化//////////////////////////////////////////////////////
-      selectInit() {
-        let locationSel = this.nation[this.letter[0]][0];
-      },
-      //数据初始化////////////////////////////////////////////////////
-      dataInit() {
-        let province = localStorage.getItem(lsKey.locationProvince);
-        let city = localStorage.getItem(lsKey.locationCity);
-        let district = localStorage.getItem(lsKey.locationDistrict);
-        this.location = `${province} / ${city} / ${district}`
-      },
-      //选择器选择///////////////////////////////////////////////////
-      selectLocation(key, type) {
-        switch (type) {
-          case 1:
-            this.province = key;
-            this.city = '';
-            this.district = '';
-            this.citySel = '';
-            this.nationData.map((item) => {
-              if (item.name === this.province) {
-                this.provinceSel = item;
-                return
-              }
-            });
-            this.location = `${this.province} / ${this.city} / ${this.district}`;
-            break;
-          case 2:
-            this.city = key;
-            this.district = '';
-            let cityArr = this.provinceSel.city;
-            cityArr.map((item) => {
-              if (item.name === this.city) {
-                this.citySel = item;
-                return
-              }
-            });
-            this.location = `${this.province} / ${this.city} / ${this.district}`;
-            break;
-          case 3:
-            this.district = key;
-            this.location = `${this.province} / ${this.city} / ${this.district}`;
-            //将定位存入本地缓存
-            localStorage.setItem(lsKey.locationProvince, this.province);
-            localStorage.setItem(lsKey.locationCity, this.city);
-            localStorage.setItem(lsKey.locationDistrict, this.district);
-            mui.back();
-        }
-      },
-    },
-    mounted() {
+    mounted(){
+        let vueThis = this;
+      this.province = localStorage.getItem(lsKey.locationProvince) || '';
+      this.city = localStorage.getItem(lsKey.locationCity) || '';
+      this.district = localStorage.getItem(lsKey.locationDistrict) || '';
       mui.init({
-        beforeback: function(){
-          //获得列表界面的webview
-          let home = plus.webview.getWebviewById('home');
-          //触发列表界面的自定义事件（refresh）,从而进行数据刷新
-          mui.fire(home,'refresh');
-          //返回true，继续页面关闭逻辑
-          return true
-        }
-      });
-      this.dataInit();
-      this.getNation();
-    }
+        pullRefresh: [{
+          container: '#page1',
+          up: {
+            contentrefresh: "正在加载...",
+            callback: function () {
+              vueThis.proData.pageNum += 1;
+              http({
+                url: api.index_project_search,
+                data: {
+                  province: vueThis.province,
+                  cur_page: vueThis.proData.pageNum
+                }, success: (data) => {
+                  vueThis.proData.data = vueThis.proData.data.concat(data.result);
+                  if (data.total_page === vueThis.proData.pageNum) {
+                    this.endPullupToRefresh(true);
+                  } else {
+                    this.endPullupToRefresh(false);
+                  }
+                }
+              });
+            }
+          }
+        }]
+      })
+    },
+    methods: {
+      searchPro(){
+        http({
+          url:api.index_project_search,
+          data:{
+            province: this.province,
+            city:this.city,
+            district: this.district,
+            search:this.searchMsg
+          },
+          success:(data)=>{
+              this.proData.pageNum = 1;
+              this.proData.data = data.result;
+          }
+        })
+      }
+    },
   }
 </script>

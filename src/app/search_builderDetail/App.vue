@@ -3,17 +3,16 @@
     header.header-nav
       span.mui-action-back.iconfont.icon-return
       .header-title {{baseData.user_name}}
+      .hide-module
+        .modoule-top
+          .user-head
+            i.iconfont.icon-Avatar
+          .user-sign {{baseData.level}}
+          .user-focus 关注
+          .user-share 分享
     .mui-content#builderTender
       .scroll-wrapper
         .scroll-box
-          .hide-module
-          .hide-bg
-          .modoule-top
-            .user-head
-              i.iconfont.icon-Avatar
-            .user-sign {{baseData.level}}
-            .user-focus 关注
-            .user-share 分享
           .cell-row
             .base-msg
               .module2

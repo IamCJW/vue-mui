@@ -1,61 +1,50 @@
 @import "../../stylus/_mixin.styl"
 .header-nav
   box-shadow none
-.mui-content
-  height 100vh
-  .hide-module
-    position fixed
-    top .44rem
-    left 0
-    right 0
-    width 100%
-    height .1rem
-    background linear-gradient($main-color,$main-color,transparent)
-    z-index $z-index-navigation
-  .hide-bg
-    height .3rem
-    position fixed
-    top .44rem
-    left 0
-    right 0
-    width 100%
-    background $main-color
-    z-index 1
-  .modoule-top
+  height auto
+.hide-module
+  width: 100%;
+  position: relative;
+  z-index: 99;
+  top: .1rem;
+  padding: 0 .1rem;
+.modoule-top
+  position relative
+  display-flex()
+  flex-align-item(baseline)
+  flex-justify-content(space-between)
+  .user-head
     position relative
-    padding 0.1rem .3rem 0
-    display-flex()
-    flex-align-item(baseline)
-    .user-head
-      position relative
-      z-index 2
-      flex-flex(1)
-      .iconfont
-        font-size .7rem
-        line-height .7rem
-        background-color #fff
-        color $text-color-light-xx
-        box-shadow $box-shadow-default
-        display-inline-flex()
-    .user-sign
-      position relative
-      display inline-block
-      background-color $main-color
-      color #fff
-      padding 0 .06rem
-      border-radius $border-radius-xx
-      margin-right .12rem
-      z-index 2
-    .user-share,.user-focus
-      position relative
-      display inline-block
-      background-color $third-color
-      color #fff
-      width .45rem
-      text-align center
-      border-radius $border-radius-xx
-      margin-left .12rem
-      z-index 2
+    z-index 2
+    border-radius $border-radius-x
+    overflow hidden
+    .iconfont
+      font-size .7rem
+      line-height .7rem
+      background-color #fff
+      color $text-color-light-xx
+      box-shadow $box-shadow-default
+      display-inline-flex()
+  .user-sign
+    position relative
+    display inline-block
+    background-color $main-color-x
+    color #fff
+    padding 0 .06rem
+    border-radius $border-radius-xx
+    z-index 2
+  .user-share,.user-focus
+    position relative
+    display inline-block
+    background-color $third-color
+    color #fff
+    width .45rem
+    text-align center
+    border-radius $border-radius-xx
+    z-index 2
+.header-nav~.mui-content
+  height 100vh
+  padding-top .88rem
 .base-msg
   margin-top .12rem
   width 100%

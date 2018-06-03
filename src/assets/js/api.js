@@ -15,6 +15,7 @@ export default (config => {
   tender_id: '/project/tender/detail',//招标公告详情
   tender_more: '/project/tender/more',//更多招标信息分页数据
   tender_subscribe: '/project/tender/subscribe',//订阅分页数据
+  index_project_search:'/index/project/search',//项目搜索
   common_dict: '/common/dict',//基础数据字典
   search_company: '/search/company',//建筑企业
   search_builder_search: '/search/builder/search',//查找建造师

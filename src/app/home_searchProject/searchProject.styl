@@ -1,4 +1,14 @@
 @import "../../stylus/_mixin.styl"
+.mui-content
+  height 100vh
+  overflow hidden
+.content-page
+  position relative
+  width 100vw
+  height 100%
+  overflow-y auto
+  .scroll-wrapper
+    height 100%
 .pro-group
   padding-top .12rem
   .pro-item
@@ -21,8 +31,9 @@
       div
         width .7rem
         height .3rem
+        line-height .3rem
         display-flex()
-        flex-align-item(center)
+        flex-align-item(baseline)
         &:last-child
           border-top $border-default
         .iconfont
