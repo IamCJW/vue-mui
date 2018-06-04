@@ -1,0 +1,132 @@
+@import "../../stylus/_mixin.styl"
+.detail-nav-bar
+  position fixed
+  top .44rem
+  background-color $main-color-x
+  width 100%
+  height .46rem
+  display-flex()
+  flex-justify-content(space-around)
+  overflow-x auto
+  z-index $z-index-navigation
+  span
+    height .46rem
+    display inline-block
+    font-size .14rem
+    padding .14rem .12rem .12rem
+    color rgba(255,255,255,.75)
+    white-space nowrap
+    position relative
+    transition color .5s
+    letter-spacing: -.005rem;
+    &.active
+      color #fff
+      &::before
+        position absolute
+        content ''
+        top 0.01rem
+        left 0
+        right 0
+        height .02rem
+        background-color $third-color
+        border-radius .03rem
+.content-wrapper
+  position absolute
+  top 0
+  width 100%
+  height 100vh
+  padding-top .9rem
+  overflow hidden
+  z-index $z-index-content
+  .content-full-scroll
+    width 500vw
+    height 100%
+    position relative
+    overflow hidden
+    left 0
+    transition .3s left
+    .content-page
+      position relative
+      float left
+      width 100vw
+      height 100%
+      overflow-y auto
+      .scroll-wrapper
+        height 100%
+        .oreder-list
+          list-style none
+          padding 0
+          margin 0
+          $border-list = .1rem solid $bg-color-x
+          border-top $border-list
+          .order-item
+            border-bottom $border-list
+            .order-top
+              position relative
+              padding .04rem $cell-left-right-space
+              font-size .12rem
+              color $text-color-light-xx
+              .order-time
+                margin-right .3rem
+              .iconfont
+                font-size .18rem
+                position absolute
+                right 0
+                top 0
+                line-height .34rem
+            .order-content
+              background-color $bg-color-x
+              padding .1rem $cell-left-right-space
+              display-flex()
+              .goods-img
+                background-color $main-color-x
+                flex-flex(0,1,.5rem)
+                height .6rem
+                border-radius $border-radius-x
+                overflow hidden
+              .goods-content
+                flex-flex(1)
+                display-flex()
+                flex-direction(column)
+                flex-justify-content(space-between)
+                padding-left .12rem
+                .goods-assiset
+                  font-size .12rem
+                  color $text-color-light-xx
+                  line-height 1
+            .order-deal
+              padding .05rem $cell-left-right-space
+              font-size .12rem
+              line-height .2rem
+              color $text-color-light-xx
+              .order-pay
+                color #333333
+                font-size .14rem
+            .order-btn-group
+              padding 0 $cell-left-right-space .1rem
+              display-flex()
+              justify-content flex-end
+              button
+                border $border-default
+                padding .04rem .08rem
+                min-width .74rem
+                font-size .14rem
+                line-height .22rem
+                margin-left .12rem
+                color $text-color-light-x
+                &.active
+                  border-color $assist-color-x
+                  color $assist-color
+                &.success
+                  border-color $main-color-xx
+                  color $main-color-x
+
+////////
+.icon-Alreadypaidss
+  color $main-color
+.icon-completed
+  color $fourth-color
+.icon-Pendingpaymentss
+  color $assist-color
+icon-Cancelleds
+  color $text-color-light-xx

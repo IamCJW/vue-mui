@@ -1,7 +1,7 @@
 <template lang="pug">
   #app
     .header-me
-      i.iconfont.icon-management.user-setting
+      .user-setting(@tap="openWindow('userData')") 个人资料
       .user-msg
         div.user-head
           img(src="../../assets/me-default.png")
@@ -22,7 +22,7 @@
           i.iconfont.icon-Shippingaddress
           span 收货地址
     .mui-content
-      .order-box
+      .order-box(@tap="openWindow('order')")
         .order-title 我的订单
         .order-type-group
           .type-item
