@@ -1,0 +1,41 @@
+@import "../../stylus/_mixin.styl"
+.header-nav
+  box-shadow none
+.wallet-wrapper
+  position fixed
+  top .44rem
+  width 100%
+  color #ffffff
+  background-color $main-color
+  padding .25rem .25rem .2rem
+  z-index $z-index-navigation
+  .title
+    font-size .12rem
+    color rgba(255,255,255,.8)
+    margin-bottom .1rem
+  .wallet-content
+    display-flex()
+    flex-justify-content(space-between)
+    flex-align-item(center)
+    line-height 1
+    .value
+      font-size .4rem
+    button
+      background none
+      border .01rem solid rgba(255,255,255,.6)
+      padding .06rem .12rem
+      color #fff
+      font-size .14rem
+.header-nav~.mui-content
+  padding-top 1.6rem
+  height 100vh
+  .media-content
+    padding .08rem .12rem
+    .top,.bottom
+      display-flex()
+      flex-align-item(baseline)
+      flex-justify-content(space-between)
+    .value,.time
+      color $text-color-light-xx
+      font-size .12rem
+

@@ -1,0 +1,14 @@
+.mui-poppicker-body .mui-picker{
+  width: 25%!important;
+}
+.mui-poppicker-body .mui-picker:nth-child(2){
+  width: 50%!important;
+}
+.mui-poppicker-body .mui-picker:last-child{
+  width: 25%!important;
+}
+.mui-poppicker-header {
+  padding: .06rem .06rem .56rem .06rem;
+  font-size: .14rem;
+  color: #888;
+}

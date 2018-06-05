@@ -30,4 +30,7 @@ export default (config => {
   message_del:'/message/del',//消息删除
   message_subscribe_notify:'/message/subscribe_notify',//关注提醒列表
   message_system_notify:'/message/system_notify',//系统通知列表
+  member_icon:'/member/icon',//修改头像
+  member_info:'/member/info',//账号信息
+  common_search_company:'/common/search_company',//按关键字搜索企业信息
 })
