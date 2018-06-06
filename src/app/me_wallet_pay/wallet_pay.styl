@@ -1,0 +1,59 @@
+@import "../../stylus/_mixin.styl"
+.module
+  padding 0 $cell-left-right-space
+  border-bottom .1rem solid $bg-color-x
+  .module-title
+    font-size .16rem
+    padding .09rem 0 .21rem 0
+  .module-content
+    .pay-list
+      padding 0 .12rem
+      overflow auto
+      .pay-item
+        color $text-color-light-x
+        width .63rem
+        text-align center
+        float left
+        line-height .4rem
+        margin 0 .24rem .12rem 0
+        background-color $bg-color-x
+        border-radius $border-radius-xx
+        &.active
+          background-color $main-color
+          color #ffffff
+        &:nth-child(4n)
+          margin-right 0
+    .pay-discount
+      display-flex()
+      flex-align-item(center)
+      padding-bottom .08rem
+      .iconfont
+        margin-right .05rem
+        font-size .14rem
+        color $text-color-light-xx
+      span
+        font-size .14rem
+    .media-view
+      border-top none
+      .media-content
+        display-flex()
+        flex-align-item(center)
+        flex-justify-content(space-between)
+        color $text-color-light-x
+        &:after
+          content: '\e78d'
+          font-size .16rem
+          color $text-color-light-x
+        &.active:after
+          content:'\e627'
+          color $fourth-color
+        .pay-type
+          display-flex()
+          flex-align-item(center)
+          .iconfont
+            font-size .16rem
+            margin-right .05rem
+          .icon-wechats
+            color $fourth-color
+          .icon-Alipay
+            color $main-color

@@ -51,6 +51,7 @@ const httpServer = (opts) => {
   }
 
   axios(httpDefaultOpts).then((res) => {
+    console.log(res);
       let data = res.data;
       if(data.code === '00000'){
         opts.success(data.data);

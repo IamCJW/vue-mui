@@ -1,0 +1,93 @@
+@import "../../stylus/_mixin.styl"
+.detail-nav-bar
+  position fixed
+  top .44rem
+  background-color $main-color-x
+  min-width 100%
+  height .46rem
+  display-flex()
+  flex-justify-content(flex-start)
+  overflow-x auto
+  z-index $z-index-navigation
+  span
+    height .46rem
+    display inline-block
+    font-size .16rem
+    width 33.3333%
+    padding .14rem 0 .12rem
+    color rgba(255, 255, 255, .75)
+    white-space nowrap
+    position relative
+    transition color .5s
+    letter-spacing: -.005rem;
+    text-align center
+    &.active
+      color #fff
+      &::before
+        position absolute
+        content ''
+        top 0.01rem
+        left .2rem
+        right .2rem
+        height .04rem
+        background-color $third-color
+        border-radius .04rem
+.content-wrapper
+  position absolute
+  top 0
+  width 100%
+  height 100vh
+  padding-top .9rem
+  overflow hidden
+  z-index $z-index-content
+  .content-full-scroll
+    width 300vw
+    height 100%
+    position relative
+    overflow hidden
+    left 0
+    transition .3s left
+    .content-page
+      position relative
+      float left
+      width 100vw
+      height 100%
+      overflow hidden
+      overflow-y auto
+.coupon-group
+  padding $cell-left-right-space
+.coupon-item
+  box-shadow $box-shadow-default
+  overflow auto
+  .coupon-left
+    float left
+    width 40%
+    color #ffffff
+    background-color $main-color
+    display-flex()
+    flex-direction(column)
+    .coupon-value
+      font-size .16rem
+      span
+        font-size .24rem
+    .coupon-condition
+      font-size .12rem
+  .coupon-right
+    float left
+    width 60%
+    display-flex()
+    flex-direction(column)
+    .coupon-top
+      display-flex()
+      flex-align-item(center)
+      font-size .16rem
+      .coupon-type
+        display inline-block
+        background-color $main-color
+        border-radius $border-radius-x
+    .coupon-mid
+      font-size .12rem
+      color $text-color-light-xx
+      display-flex()
+      flex-justify-content(space-between)
+

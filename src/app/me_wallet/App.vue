@@ -7,7 +7,7 @@
       .title 账户余额(元)
       .wallet-content
         .value 0.00
-        button 账户充值
+        button(@tap="openWindow('wallet_pay')") 账户充值
     .mui-content
       .scroll-wrapper#page1
         .scroll-box
@@ -33,7 +33,7 @@
   import api from '../../assets/js/api.js'
 
   export default {
-    name: 'order',
+    name: 'wallet',
     data() {
       return {
 

@@ -1,0 +1,40 @@
+@import "../../stylus/_mixin.styl"
+.mui-content
+  height 100vw
+  overflow hidden
+  padding-bottom .46rem
+.content-page
+  position relative
+  width 100vw
+  height 100%
+  overflow-y auto
+  .scroll-wrapper
+    height 100%
+.address-box
+  padding 0 $cell-left-right-space
+  margin-top .1rem
+  display-flex()
+  flex-align-item(center)
+  .select
+    padding-right .12rem
+  .address-content
+    border $border-default
+    box-shadow $box-shadow-default
+    border-radius $border-radius-default
+    padding .08rem .1rem
+    flex-flex(1)
+    overflow: hidden;
+    .address-top
+      font-size .16rem
+      display-flex()
+      flex-align-item(center)
+      flex-justify-content(space-between)
+      .fun-group
+        .iconfont
+          font-size .18rem
+          margin-left .12rem
+        .icon-Rubbish
+          color $text-color-light-xx
+        .icon-edit
+          color $main-color
+

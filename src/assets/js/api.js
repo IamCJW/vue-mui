@@ -32,5 +32,8 @@ export default (config => {
   message_system_notify:'/message/system_notify',//系统通知列表
   member_icon:'/member/icon',//修改头像
   member_info:'/member/info',//账号信息
+  member_qualify:'/member/qualify',//添加经营资质post,删除经营资质delete
   common_search_company:'/common/search_company',//按关键字搜索企业信息
+  member_address:'/member/address',//get 主页 post 添加或修改收货地址 delete 删除收货地址
+  member_address_detail:'/member/address/detail',//地址详情
 })

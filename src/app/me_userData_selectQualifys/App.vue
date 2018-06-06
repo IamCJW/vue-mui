@@ -3,6 +3,7 @@
     header.header-nav
       span.mui-action-back.iconfont.icon-return
       .header-title 资质设置
+      span(@tap="submitBack") 确定
     .mui-content
       .selected-content
         .selected-title
@@ -12,13 +13,13 @@
         ul.media-view
           li.media(v-for="(item,index) in selectedArr")
             .media-content
-              span {{item.category}}-{{item.name}}-{{item.level}}
-              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(index)")
+              span {{item.one === '建筑业施工企业资质'? '施工资质' : item.one}}-{{item.two}}-{{item.three}}-{{item.four}}
+              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(index,item.id)")
       .button-group
         button.add(@tap="add") 添加
         .tip 手动最多添加5条资质
-    .typeGroup
-      .typeItem(v-for="(item,key) in qualifyList", :class="{active:qualifyFlag === key}", @tap="changeQualify(key)") {{item}}
+    .typeGroup(v-if="selectFlag")
+      .typeItem(v-for="(item,key) in qualifyList", :class="{active:qualifyFlag === key}", @tap="changeQualify(key)") {{item === '建筑业施工企业资质'? '施工资质' : item}}
 
 </template>
 <style lang="stylus" scoped>
@@ -45,80 +46,88 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-
+  import axios from 'axios'
   export default {
     name: 'selectQualify',
     data() {
       return {
+        selectFlag: false,
         selectedArr: [],
-        qualifyFlag:'1',
-        qualifyList:{
-          1:'施工资质',
-          2:'设计资质',
-          3:'勘察资质',
-          4:'监理资质',
-          5:'一体化资质',
+        qualifyFlag: '1',
+        qualifyList: {
+          1: '建筑业施工企业资质',
+          2: '设计资质',
+          3: '勘察资质',
+          4: '监理资质',
+          5: '一体化资质',
         },
-        picker:{}
+        picker: {},
+        qualityData: {}
       }
+    },
+    mounted() {
+      mui.init({});
+      this.getNation();
+      let vueThis = this;
+      mui('body').on('tap', '.mui-poppicker-btn-cancel', () => {
+        vueThis.selectFlag = false;
+      })
     },
     methods: {
       //资质设置内容/////////////////////////////////////////////////////////////////
       getNation() {
-
-      },
-      //选择资质///////////////////////////////////////////////////
-      select(key, type) {
-
+        this.picker = new mui.PopPicker({
+          layer: 3
+        });
+        http({
+          url: api.common_base_qualify,
+          success: (data) => {
+            this.qualifyData = data;
+            this.picker.setData(this.qualifyData[0].children);
+          }
+        });
       },
       //添加///////////////////////////////////////
       add() {
-        http({
-          url: api.common_base_qualify,
-          success: (data) => {
-            this.picker = new mui.PopPicker({
-              layer: 3
-            });
-            this.picker.setData(data);
-            this.picker.show(function (items) {
-              console.log(items)
-            });
+        this.selectFlag = true;
+        let vueThis = this;
+        this.picker.show(function (items) {
+          if(!items[2].value){
+            mui.toast('请等待数据加载完成');
+            return false
           }
+          vueThis.selectSuccess(items);
         });
-        // let item = {
-        //   category: this.category,
-        //   level: this.level,
-        //   name: this.qualify
-        // };
-        // if (JSON.stringify(this.selectedArr).indexOf(JSON.stringify(item)) === -1) {
-        //   this.selectedArr.unshift(item)
-        // } else {
-        //   mui.toast('请勿重复添加')
-        // }
       },
-      changeQualify(key){
+      changeQualify(key) {
+        if (!this.qualifyData) {
+          mui.toast('正在加载数据，请稍后切换');
+          return
+        }
         this.qualifyFlag = key;
-        http({
-          url: api.common_base_qualify,
-          data:{
-            category:this.qualifyList[key]
-          },
-          success: (data) => {
-            console.log(data);
-            this.picker.dispose();
-            this.picker = new mui.PopPicker({
-              layer: 3
-            });
-            this.picker.setData(data);
-            this.picker.show(function (items) {
-              console.log(items)
-            });
+        for (let i in this.qualifyData) {
+          if (this.qualifyData[i].text === this.qualifyList[key]) {
+            this.picker.setData(this.qualifyData[i].children);
           }
-        });
+        }
+
       },
       //删除///////////////////////
-      deleteArr(index) {
-        this.selectedArr.splice(index, 1)
+      deleteArr(index,id) {
+        mui.confirm('确认删除该资质？',' ',['取消','确定'],(e)=>{
+          if(e.index === 1){
+            http({
+              url:api.member_qualify,
+              method:'delete',
+              data:{rid:id},
+              success:()=>{
+                mui.toast('资质删除成功');
+                this.selectedArr.splice(index, 1);
+                mui.toast('资质删除成功');
+              }
+            })
+          }
+        });
       },
       //删除全部//////////////////////
       deleteAll() {
@@ -132,11 +141,39 @@
           categoryData: categoryData
         });
         mui.back()
+      },//确定回调函数
+      selectSuccess(items) {
+
+        this.selectFlag = false;
+        let item = {
+          one: this.qualifyList[this.qualifyFlag],
+          two: items[0].text,
+          three: items[1].text,
+          four: items[2].text,
+          id: items[2].value,
+        };
+        if (JSON.stringify(this.selectedArr).indexOf(JSON.stringify(item)) === -1) {
+          http({
+            url:api.member_qualify,
+            method:'post',
+            data:{rid:item.id},
+            success:()=>{
+              this.selectedArr.unshift(item);
+              mui.toast('资质添加成功');
+            }
+          })
+        } else {
+          mui.toast('请勿重复添加')
+        }
+      },
+      submitBack() {
+        let categoryData = this.selectedArr;
+        let view = plus.webview.currentWebview().opener();
+        mui.fire(view, 'chooseCategory', {
+          categoryData: categoryData
+        });
+        mui.back()
       }
-    },
-    mounted() {
-      mui.init({});
-      this.getNation();
     }
   }
 </script>

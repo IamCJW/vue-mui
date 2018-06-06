@@ -67,6 +67,8 @@
     text-align center
 .header-nav-search~.mui-content,.header-nav~.mui-content
   padding-top .44rem
+  min-height 100vh
+  position relative
 //背景颜色///////////////////////////////////////////////////
 .bg-white
   background-color #ffffff
@@ -183,3 +185,15 @@
   .iconfont
     font-size 1.5rem
     margin-bottom .12rem
+//公共按钮/////////////////////////////////////////
+.fixed-bottom-btn
+  position fixed
+  bottom 0
+  width 100%
+  padding .12rem 0
+  background-color $main-color
+  color #ffffff
+  border none
+  border-radius 0
+  font-size .16rem
+  z-index $z-index-navigation

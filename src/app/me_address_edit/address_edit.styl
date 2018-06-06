@@ -1,0 +1,64 @@
+@import "../../stylus/_mixin.styl"
+.media-view
+  .media
+    .media-content
+      position relative
+      .media-lable
+        width 1rem
+      .media-value
+        float none
+        input
+          border none
+        .user-head
+          position absolute
+          float right
+          display inline-block
+          width .37rem
+          height .37rem
+          overflow hidden
+          border-radius 100%
+          top .04rem
+          right .34rem
+          background-color $main-color
+          img
+            max-width 100%
+          input
+            position absolute
+            width 100%
+            height 100%
+            left 0
+            top 0
+            opacity 0
+.setDefult
+  display-flex()
+  flex-align-item(center)
+  flex-justify-content(space-between)
+  padding $cell-left-right-space
+  .setDefult-msg
+    font-size .12rem
+    line-height .18rem
+    .tip
+      font-size .1rem
+      color $text-color-light-xx
+.switch
+  height: 0.3rem;
+  width: 0.6rem;
+  border: $border-default;
+  border-radius: .3rem;
+  position: relative;
+  transition background-color .3s
+  .switch-handle
+    position: absolute;
+    width: .26rem;
+    height: .26rem;
+    background: #ffffff;
+    border-radius: 100%;
+    top: .01rem;
+    left: .02rem;
+    box-shadow 0 0.02rem 0.05rem rgba(0, 0, 0, 0.26)
+    transition left .3s
+  &.active
+    background $fourth-color
+    .switch-handle
+      left .3rem
+
