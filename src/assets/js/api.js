@@ -36,4 +36,8 @@ export default (config => {
   common_search_company:'/common/search_company',//按关键字搜索企业信息
   member_address:'/member/address',//get 主页 post 添加或修改收货地址 delete 删除收货地址
   member_address_detail:'/member/address/detail',//地址详情
+  member_coupon:'/member/coupon',//优惠券
+  member_follow:'/member/follow',//我的关注主页
+  search_tender_company_detail:'/search/tender/company/detail',//业主单位详情
+ search_tender_company_list:'/search/tender/company/list',//业主单位详情招标数据分页
 })

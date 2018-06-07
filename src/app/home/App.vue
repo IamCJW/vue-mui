@@ -50,7 +50,7 @@
                           | 万
           //公告
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
-            .scroll-wrapper.cell-row#page2
+            .scroll-wrapper#page2
               .scroll-box
                 .filter-wrapper
                   .filter(@tap="popoutFilter(true,false)")
@@ -77,7 +77,7 @@
                           | 万
           //中标
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
-            .scroll-wrapper.cell-row#page3
+            .scroll-wrapper#page3
               .scroll-box
                 .filter-wrapper
                   .filter(@tap="popoutFilter(true,false)")

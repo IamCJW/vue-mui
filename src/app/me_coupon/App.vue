@@ -12,23 +12,56 @@
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
             .coupon-group
-              .coupon-item
+              .none(v-if="!useData[0]")
+                i.iconfont.icon-coupon
+                span 无可用优惠券
+              .coupon-item(v-for='item in useData')
                 .coupon-left
                   .coupon-value ￥
-                    span 3
+                    span {{item.coupon_je}}
                   .coupon-condition 满300可用
                 .coupon-right
                   .coupon-top
-                    .coupon-type 现金券
-                    .coupon-name 我是优惠券的名字
+                    .coupon-type {{item.type_text}}
+                    .coupon-name.mui-ellipsis {{item.name}}
                   .coupon-mid
-                    .coupon-time 2018-11-11~2018-11-11
+                    .coupon-time {{item.start_date | dateFilter}} - {{item.end_date | dateFilter}}
                     .coupon-use 立即使用
-                  .couppon-bottom 广东省深圳市可用
+                  .coupon-bottom 仅{{item.scope.province}}{{item.scope.city}}可用
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
-            | 2
+            .coupon-group.used
+              .none(v-if="!usedData[0]")
+                i.iconfont.icon-coupon
+                span 无已用优惠券
+              .coupon-item(v-for='item in usedData')
+                .coupon-left
+                  .coupon-value ￥
+                    span {{item.coupon_je}}
+                  .coupon-condition 满300可用
+                .coupon-right
+                  .coupon-top
+                    .coupon-type {{item.type_text}}
+                    .coupon-name.mui-ellipsis {{item.name}}
+                  .coupon-mid
+                    .coupon-time {{item.start_date | dateFilter}} - {{item.end_date | dateFilter}}
+                  .coupon-bottom 仅{{item.scope.province}}{{item.scope.city}}可用
           .content-page(@swiperight="contentSwiperight()")
-            | 3
+            .coupon-group.used.end
+              .none(v-if="!endData[0]")
+                i.iconfont.icon-coupon
+                span 无过期优惠券
+              .coupon-item(v-for='item in endData')
+                .coupon-left
+                  .coupon-value ￥
+                    span {{item.coupon_je}}
+                  .coupon-condition 满300可用
+                .coupon-right
+                  .coupon-top
+                    .coupon-type {{item.type_text}}
+                    .coupon-name.mui-ellipsis {{item.name}}
+                  .coupon-mid
+                    .coupon-time {{item.start_date | dateFilter}} - {{item.end_date | dateFilter}}
+                  .coupon-bottom 仅{{item.scope.province}}{{item.scope.city}}可用
 </template>
 <style lang="stylus" scoped>
   @import "coupon.styl"
@@ -45,10 +78,13 @@
     data() {
       return {
         pageKey:0,
+        useData:{},
+        usedData:{},
+        endData:{}
       }
     },
     mounted() {
-      let vueThis = this;
+
       mui.init({
 
       });
@@ -61,16 +97,30 @@
       //数据请求
       getData() {
         http({
-          url: api.message_subscribe_notify,
+          url: api.member_coupon,
+          data:{
+            status:0
+          },
           success: (data) => {
-            this.subscribeData.data = data.result;
-            console.log(this.subscribeData)
+            this.useData = data;
           }
         });
         http({
-          url: api.message_system_notify,
+          url: api.member_coupon,
+          data:{
+            status:1
+          },
           success: (data) => {
-            this.systemData.data = data.result;
+            this.usedData = data;
+          }
+        });
+        http({
+          url: api.member_coupon,
+          data:{
+            status:-1
+          },
+          success: (data) => {
+            this.endData = data;
           }
         });
       },
@@ -95,6 +145,11 @@
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },
+    },
+    filters:{
+      dateFilter(date){
+        return date.replace(/-/g,'.')
+      }
     }
   }
 </script>

@@ -1,0 +1,94 @@
+@import "../../stylus/_mixin.styl"
+.detail-nav-bar
+  position fixed
+  top .44rem
+  background-color $main-color-x
+  min-width 100%
+  display-flex()
+  flex-justify-content(flex-start)
+  overflow-x auto
+  z-index $z-index-navigation
+  span
+    flex-flex(1)
+    display inline-block
+    font-size .16rem
+    padding .12rem 0 .08rem
+    color rgba(255, 255, 255, .75)
+    white-space nowrap
+    position relative
+    transition color .5s
+    letter-spacing: -.005rem;
+    text-align center
+    &.active
+      color #fff
+      &::before
+        position absolute
+        content ''
+        top 0.01rem
+        left .2rem
+        right .2rem
+        height .04rem
+        background-color $third-color
+        border-radius .04rem
+.content-wrapper
+  position absolute
+  top 0
+  width 100%
+  height 100vh
+  padding-top .86rem
+  overflow hidden
+  z-index $z-index-content
+  .content-full-scroll
+    width 400vw
+    height 100%
+    position relative
+    overflow hidden
+    left 0
+    transition .3s left
+    .content-page
+      position relative
+      float left
+      width 100vw
+      height 100%
+      overflow hidden
+      overflow-y auto
+.media-view
+  padding .12rem
+  .media
+    border $border-default
+    box-shadow $box-shadow-default
+    border-radius $border-radius-x
+    margin-bottom .1rem
+    .add
+      .iconfont
+        font-size .14rem
+    .media-content
+      display-flex()
+      flex-align-item(center)
+      .head
+        width .3rem
+        height .3rem
+        border-radius 100%
+        overflow hidden
+        display-flex()
+        flex-align(center)
+        flex-justify-content(center)
+        background $main-color
+        margin-right .1rem
+        flex-flex(0,1,.3rem)
+        i
+          color #ffffff
+      .content
+        flex-flex(1)
+        overflow hidden
+        .tip
+          color $text-color-light-xx
+          font-size .12rem
+      button
+        display inline-block
+        border $border-default
+        border-radius $border-radius-xx
+        line-height 1
+        padding .05rem
+        margin-left: .1rem;
+
