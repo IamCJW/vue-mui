@@ -43,4 +43,11 @@ export default (config => {
   member_order_company: '/member/order_company',//订单公司信息管理 get delete post
   member_system_config:'/member/system/config',//系统设置 get post
   member_app_check_version:'/member/app/check_version',//APP版本检查
+  user_login:'/user/login',//用户登录
+  user_register:'/user/register',//用户注册
+  user_auth:'user_auth',//第三方登录
+  user_auth_register:'/user/auth/register',//第三方登录用户注册
+  user_auth_bind:'/user/auth/bind',//第三方账号登录绑定
+  common_sendcode:'/common/sendcode',//获取验证码
+  common_verify_code:'/common/verify_code',//验证码验证
 })

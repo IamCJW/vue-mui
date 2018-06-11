@@ -1,36 +1,19 @@
 @import "../../stylus/_mixin.styl"
 .mui-content
-  background-color #fcfcfc
   min-height 100vh
   padding .12rem
   .box
     position relative
-    margin-top 1rem
+    margin-top .12rem
     width 100%
-    background #fff
-    box-shadow $box-shadow-default
-    border-radius $border-radius-default
-    .logo
-      display block
-      width .8rem
-      height .8rem
-      margin 0 auto
-      position relative
-      box-shadow .04rem .04rem .08rem rgba(0,0,0,.24)
-      top -.4rem
-      overflow hidden
-      border-radius .15rem
-      img
-        width 100%
     .input-group
       .input-item
         position relative
-        width 2.9rem
-        height .5rem
+        height .44rem
         display-flex()
         flex-justify-content(space-between)
         flex-align-item(center)
-        margin 0 auto .25rem
+        margin 0 auto .12rem
         i
           position relative
           z-index 2
@@ -55,7 +38,7 @@
             background-color $text-color-light-xxx
             opacity .5
           &.disabled
-            color $text-color-light-xxx
+            color $assist-color
         input,button
           position absolute
           left 0
@@ -64,7 +47,7 @@
           height 100%
           z-index 1
           padding-left .42rem
-          border-radius .25rem
+          border-radius $border-radius-default
           border $border-default
         input:focus
           border-color $main-color
@@ -76,42 +59,8 @@
         &.other
           margin -.1rem auto 0
           height auto
-    .login-third
-      margin-top .5rem
-      .title
-        position relative
-        text-align center
-        width 100%
-        color $text-color-light-xxx
-        font-size .12rem
-        &:after,&:before
-          content ''
-          position absolute
-          background-color $text-color-light-xxx
-          height .01rem
-          opacity .5
-          top .1rem
-        &:after
-          right 0
-          left 2.3rem
-        &:before
-          left 0
-          right 2.3rem
-      .content
-        display-flex()
-        flex-align-item(center)
-        flex-justify-content(space-around)
-        padding .35rem .6rem
-        .iconfont
-          font-size .4rem
-          line-height 1
     .tip
-      text-align center
       color $text-color-light-xxx
       font-size .12rem
-      padding-bottom .15rem
-.icon-WECHAT
-  color #1afa29
-.icon-QQFRIENDS
-  color #0ca7f8
-
+      span
+        color $main-color
