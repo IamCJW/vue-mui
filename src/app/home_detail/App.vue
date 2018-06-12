@@ -36,8 +36,7 @@
             td.th 信息来源
             td(colspan="2") {{msg.resource}}
           tr
-            td.th 原文内容
-            td(colspan="2")
+            td.th(colspan="3") 原文内容
           tr
             td.td(colspan="3")
               .orContent {{msg.content}}
@@ -50,7 +49,7 @@
           tr
             td.th 招标人
             td(colspan="3") {{msg.tender_info.tender_name}}
-          tr
+          tr(v-if="msg.proxy_name")
             td.th 招标代理
             td(colspan="3") {{msg.proxy_name}}
             td
@@ -63,7 +62,7 @@
             tr
               td.th 中标金额
               td(colspan="3") {{item.tender_je}}
-            tr
+            tr(v-if="item.builder_name")
               td.th 建筑师名称
               td.th {{item.builder_name}}
               td.th 建筑师证书
@@ -72,12 +71,11 @@
             td.th 信息来源
             td(colspan="3") {{msg.resource}}
           tr
-            td.th 原文内容
-            td(colspan="3")
+            td.th(colspan="4") 原文内容
           tr
             td.td(colspan="4")
               .orContent {{msg.content}}
-      // 中标公示
+      // 其他
       .content-table(v-show="navPage !== '中标公示' && navPage !== '招标公告'")
         table
           tr
@@ -87,8 +85,7 @@
             td.th 信息来源
             td(colspan="3") {{msg.resource}}
           tr
-            td.th 原文内容
-            td(colspan="3")
+            td.th(colspan="4") 原文内容
           tr
             td.td(colspan="4")
               .orContent {{msg.content}}

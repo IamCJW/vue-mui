@@ -1,0 +1,37 @@
+@import "../../stylus/_mixin.styl"
+.mui-content
+  background-color $bg-color-x
+  height 100vh
+  .content-wrapper
+    height 100%
+    position relative
+    .mui-wrapper
+      height 100%
+    .media-view
+      .media
+        .media-content
+          padding .07rem .12rem
+          display-flex()
+          flex-align-item(center)
+          flex-justify-content(space-between)
+          .media-del
+            display-flex()
+            flex-align-item(center)
+            i
+              color rgba(255,255,255,.8)
+              font-size .2rem
+              margin-right .05rem
+        .media-alert
+          margin 0
+          .media
+            padding .04rem 0
+            border-bottom .1rem solid $bg-color-x
+            .media-content
+              display block
+              .qualify-group
+                .qualify-title
+                  margin-bottom .05rem
+                .qualify-item
+                  font-size .12rem
+                  color $text-color-light-xx
+

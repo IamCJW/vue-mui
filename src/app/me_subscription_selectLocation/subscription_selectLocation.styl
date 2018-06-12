@@ -1,48 +1,7 @@
 @import "../../stylus/_mixin.styl"
 $cell-padding = .27rem
-.border-box
-  border $border-default
-  border-radius $border-radius-xx
-  padding .07rem .12rem
-  min-width .66rem
-  display inline-block
-  text-align center
 .mui-content
   position relative
-  .selected-box
-    position relative
-    z-index 2
-    color $text-color-light-xx
-    padding 0 $cell-left-right-space 0 $cell-padding
-    background #ffffff
-    font-size .14rem
-    height .5rem
-    border-bottom $border-default
-    display-flex()
-    flex-align-item(center)
-    flex-justify-content(space-between)
-    span:last-child
-      color #333
-  .oldSelect-box
-    position relative
-    z-index 2
-    background-color #fff
-    padding .08rem 0 .1rem $cell-padding
-    border-bottom $border-default
-    height .85rem
-    overflow hidden
-    .oldSelect-title
-      font-size .12rem
-      margin-bottom .06rem
-      color $text-color-light-xx
-    .oldSelect-group
-      margin-left  -.1rem
-      white-space nowrap
-      overflow-x auto
-      .border-box
-        margin-right .15rem
-        background #d2eefc
-        color #666
   .indexed-list
     position: absolute
     border-top: $border-default
@@ -54,7 +13,7 @@ $cell-padding = .27rem
     cursor: default;
     top: 0;
     z-index: 1;
-    $indexed-padding-top = 1.78rem
+    $indexed-padding-top = .44rem
     padding-top $indexed-padding-top
     .indexed-content
       height 100%

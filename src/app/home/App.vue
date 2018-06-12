@@ -25,11 +25,11 @@
             .scroll-wrapper#page1
               .scroll-box
                 .filter-wrapper
-                  .filter(@tap="")
+                  .filter(@tap="openWindow('subscription')")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex0.data")
+                  .pro-item(v-for="item in pageIndex0.data", @tap="openWindow('detail',{rid:item.rid})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -84,7 +84,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex2.data")
+                  .pro-item(v-for="item in pageIndex2.data", @tap="openWindow('detail',{rid:item.rid})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -111,7 +111,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item.more(v-for='item in pageIndex3.data')
+                  .pro-item.more(v-for='item in pageIndex3.data', @tap="openWindow('detail',{rid:item.rid})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -168,7 +168,7 @@
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http'
   import api from '../../assets/js/api'
-
+  import myMethods from '../../assets/js/methods.js'
   export default {
     name: 'home',
     data() {
@@ -395,13 +395,7 @@
         }
       },
       // 跳转页面
-      openWindow(route,data) {
-        mui.openWindow({
-          url: `./${route}.html`,
-          id: route,
-          extras:data
-        })
-      },
+      openWindow:myMethods.openWindow,
       //页面切换
       jumpTo(key) {
         this.filterFlag = false;

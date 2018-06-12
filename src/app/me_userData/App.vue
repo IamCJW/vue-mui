@@ -31,7 +31,7 @@
             .media-lable 公司名称
             .media-value {{company_info.name || '公司名字设置'}}
         li.media
-          .media-content.iconfont.icon-right
+          .media-content.iconfont.icon-right(@tap="openWindow('userData_selectQualifys')")
             .media-lable 资质条件
             .media-value 条件设置
         li.media

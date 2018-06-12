@@ -1,6 +1,6 @@
 @import "../../stylus/_mixin.styl"
 .detail-header
-  //position fixed
+  position fixed
   top 0
   left 0
   right 0
@@ -57,10 +57,15 @@
           height .02rem
           background-color $third-color
           border-radius .03rem
+.mui-content
+  padding 1.16rem 0 .44rem
+  height 100vh
 .content-table
   width 100%
   line-height .4rem
   color $text-color-light-x
+  height 100%
+  overflow-y auto
   .th
     width .9rem
     color #333
