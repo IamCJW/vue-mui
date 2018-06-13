@@ -35,13 +35,13 @@
                           i.iconfont.icon-time
                           span {{item.info_date}}
                       .module-content {{item.title}}
-    .type-message.mask(v-if="filterMsg.flag")
+    .type-message.mask(v-if="filterMsg.flag", @tap="showFilter")
       .popout
         .filter-box
           .module(v-if="pageFlag === 0")
-            button(v-for="item in filterMsg.data.subscribeData", @tap="selectFilter(item.value)", :class="{active:filterMsg.subscribeFlag === item.value}") {{item.key}}
+            button(v-for="item in filterMsg.data.subscribeData", @tap.stop="selectFilter(item.value)", :class="{active:filterMsg.subscribeFlag === item.value}") {{item.key}}
           .module(v-if="pageFlag === 1")
-            button(v-for="item in filterMsg.data.systemData", @tap="selectFilter(item.value)", :class="{active:filterMsg.systemFlag === item.value}") {{item.key}}
+            button(v-for="item in filterMsg.data.systemData", @tap.stop="selectFilter(item.value)", :class="{active:filterMsg.systemFlag === item.value}") {{item.key}}
 </template>
 <style lang="stylus" scoped>
   @import "message.styl"
@@ -190,10 +190,12 @@
         })
       },
       showFilter(){
-        this.filterMsg.flag = true;
+        this.filterMsg.flag = !this.filterMsg.flag;
       },
       selectFilter(key){
-        this.filterMsg.flag = false;
+        console.log(this.filterMsg.flag)
+        this.filterMsg.flag = !this.filterMsg.flag;
+        console.log(this.filterMsg.flag)
         if(this.pageFlag === 0 && this.filterMsg.subscribeFlag !== key){
           this.filterMsg.subscribeFlag = key;
           http({

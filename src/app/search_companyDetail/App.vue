@@ -242,14 +242,15 @@
 <script>
   /* global mui */
   /* global mui plus */
-  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import myMethods from '../../assets/js/methods'
 
   export default {
     name: 'companyDetail',
     data() {
       return {
+        rid:'',
         pageKey: 1,//页面状态
         baseData: '',//基本信息
         phoneFlag: false,//联系人
@@ -280,7 +281,11 @@
     },
     mounted() {
       let vueThis = this;
-      this.getData();
+      mui.plusReady(()=>{
+        let muiData = myMethods.getMuiExtras();
+        this.rid = muiData.rid;
+        this.getData();
+      });
       this.jumpTo(this.pageKey);
       mui.init({
         pullRefresh: [{
@@ -292,7 +297,7 @@
               http({
                 url: api.search_company_tender_success,
                 data: {
-                  code: '0000',//////////////////////////////////公司编码
+                  code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.tenderSuccessData.pageNum
                 }, success: (data) => {
                   vueThis.tenderSuccessData.data = vueThis.tenderSuccessData.data.concat(data.result);
@@ -314,7 +319,7 @@
               http({
                 url: api.search_company_legal,
                 data: {
-                  code: '0000',//////////////////////////////////公司编码
+                  code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.legalData.pageNum
                 }, success: (data) => {
                   vueThis.legalData.data = vueThis.legalData.data.concat(data.result);
@@ -336,7 +341,7 @@
               http({
                 url: api.search_company_builder,
                 data: {
-                  code: '0000',//////////////////////////////////公司编码
+                  code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.builderData.pageNum
                 }, success: (data) => {
                   vueThis.builderData.data = vueThis.builderData.data.concat(data.result);
@@ -363,7 +368,7 @@
       getData() {
         http({
           url: api.search_company_detail,
-          data: {rid: 'rid'},
+          data: {rid: this.rid},
           success: (data) => {
             this.baseData = data;
             this.commercialData = data.commercial_info;

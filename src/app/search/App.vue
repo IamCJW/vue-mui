@@ -17,7 +17,7 @@
                     i.iconfont.icon-SEARCH
                 .search-result 某招标共收录建筑企业{{companyData.total}}家
                 .com-group
-                  .com-item(v-for="item in companyData.result")
+                  .com-item(v-for="item in companyData.result", @tap="openWindow('companyDetail',{rid:item.rid})")
                     .com-name {{item.company_name}}
                     .com-sign
                       span 资质:{{item.qualify_num}}
@@ -35,9 +35,9 @@
                   .search-box(@tap="openWindow('searchBuilder')")
                     span 请输入建造职师或证件号
                     i.iconfont.icon-SEARCH
-                .search-result 某招标共收录建造师{{builderData.total}}家
+                .search-result 某招标共收录建造师{{builderData.total}}名
                 .bui-group
-                  .bui-item(v-for="item in builderData.result")
+                  .bui-item(v-for="item in builderData.result", @tap="openWindow('builderDetail',{rid:item.rid})")
                     .bui-top
                       .bui-name {{item.user_name}}
                       .bui-id 注册号:{{item.register_no}}

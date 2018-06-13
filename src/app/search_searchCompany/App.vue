@@ -12,7 +12,7 @@
           .scroll-box
             .search-result(v-if="total") 某招标共收录建筑企业{{companyData.total}}家
             .com-group
-              .com-item(v-for="item in companyData.result")
+              .com-item(v-for="item in companyData.result", @tap="openWindow('companyDetail',{rid:item.rid})")
                 .com-name {{item.company_name}}
                 .com-sign
                   span 资质:{{item.qualify_num}}
@@ -33,12 +33,13 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api'
+  import myMethods from '../../assets/js/methods'
 
   export default {
     name: 'searchCompany',
     data() {
       return {
-        total:false,
+        total: false,
         message: '',
         companyData: {}
       }
@@ -83,13 +84,7 @@
         })
       },
       // 跳转页面
-      openWindow(route, data) {
-        mui.openWindow({
-          url: `./${route}.html`,
-          id: route,
-          extras: data
-        })
-      }
-    },
+      openWindow: myMethods.openWindow,
+    }
   }
 </script>

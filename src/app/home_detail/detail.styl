@@ -98,7 +98,7 @@ footer
     display-flex()
     flex-align-item(center)
     box-shadow 0 -.02rem .02rem rgba(0,0,0,.03)
-    .btn-item
+    .btn-item,.btn-item a
       display-flex()
       flex-direction(column)
       flex-justify-content(center)
@@ -111,14 +111,76 @@ footer
       .iconfont
         font-size .18rem
         margin-bottom .05rem
+        &.active
+          color $third-color
     .buy
       flex-flex(1)
       background-color $assist-color
       color #ffffff
       font-size .14rem
-
-
-
-
-
+.buyType
+  bottom .48rem
+  height auto
+  .popout
+    position absolute
+    bottom 0
+    width 100%
+    background #fff
+    padding .12rem .12rem 0
+    button
+      width 100%
+      border-radius $border-radius-x
+      border $border-default
+      padding .12rem 0
+      margin-bottom .12rem
+      &.active
+        background-color $assist-color
+        color #fff
+.menu
+  .popout
+    position fixed
+    right .12rem
+    top .48rem
+    width 1rem
+    border-radius $border-radius-default
+    background-color #fff
+    padding .02rem 0
+    .popout-arrow
+      width 0.25rem
+      height 0.25rem
+      transform rotate(45deg)
+      position absolute
+      top -.06rem
+      right .09rem
+      background-color #fff
+    .funitem
+      position relative
+      z-index 1
+      text-align center
+      display-flex()
+      flex-align-item(center)
+      flex-justify-content(center)
+      border-bottom $border-default
+      padding .05rem
+      i
+        margin-right .05rem
+        font-size .14rem
+.warn
+  .popout
+    height 80%
+    top 10%
+    width 80%
+    left 10%
+    position absolute
+    border-radius $border-radius-default
+    background-color #ffffff
+    overflow hidden
+    overflow-y auto
+    padding-bottom .46rem
+    .title
+      padding $cell-left-right-space
+      .iconfont
+        float right
+    .fixed-bottom-btn
+      position absolute
 

@@ -29,7 +29,7 @@
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex0.data", @tap="openWindow('detail',{rid:item.rid})")
+                  .pro-item(v-for="item in pageIndex0.data", @tap="openWindow('detail',{rid:item.rid,type:1})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -57,7 +57,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex1.data", @tap="openWindow('detail',{rid:item.rid})")
+                  .pro-item(v-for="item in pageIndex1.data", @tap="openWindow('detail',{rid:item.rid,type:1})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -84,7 +84,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex2.data", @tap="openWindow('detail',{rid:item.rid})")
+                  .pro-item(v-for="item in pageIndex2.data", @tap="openWindow('detail',{rid:item.rid,type:2})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -111,7 +111,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item.more(v-for='item in pageIndex3.data', @tap="openWindow('detail',{rid:item.rid})")
+                  .pro-item.more(v-for='item in pageIndex3.data', @tap="openWindow('detail',{rid:item.rid,type:3})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -165,6 +165,7 @@
 </style>
 <script>
   /* global mui */
+  /* global mui plus*/
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http'
   import api from '../../assets/js/api'
@@ -554,6 +555,10 @@
       mui('.mui-scroll-wrapper').scroll();
     },
     created() {
+      mui.plusReady(()=>{
+        console.log('uuid:'+plus.device.uuid)
+      });
+
       this.location();
       this.getData();
     }

@@ -12,7 +12,7 @@
           .scroll-box
             .search-result(v-if="total") 某招标共收录建筑企业{{builderData.total}}家
             .bui-group
-              .bui-item(v-for="item in builderData.result")
+              .bui-item(v-for="item in builderData.result",@tap="openWindow('builderDetail',{rid:item.rid})")
                 .bui-top
                   .bui-name {{item.user_name}}
                   .bui-id 注册号:{{item.register_no}}

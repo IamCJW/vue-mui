@@ -11,6 +11,7 @@ export default (config => {
   nation: '/common/nation',//地址三级联动
   tender_success: '/project/tender_success',//中标公示分页数据
   tender_success_detail: "/project/tender_success/detail",//中标公示详情
+  project_relation_info_detail: "/project/relation_info/detail",//其他内容详情
   tender: '/project/tender',//招标公告分页数据
   tender_id: '/project/tender/detail',//招标公告详情
   tender_more: '/project/tender/more',//更多招标信息分页数据
@@ -51,4 +52,6 @@ export default (config => {
   common_sendcode: '/common/sendcode',//获取验证码
   common_verify_code: '/common/verify_code',//验证码验证
   member_subscribe: '/member/subscribe',//订阅管理
+  member_advice_wrong: '/member/advice/wrong',//信息报错
+  member_advice: '/member/advice',//意见提交
 })

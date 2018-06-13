@@ -68,11 +68,13 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import myMethods from '../../assets/js/methods'
 
   export default {
     name: 'builderDetail',
     data() {
       return {
+        rid:'',
         baseData: {},
         builderTenderData: {
           pageNum: 1,
@@ -82,7 +84,11 @@
     },
     mounted() {
       let vueThis = this;
-      this.getData();
+      mui.plusReady(()=>{
+        let data = myMethods.getMuiExtras();
+        this.rid = data.rid;
+        this.getData();
+      });
       mui.init({
         pullRefresh: [{
           container: '#builderTender',
@@ -93,7 +99,7 @@
               http({
                 url: api.search_builder_tender_success,
                 data: {
-                  province: vueThis.province,
+                  code: vueThis.rid,
                   cur_page: vueThis.builderTenderData.pageNum
                 }, success: (data) => {
                   console.log(vueThis.builderTenderData.data)
@@ -118,7 +124,7 @@
       getData() {
         http({
           url: api.search_builder_detail,
-          data: {rid: 'rid'},
+          data: {rid: this.rid},
           success: (data) => {
             this.baseData = data;
             this.builderTenderData.data = data.tender_success_list;

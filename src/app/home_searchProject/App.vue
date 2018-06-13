@@ -11,7 +11,7 @@
         .scroll-wrapper#page1
           .scroll-box
             .pro-group.cell-row
-              .pro-item(v-for="item in proData.data")
+              .pro-item(v-for="item in proData.data",@tap="openWindow(item)")
                 .pro-assist
                   div(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                     i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
@@ -46,8 +46,8 @@
         }
       }
     },
-    mounted(){
-        let vueThis = this;
+    mounted() {
+      let vueThis = this;
       this.province = localStorage.getItem(lsKey.locationProvince) || '';
       this.city = localStorage.getItem(lsKey.locationCity) || '';
       this.district = localStorage.getItem(lsKey.locationDistrict) || '';
@@ -78,21 +78,40 @@
       })
     },
     methods: {
-      searchPro(){
+      searchPro() {
         http({
-          url:api.index_project_search,
-          data:{
+          url: api.index_project_search,
+          data: {
             province: this.province,
-            city:this.city,
+            city: this.city,
             district: this.district,
-            search:this.searchMsg
+            search: this.searchMsg
           },
-          success:(data)=>{
-              this.proData.pageNum = 1;
-              this.proData.data = data.result;
+          success: (data) => {
+            this.proData.pageNum = 1;
+            this.proData.data = data.result;
           }
         })
-      }
+      },
+      openWindow: (item) => {
+        let data = {};
+        data['rid'] = item.rid;
+        switch (item.tender_type) {
+          case '招标':
+            data['type'] = 1;
+            break;
+          case '中标':
+            data['type'] = 2;
+            break;
+          default:
+            data['type'] = 3;
+        }
+        mui.openWindow({
+          url: `./detail.html`,
+          id: 'detail',
+          extras: data
+        })
+      },
     },
   }
 </script>

@@ -29,8 +29,12 @@ const myMethods = {
       id: route,
       extras: data
     })
+  },
+  //获取页面传值
+  getMuiExtras(){
+    let self = plus.webview.currentWebview();
+    return self;
   }
-
 };
 
 export default myMethods
