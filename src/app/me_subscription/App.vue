@@ -50,21 +50,24 @@
     name: 'subscription',
     data() {
       return {
-        subscriptionData:{
-          pageNum:1,
-          data:[]
-        },switchData:{}
+        subscriptionData: {
+          pageNum: 1,
+          data: []
+        }, switchData: {}
       }
     },
-    components:{
-      switchBox:switchBox,
+    components: {
+      switchBox: switchBox,
     },
     mounted() {
       this.getData();
-      window.addEventListener('chooseLocation',(e)=>{
+      window.addEventListener('chooseLocation', (e) => {
         mui.toast(e.detail.msg);
       });
-      window.addEventListener('chooseQualification',(e)=>{
+      window.addEventListener('chooseQualification', (e) => {
+        mui.toast(e.detail.msg);
+      });
+      window.addEventListener('addSuccess',(e)=>{
         mui.toast(e.detail.msg);
       });
       let vueThis = this;
@@ -100,24 +103,35 @@
     methods: {
       //数据请求
       getData() {
+        this.subscriptionData = {
+          pageNum: 1,
+          data: []
+        };
         http({
           url: api.member_subscribe,
           success: (data) => {
             this.subscriptionData.data = data.result;
-            data.result.forEach((item)=>{
-              this.$set(this.switchData,`status${item.id}`,item.status);
+            data.result.forEach((item) => {
+              this.$set(this.switchData, `status${item.id}`, item.status);
             })
           }
         });
       },
       //更新开关的值
-      upStatus(data){
-        this.$set(this.switchData,data.key,data.value);
+      upStatus(data) {
+        this.$set(this.switchData, data.key, data.value);
       },
-      openWindow:myMethods.openWindow,
+      openWindow: myMethods.openWindow,
       //订阅删除
-      subscriptionDel(){
-
+      subscriptionDel() {
+        http({
+          url: api.member_subscribe,
+          method: 'post',
+          data: {},
+          success: (data) => {
+            this.getData()
+          }
+        });
       },
     }
   }

@@ -1,15 +1,9 @@
-// src/app/index/index.pug
-// 主模板，文件名称需和目录名一致
+extends ../common
+block head
+  +head('资质设置','./static/mui.picker.css','./static/mui.poppicker.css','./static/mui.poppicker.css')
+block content
+  block js
+    +js(['./static/mui.picker.js','./static/mui.poppicker.js'])
+  #app
 
-doctype html
-html
-  head
-    meta(charset='UTF-8')
-    title 资质设置
-    meta(name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no')
-    link(rel="stylesheet", href="./static/mui.min.css")
-    link(rel="stylesheet", href="./static/iconfont.css")
-  body
-    script(src='./static/mui.js')
-    script(src='http://106.14.201.3:8080/rap.plugin.js?projectId=1')
-    #app
+

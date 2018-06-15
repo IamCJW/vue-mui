@@ -50,7 +50,7 @@
       }
     },
     mounted () {
-      mui.init()
+      mui.init({})
     }
   }
 </script>

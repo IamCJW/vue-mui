@@ -1,8 +1,12 @@
 @import "../../stylus/_mixin.styl"
-.pro-group
-  float left
-  width 100vw
+.header-nav
+  box-shadow none
+.mui-content
   height 100vh
+.pro-group
+  position relative
+  width 100vw
+  height 100%
   padding 0 .12rem
   overflow hidden
   overflow-y auto
@@ -28,13 +32,13 @@
             color #333333
             right .3rem
       .search-result
-        background $btn-gradient
-        color rgba(255, 255, 255, .8)
-        font-size .1rem
-        line-height .25rem
-        text-align center
-        padding 0 .12rem
-        margin 0 -.24rem
+        background: $main-color;
+        color: rgba(255,255,255,0.8);
+        font-size: 0.1rem;
+        line-height: 1;
+        text-align: center;
+        padding: 0.04rem 0.12rem;
+        margin: 0.05rem -0.24rem 0;
       .com-group
         padding-top .12rem
         .com-item
@@ -51,7 +55,7 @@
               display inline-block
               min-width .6rem
           .com-records
-            overflow auto
+            overflow hidden
             span
               font-size .1rem
               float left

@@ -14,7 +14,7 @@
         span.detail-bar-item( :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,1)") 招标公告
         span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '中标公示'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,2)") {{item.name}}
         span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '中标公示'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,3)") {{item.name}}
-    .mui-content
+    .mui-content(v-if="dataLock")
       //招标公示
       .content-table(v-show="navPage === '招标公告'")
         table
@@ -143,9 +143,18 @@
     name: 'detail',
     data() {
       return {
-        warnStatus:false,
+        dataLock: false,//数据锁
+        warnStatus: false,
         warnList: {
-          '招标':false,'中标': false, '答疑': false, '变更': false, '澄清': false, '资审': false, '流标': false, '废标': false, '其他': false,
+          '招标': false,
+          '中标': false,
+          '答疑': false,
+          '变更': false,
+          '澄清': false,
+          '资审': false,
+          '流标': false,
+          '废标': false,
+          '其他': false,
         },
         menuStatus: false,
         followStatus: false,
@@ -155,7 +164,7 @@
         },
         pushMsg: {
           tender_info: {
-            name: '公司名称',
+            name: '项目名称',
             tender_type: '行业',
             construction_type: '专业',
             province: '',
@@ -167,7 +176,7 @@
         },
         pullMsg: {
           tender_info: {
-            name: '公司名称',
+            name: '项目名称',
             tender_type: '行业',
             construction_type: '专业',
             province: '',
@@ -179,7 +188,7 @@
         },
         otherMsg: {
           tender_info: {
-            name: '公司名称',
+            name: '项目名称',
             tender_type: '行业',
             construction_type: '专业',
             province: '',
@@ -195,22 +204,52 @@
       }
     },
     mounted() {
-      http({
-        url: api.tender_id,
-        data: {rid: '1'},
-        success: (data) => {
-          this.pushMsg = data;
-          this.navigate_list = data.navigate_list;
-          this.navPage = '招标公告';
-        }
-      });
-      mui.plusReady(() => {
-        let muiData = myMethods.getMuiExtras();
+      let vueThis = this;
+      window.addEventListener('getData', (e) => {
+        vueThis.dataLock = false;
+        vueThis.pushMsg = {
+          tender_info: {
+            name: '项目名称',
+            tender_type: '行业',
+            construction_type: '专业',
+            province: '',
+            city: '',
+            district: '',
+            tel: '',
+            followed: ''
+          }
+        };
+        vueThis.pullMsg = {
+          tender_info: {
+            name: '项目名称',
+            tender_type: '行业',
+            construction_type: '专业',
+            province: '',
+            city: '',
+            district: '',
+            tel: '',
+            followed: ''
+          }
+        };
+        vueThis.otherMsg = {
+          tender_info: {
+            name: '项目名称',
+            tender_type: '行业',
+            construction_type: '专业',
+            province: '',
+            city: '',
+            district: '',
+            tel: '',
+            followed: ''
+          }
+        };
+        vueThis.navigate_list= [];
+        let muiData = e.detail;
         if (muiData.type === 1) {
           this.zbRid = muiData.rid;
         }
         this.getData(muiData);
-      })
+      });
     },
     created() {
 
@@ -218,7 +257,7 @@
     methods: {
       //数据请求
       getData(data) {
-        let rid = data.rid || 0;
+        let rid = data.rid;
         let type = data.type || 1;
         switch (type) {
           case 1:
@@ -230,6 +269,7 @@
                 this.navigate_list = data.navigate_list;
                 this.navPage = '招标公告';
                 this.followStatus = data.tender_info.followed;
+                this.dataLock = true;
               }
             });
             break;
@@ -242,6 +282,7 @@
                 this.navigate_list = data.navigate_list;
                 this.navPage = '中标公告';
                 this.followStatus = data.tender_info.followed;
+                this.dataLock = true;
               }
             });
             break;
@@ -258,6 +299,7 @@
                   }
                 });
                 this.followStatus = data.tender_info.followed;
+                this.dataLock = true;
               }
             });
             break;
@@ -350,38 +392,38 @@
           })
         }
       },//选择错误
-      chooseWarn(key){
-        this.$set(this.warnList,key,!this.warnList[key])
+      chooseWarn(key) {
+        this.$set(this.warnList, key, !this.warnList[key])
       },//提交错误
-      submitWarn(){
+      submitWarn() {
         let data = '';
-        for(let item in this.warnList){
-          if(this.warnList[item]){
-           data += `${item},`
+        for (let item in this.warnList) {
+          if (this.warnList[item]) {
+            data += `${item},`
           }
         }
-        if (data === ''){
+        if (data === '') {
           mui.toast('请选择错误选项');
           return
         }
         http({
-          url:api.member_advice_wrong,
-          method:'post',
-          data:{
-            tag:data,
-            tender_id:this.zbRid
+          url: api.member_advice_wrong,
+          method: 'post',
+          data: {
+            tag: data,
+            tender_id: this.zbRid
           },
-          success:()=>{
+          success: () => {
             mui.toast('已报错');
             this.warnStatus = false;
           }
         })
       },//错误展示
-      warnShow(){
+      warnShow() {
         this.warnStatus = true;
         this.menuStatus = false;
       },//错误关闭
-      warnClose(){
+      warnClose() {
         this.warnStatus = false;
       }
     }

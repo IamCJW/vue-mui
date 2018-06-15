@@ -1,6 +1,4 @@
 // src/app/home/App.vue
-
-
 <template lang="pug">
   #app
     .header-full
@@ -19,6 +17,7 @@
         button.home-bar-item(@tap="jumpTo(2)", :class="{active: pageKey===2}") 中标公示
         button.home-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 更多信息
     .mui-content
+      loading(ref="loading")
       .content-wrapper
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
@@ -29,7 +28,7 @@
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex0.data", @tap="openWindow('detail',{rid:item.rid,type:1})")
+                  .pro-item(v-for="item in pageIndex0.data", @tap="openDetail({rid:item.rid,type:1})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -57,7 +56,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex1.data", @tap="openWindow('detail',{rid:item.rid,type:1})")
+                  .pro-item(v-for="item in pageIndex1.data", @tap="openDetail({rid:item.rid,type:1})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -84,7 +83,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex2.data", @tap="openWindow('detail',{rid:item.rid,type:2})")
+                  .pro-item(v-for="item in pageIndex2.data", @tap="openDetail({rid:item.rid,type:2})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -111,7 +110,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item.more(v-for='item in pageIndex3.data', @tap="openWindow('detail',{rid:item.rid,type:3})")
+                  .pro-item.more(v-for='item in pageIndex3.data', @tap="openDetail({rid:item.rid,type:3})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.info_date}}
@@ -170,6 +169,8 @@
   import http from '../../assets/js/http'
   import api from '../../assets/js/api'
   import myMethods from '../../assets/js/methods.js'
+  import loading from '../../components/loading'
+
   export default {
     name: 'home',
     data() {
@@ -227,9 +228,17 @@
         nation: '',//地址数据
       }
     },
+    components: {
+      loading: loading
+    },
     methods: {
       //获取初始数据
       getData() {
+        this.$refs.loading.show();
+        this.pageIndex0 = {data: [], pageNum: 1};//招标订阅信息
+        this.pageIndex1 = {data: [], pageNum: 1};//招标公示信息
+        this.pageIndex2 = {data: [], pageNum: 1};//中标公示信息
+        this.pageIndex3 = {data: [], pageNum: 1};//更多信息
         //获取项目数据
         http({
           url: api.home,
@@ -238,9 +247,7 @@
             this.pageIndex1.data = data.tender_list;
             this.pageIndex2.data = data.success_tender_list;
             this.pageIndex3.data = data.more_list;
-            window.addEventListener('refresh', () => {
-              location.reload()
-            })
+            // this.$refs.loading.hide();
           }
         });
         http({
@@ -396,7 +403,17 @@
         }
       },
       // 跳转页面
-      openWindow:myMethods.openWindow,
+      openWindow: myMethods.openWindow,
+      openDetail(data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById('detail');
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~')
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow('detail');
+        });
+      },
       //页面切换
       jumpTo(key) {
         this.filterFlag = false;
@@ -452,14 +469,21 @@
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       }
     },
-    components: {},
     mounted() {
+      this.location();
+      this.getData();
       let vueThis = this;
       mui.init({
         preloadPages: [
           {
             url: './selectLocation.html',
             id: 'selectLocation',
+          }, {
+            url: './searchProject.html',
+            id: 'searchProject',
+          }, {
+            url: './detail.html',
+            id: 'detail'
           }
         ], pullRefresh: [{
           container: '#page1',
@@ -553,14 +577,12 @@
       });
       this.jumpTo(this.pageKey);
       mui('.mui-scroll-wrapper').scroll();
+      window.addEventListener('chooseProvince', () => {
+        vueThis.getData();
+      })
     },
     created() {
-      mui.plusReady(()=>{
-        console.log('uuid:'+plus.device.uuid)
-      });
 
-      this.location();
-      this.getData();
     }
   }
 </script>

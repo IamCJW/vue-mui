@@ -53,25 +53,30 @@
         province: '',
         street: '',
         defaulted: 0,
+        rid:'',
         cityPicker:{}
       }
     },
     mounted() {
+      mui.plusReady(()=>{
+        this.rid = myMethods.getMuiExtras()
+        this.getData();
+      });
+
       this.cityPicker = new mui.PopPicker({
         layer: 3
       });
       this.cityPicker.setData(cityData3);
     },
     created() {
-      this.getData();
+
     },
     methods: {
       //数据请求
       getData() {
-        console.log(13);
         http({
           url:api.member_address_detail,
-          data:{rid:'rid'},
+          data:{rid:this.rid},
           success:(data)=>{
             console.log(data)
             this.city=data.city;
@@ -110,12 +115,15 @@
             province: this.province,
             street: this.street,
             defaulted: this.defaulted,
-            rid:'rid'
+            rid:this.rid
           },
           method:'post',
           success:()=>{
-            mui.toast('新增成功');
-            mui.back()
+            let view = plus.webview.currentWebview().opener();
+            mui.fire(view, 'editSuccess', {
+              msg: '修改成功'
+            });
+            mui.back();
           }
         })
       }

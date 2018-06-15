@@ -12,11 +12,11 @@
         li.media
           .media-content.flex
             span 微信接收消息提醒
-            switchBox.fr(:status='notify_im_message', :keyName="'notify_im_message'", @changeStatus="upStatus")
+            switchBox.fr(:status='notify_wx_message', :keyName="'notify_wx_message'", @changeStatus="upStatus")
         li.media
           .media-content.flex
             span 消息免打扰
-            switchBox.fr(:status='notify_im_message', :keyName="'notify_im_message'", @changeStatus="upStatus")
+            switchBox.fr(:status='notify_busy', :keyName="'notify_busy'", @changeStatus="upStatus")
         li.tip 23:00 - 8:00 将不接收任何通知
         li.media
           .media-content.iconfont.icon-right
@@ -30,7 +30,7 @@
           .media-content.iconfont.icon-right
             .media-lable 清理本地缓存
             .media-value 12.9MB
-      .fixed-bottom-btn 退出登录
+      .fixed-bottom-btn(openWindow="openWindow('index')") 退出登录
 </template>
 <style lang="stylus" scoped>
   @import "systemSetting.styl"
@@ -80,7 +80,8 @@
       },
       upStatus(data){
         this[data.key] = data.value;
-      }
+      },
+      openWindow:myMethods.openWindow,
     }
   }
 </script>

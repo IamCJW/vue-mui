@@ -79,6 +79,10 @@
     },
     methods: {
       searchPro() {
+        if (this.searchMsg === ''){
+          mui.toast('请输入要搜索的关键字~');
+          return
+        }
         http({
           url: api.index_project_search,
           data: {

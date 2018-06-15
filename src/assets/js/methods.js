@@ -34,7 +34,13 @@ const myMethods = {
   getMuiExtras(){
     let self = plus.webview.currentWebview();
     return self;
-  }
+  },
+  //设置导航栏颜色
+  setStatusbar:(function () {
+    mui.plusReady(()=>{
+      plus.navigator.setStatusBarBackground('#04a3ee');
+    })
+  })(),
 };
 
 export default myMethods

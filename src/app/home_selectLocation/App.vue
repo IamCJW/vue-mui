@@ -172,11 +172,10 @@
     mounted() {
       mui.init({
         beforeback: function () {
-          //获得列表界面的webview
-          let home = plus.webview.getWebviewById('home');
-          //触发列表界面的自定义事件（refresh）,从而进行数据刷新
-          mui.fire(home, 'refresh');
-          //返回true，继续页面关闭逻辑
+          let view = plus.webview.currentWebview().opener();
+          mui.fire(view, 'chooseProvince',{
+            msg:'选择地址'
+          });
           return true
         }
       });

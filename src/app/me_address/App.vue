@@ -9,15 +9,16 @@
           .scroll-box
             .address-group
               div.address-box(v-for="item in addressData.data")
-                i.iconfont.icon-CIRCLE.select
+                i.iconfont.select(:class="item.defaulted ? 'icon-selectss':'icon-CIRCLE'", @tap="changeDefault(item.rid,!item.defaulted)")
                 .address-content
                   .address-top
                     .fun-name {{item.contact_name}}
                     .fun-group
-                      i.iconfont.icon-Rubbish
-                      i.iconfont.icon-edit(@tap="openWindow('address_edit',{id:item.rid})")
+                      i.iconfont.icon-Rubbish(@tap="delAddress(item.rid)")
+                      i.iconfont.icon-edit(@tap="openWindow('address_edit',{item:item})")
                   .address-tel {{item.contact_tel}}
-                  .address-location.mui-ellipsis {{item.province}}{{item.city}}{{item.district}}{{item.street}}
+                  .address-location {{item.province}}{{item.city}}
+                  .address-location {{item.district}}{{item.street}}
       button.fixed-bottom-btn(@tap="openWindow('address_edit_new')") 新增收货地址
 </template>
 <style lang="stylus" scoped>
@@ -41,6 +42,10 @@
       }
     },
     mounted() {
+      window.addEventListener('editSuccess',(e)=>{
+        mui.toast(e.detail.msg);
+        this.getData()
+      });
       this.getData();
       let vueThis = this;
       mui.init({
@@ -75,6 +80,10 @@
     methods: {
       //数据请求
       getData() {
+        this.addressData = {
+          pageNum: 1,
+          data: {}
+        }
         http({
           url: api.member_address,
           success: (data) => {
@@ -82,7 +91,34 @@
           }
         })
       },//打开页面
-      openWindow: myMethods.openWindow
+      openWindow: myMethods.openWindow,
+      delAddress(id) {
+        mui.confirm('确定删除该地址', ' ', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
+            http({
+              url: api.member_address,
+              method:'post',
+              data: {rid: id},
+              success: (data) => {
+                this.getData()
+              }
+            })
+          }
+        })
+      },//修改默认地址
+      changeDefault(id,value){
+        http({
+          url:api.member_address_default,
+          method:'post',
+          data:{
+            defaulted:value,
+            rid:id
+          },
+          success(){
+            this.getData();
+          }
+        })
+      }
     }
   }
 </script>

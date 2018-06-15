@@ -2,20 +2,14 @@
   #app
     header.header-nav
       span.mui-action-back.iconfont.icon-return
-      .header-title 新用户注册
+      .header-title 关于我们
     .mui-content
-      .box
-        .input-group
-          .input-item
-            i.iconfont.icon-yanzhengma
-            input(placeholder="请输入密码" minlength="6")
-          .input-item
-            i.iconfont.icon-yanzhengma
-            input(placeholder="请再次输入")
-        button.mid-btn.disabled(@tap="openWindow('index')") 注册
+      .none
+        i.iconfont.icon-company
+        span 暂无公司介绍
 </template>
 <style lang="stylus" scoped>
-  @import "regist_next.styl"
+  @import "aboutUS.styl"
 </style>
 <script>
   /* global mui */
@@ -25,9 +19,10 @@
   import api from '../../assets/js/api.js'
 
   export default {
-    name: 'login',
+    name: 'aboutUS',
     data() {
       return {
+
       }
     },
     mounted() {
@@ -39,9 +34,15 @@
     methods: {
       //数据请求
       getData() {
-
+        http({
+          url: api.search_company,
+          success: (data) => {
+            this.companyData = data;
+          }
+        })
       },//打开页面
-      openWindow:myMethods.openWindow,
+      openWindow: myMethods.openWindow,
+      //左滑事件
     }
   }
 </script>

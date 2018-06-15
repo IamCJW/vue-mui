@@ -43,7 +43,9 @@
     mounted() {
       let vueThis = this;
       this.getData();
-      this.subscription = plus.webview.currentWebview();
+      mui.plusReady(()=>{
+        this.subscription = plus.webview.currentWebview();
+      });
       window.addEventListener('chooseCategory',()=>{
         vueThis.getData();
       })

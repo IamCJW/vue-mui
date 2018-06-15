@@ -1,0 +1,20 @@
+mixin head( title, ...styleUrls)
+  head
+    meta(charset='UTF-8')
+    title=title
+    meta(name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no')
+    link(rel="stylesheet", href="./static/mui.min.css")
+    link(rel="stylesheet", href="./static/iconfont.css")
+    each item in styleUrls
+      link(rel="stylesheet", href=item)
+mixin js(options)
+  each item in options
+    script(src=item)
+doctype html
+html
+  block head
+  body
+    script(src='./static/mui.js')
+    script(src='http://106.14.201.3:8080/rap.plugin.js?projectId=1')
+    block script
+    block content

@@ -44,6 +44,7 @@
             .media-lable 固定电话
             .media-value
               input(placeholder='请输入电话', v-model="company_info.tel")
+      button.mid-btn(:tap="saveBase") 保存
     .mask(v-if='headEdit')
       .popout
         vueCropper(ref="cropper", :fixed="option.fixed", :fixedNumber="option.fixedNumber", :img="option.img", :info="option.info", :autoCrop="option.autoCrop", :autoCropWidth="option.autoCropWidth", :canMove="option.canMove", :autoCropHeight="option.autoCropHeight", :outputSize="option.size", :outputType="option.outputType")
@@ -91,6 +92,7 @@
       vueCropper: Cropper
     },
     mounted() {
+      let vueThis = this;
       window.addEventListener('chooseCompany',(e)=>{
         vueThis.company_info.name = e.detail.data.name;
       })
@@ -148,6 +150,22 @@
         changSex.show(function(items) {
           vueThis.gender = items[0].text;
         });
+      },//保存基本信息
+      saveBase(){
+        http({
+          url:api.member_info,
+          method:'post',
+          data:{
+            gender:this.gender,
+            name:this.company_info.name,
+            tel:this.company_info.tel,
+            title:this.company_info.title,
+            user_name:this.name
+          },
+          success:()=>{
+            mui.toast('保存成功')
+          }
+        })
       }
     }
   }

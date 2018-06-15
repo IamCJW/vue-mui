@@ -1,15 +1,5 @@
-// src/app/index/index.pug
-// 主模板，文件名称需和目录名一致
-
-doctype html
-html
-  head
-    meta(charset='UTF-8')
-    title 我的关注
-    meta(name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no')
-    link(rel="stylesheet", href="./static/mui.min.css")
-    link(rel="stylesheet", href="./static/iconfont.css")
-  body
-    script(src='./static/mui.js')
-    script(src='http://106.14.201.3:8080/rap.plugin.js?projectId=1')
-    #app
+extends ../common
+block head
+  +head('我的关注')
+block content
+  #app

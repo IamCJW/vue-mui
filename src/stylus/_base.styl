@@ -77,9 +77,9 @@ i
   position relative
 //背景颜色///////////////////////////////////////////////////
 .bg-white
-  background-color #ffffff
+  background-color #ffffff!important
 .bg-gary
-  background-color $bg-color-x
+  background-color $bg-color-x!important
 //弹出层////////////////////////////////////////////////
 .mask
   position fixed
@@ -126,6 +126,9 @@ i
   color $fourth-color
 .iconfont-CIRCLE
   color $text-color-light-xx
+//字体颜色///////////////////////////////////
+.text-color-third
+  color $third-color!important
 /////公共功能列表/////////////
 .media-view
   position: relative;
@@ -220,3 +223,33 @@ i
   &.disabled
     background-color #f4f4f4
     color $text-color-light-xx
+//更多菜单/////////////////////////////////
+.menu
+  .popout
+    position fixed
+    right .12rem
+    top .48rem
+    width 1rem
+    border-radius $border-radius-default
+    background-color #fff
+    padding .02rem 0
+    .popout-arrow
+      width 0.25rem
+      height 0.25rem
+      transform rotate(45deg)
+      position absolute
+      top -.06rem
+      right .09rem
+      background-color #fff
+    .funitem
+      position relative
+      z-index 1
+      text-align center
+      display-flex()
+      flex-align-item(center)
+      flex-justify-content(center)
+      border-bottom $border-default
+      padding .05rem
+      i
+        margin-right .05rem
+        font-size .14rem

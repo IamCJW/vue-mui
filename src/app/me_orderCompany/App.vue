@@ -27,6 +27,7 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api'
+  import myMethods from "../../assets/js/methods";
 
   export default {
     name: 'orderCompany',
@@ -36,8 +37,12 @@
       }
     },
     mounted() {
+      let vueThis = this;
       this.getData();
       mui.init({});
+      window.addEventListener('addSuccess',()=>{
+        this.getData();
+      })
     },
     methods: {
       // 获取基础数据
@@ -66,13 +71,7 @@
       }
       ,
       // 跳转页面
-      openWindow(route, data) {
-        mui.openWindow({
-          url: `./${route}.html`,
-          id: route,
-          extras: data
-        })
-      }
+      openWindow:myMethods.openWindow()
     },
   }
 </script>

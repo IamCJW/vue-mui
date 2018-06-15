@@ -9,8 +9,7 @@
         .word-num {{advice.length}}/200
       .tip.cell-row 每一条反馈我们都会认真对待，感谢您的宝贵意见~
 
-      button.mid-btn 提交
-
+      button.mid-btn(@tap="adviceSubmit") 提交
 
 
 </template>
@@ -38,7 +37,21 @@
     created() {
     },
     methods: {
-
+      adviceSubmit() {
+        if (this.advice === '') {
+          return
+        }
+        http({
+          url: api.member_advice,
+          method: 'post',
+          data: {
+            context: this.advice,
+          },
+          success: () => {
+            mui.back();
+          }
+        })
+      }
     }
   }
 </script>

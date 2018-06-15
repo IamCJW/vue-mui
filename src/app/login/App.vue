@@ -8,7 +8,7 @@
           .input-item
             i.iconfont.icon-shouji
             input(placeholder="请输入手机号" type="tel" maxlength="11" v-model="phone" @input="changePhone")
-            span.code(:class="{disabled:codeFlag}" @tap="getCode") {{codeText}}
+            span.code(:class="{disabled:codeFlag}" @tap="getCode" v-if="!loginType") {{codeText}}
           .input-item(v-if="!loginType")
             i.iconfont.icon-yanzhengma
             input(placeholder="请输入验证码" type="tel" maxlength="11"  v-model="code")
@@ -19,7 +19,7 @@
           .input-item
             button(@tap="login") 登录
           .input-item.other
-            span(@tap="changType") 短信验证码登录
+            span(@tap="changType") {{loginType ? '短信验证码登录': '账号密码登录'}}
             span(@tap="openWindow('regist')") 新用户注册
         .login-third
           .title 其他登录方式

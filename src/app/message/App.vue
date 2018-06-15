@@ -4,10 +4,10 @@
       .search-nav-list
         .search-item(:class="{active: pageFlag === 0}", @tap="jumpTo(0)")
           span 关注消息&nbsp;
-          i.iconfont.icon-TRIANGLE(@tap="showFilter()")
+          i.iconfont(@tap="showFilter()", :class="[filterMsg.flag &&  pageFlag === 0 ? 'icon-TRIANGLE-copy':'icon-TRIANGLE']")
         .search-item(:class="{active: pageFlag === 1}", @tap="jumpTo(1)")
           span 系统消息&nbsp;
-          i.iconfont.icon-TRIANGLE(@tap="showFilter()")
+          i.iconfont(@tap="showFilter()", :class="[filterMsg.flag &&  pageFlag === 1 ? 'icon-TRIANGLE-copy':'icon-TRIANGLE']")
     .mui-content
       .content-wrapper
         .content-full-scroll(ref='barscroll')
@@ -15,7 +15,7 @@
             .scroll-wrapper#page1
               .scroll-box
                 ul.media-view
-                  li.media(v-for="(item,index) in subscribeData.data", :class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)")
+                  li.media(v-for="(item,index) in subscribeData.data", :class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)", @tap="goToDetail(msg_type,rid)")
                     .media-content
                       .module-top.overflow-auto
                         .fl {{item.msg_type_text}} / {{item.info_type}}
@@ -57,30 +57,33 @@
     name: 'message',
     data() {
       return {
-        pageFlag:0,
-        filterMsg:{
-          flag:false,
-          subscribeFlag:0,
-          systemFlag:0,
-          data:{
-            subscribeData:[{key:'全部',value:0},{key:'项目动态',value:1},{key:'企业动态',value:2},{key:'建造师动态',value:3},{key:'业主动态',value:4}],
-            systemData:[{key:'全部',value:0},{key:'系统通知',value:1},{key:'订单通知',value:2}]
+        pageFlag: 0,
+        filterMsg: {
+          flag: false,
+          subscribeFlag: 0,
+          systemFlag: 0,
+          data: {
+            subscribeData: [{key: '全部', value: 0}, {key: '项目动态', value: 1}, {key: '企业动态', value: 2}, {
+              key: '建造师动态',
+              value: 3
+            }, {key: '业主动态', value: 4}],
+            systemData: [{key: '全部', value: 0}, {key: '系统通知', value: 1}, {key: '订单通知', value: 2}]
           }
         },
-        subscribeData:{
-          pageNum:1,
-          data:{}
+        subscribeData: {
+          pageNum: 1,
+          data: {}
         },
-        systemData:{
-          pageNum:1,
-          data:{}
+        systemData: {
+          pageNum: 1,
+          data: {}
         }
       }
     },
     mounted() {
       let vueThis = this;
       mui.init({
-        gestureConfig:{
+        gestureConfig: {
           longtap: true, //默认为false
         },
         pullRefresh: [{
@@ -104,7 +107,7 @@
               });
             }
           }
-        },{
+        }, {
           container: '#page2',
           up: {
             contentrefresh: "正在加载...",
@@ -171,49 +174,67 @@
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },
-      deleteMes(id,index,type){
+      deleteMes(id, index, type) {
         let vueThis = this;
-        mui.confirm('确定删除该消息',' ',['取消','确定'],(e)=>{
-          if (e.index === 1){
+        mui.confirm('确定删除该消息', ' ', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
             http({
-              url:api.message_del,
-              data:{rid:id},
-              success:(data)=>{
-                if(type === 1){
-                  vueThis.subscribeData.data.splice(index,1)
-                }else {
-                  vueThis.systemData.data.splice(index,1)
+              url: api.message_del,
+              data: {rid: id},
+              success: (data) => {
+                if (type === 1) {
+                  vueThis.subscribeData.data.splice(index, 1)
+                } else {
+                  vueThis.systemData.data.splice(index, 1)
                 }
               }
             })
           }
         })
       },
-      showFilter(){
+      showFilter() {
         this.filterMsg.flag = !this.filterMsg.flag;
       },
-      selectFilter(key){
+      selectFilter(key) {
         console.log(this.filterMsg.flag)
         this.filterMsg.flag = !this.filterMsg.flag;
         console.log(this.filterMsg.flag)
-        if(this.pageFlag === 0 && this.filterMsg.subscribeFlag !== key){
+        if (this.pageFlag === 0 && this.filterMsg.subscribeFlag !== key) {
           this.filterMsg.subscribeFlag = key;
           http({
             url: api.message_subscribe_notify,
-            data:{msg_type:key},
+            data: {msg_type: key},
             success: (data) => {
               this.subscribeData.data = data.result;
             }
           });
-        }else if (this.pageFlag === 1  && this.filterMsg.systemFlag !== key) {
+        } else if (this.pageFlag === 1 && this.filterMsg.systemFlag !== key) {
           this.filterMsg.systemFlag = key;
           http({
             url: api.message_system_notify,
-            data:{msg_type:key},
+            data: {msg_type: key},
             success: (data) => {
               this.systemData.data = data.result;
             }
           });
+        }
+      },
+      openWindow: myMethods.openWindow,//消息跳转详情
+      goToDetail(type, rid) {
+        let id = rid;
+        switch (type) {
+          case 1:
+            openWindow('detail',{rid:id});
+            break;
+          case 2:
+            openWindow('companyDetail',{rid:id});
+            break;
+          case 3:
+            openWindow('builderDetail',{rid:id});
+            break;
+          case 4:
+            openWindow('companyDetail',{rid:id});
+            break;
         }
       }
     }

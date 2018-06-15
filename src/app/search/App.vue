@@ -63,33 +63,34 @@
                   div.media-lable 企业要求
                   div.media-value.select-group
                     div(@tap="companySelect(1)")
-                      i.iconfont(:class="[condition===1?'icon-select':'icon-CIRCLE']")
+                      i.iconfont(:class="[condition===1 ? 'icon-selectss': 'icon-CIRCLE']")
                       span 不限
                     div(v-if="province.shortName", @tap="companySelect(2)")
-                      i.iconfont(:class="[condition===2?'icon-select':'icon-CIRCLE']")
+                      i.iconfont(:class="[condition===2 ? 'icon-selectss' : 'icon-CIRCLE']")
                       span 入{{province.shortName}}企业
                     div(@tap="companySelect(3)")
-                      i.iconfont(:class="[condition===3?'icon-select':'icon-CIRCLE']")
+                      i.iconfont(:class="[condition===3 ? 'icon-selectss' : 'icon-CIRCLE']")
                       span 本地企业
               li.media
                 .media-content.iconfont.icon-right
                   div.media-lable 设置资历条件
                   div.media-value(@tap="openWindow('selectQualify')") 请设置
-            ul.media-view.categoryData
-              li.media(v-for="item in categoryData")
-                .media-content
-                  div.media-value {{item.category}}-{{item.name}}-{{item.level}}
-            ul.media-view
-              li.media
-                .media-content
-                  div.media-value.select-group
-                    div(@tap="categorySelect(1)")
-                      i.iconfont(:class="[conditionCategory===1?'icon-select':'icon-CIRCLE']")
-                      span 符合单个
-                    div(@tap="categorySelect(2)")
-                      i.iconfont(:class="[conditionCategory===2?'icon-select':'icon-CIRCLE']")
-                      span 全部符合
-            button.search(@tap="openWindow('searchFilterCompany')") 查询
+            template(v-if="categoryData.length !== 0")
+              ul.media-view.categoryData
+                li.media(v-for="item in categoryData")
+                  .media-content
+                    div.media-value {{item.one}}-{{item.two}}-{{item.three}}-{{item.four}}
+              ul.media-view
+                li.media
+                  .media-content
+                    div.media-value.select-group
+                      div(@tap="categorySelect(1)")
+                        i.iconfont(:class="[conditionCategory===1?'icon-selectss':'icon-CIRCLE']")
+                        span 符合单个
+                      div(@tap="categorySelect(2)")
+                        i.iconfont(:class="[conditionCategory===2?'icon-selectss':'icon-CIRCLE']")
+                        span 全部符合
+            button.search(@tap="search") 查询
 </template>
 <style lang="stylus" scoped>
   @import "search.styl"
@@ -114,11 +115,7 @@
         },
         condition: 1,//企业要求
         conditionCategory: 1,//资质设置
-        categoryData: [{category: '时候的大小', name: '四季豆哦', level: '甲级'}, {
-          category: '时候的大小',
-          name: '四季豆哦',
-          level: '甲级'
-        }, {category: '时候的大小', name: '四季豆哦', level: '甲级'}]//资历条件
+        categoryData: [],
       }
     },
     mounted() {
@@ -223,6 +220,23 @@
         let key = this.pageFlag;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
+      },//查询事件
+      search(){
+        let data ={
+          province:this.province.name,
+          company_type:this.condition,
+          filter_type:this.conditionCategory,
+          qualify_filter:[],
+        };
+        let categoryData = this.categoryData;
+        categoryData.forEach((item,index)=>{
+          data.qualify_filter[index]={
+            category:item.two,
+            level:item.three,
+            name:item.four,
+          }
+        });
+        this.openWindow('searchFilterCompany',data);
       }
     }
   }

@@ -1,20 +1,7 @@
-// src/app/index/index.pug
-// 主模板，文件名称需和目录名一致
-
-doctype html
-html
-  head
-    meta(charset='UTF-8')
-    title 编辑
-    meta(name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no')
-    link(rel="stylesheet", href="./static/mui.min.css")
-    link(rel="stylesheet", href="./static/iconfont.css")
-    link(rel="stylesheet", href='./static/mui.picker.css')
-    link(rel="stylesheet", href='./static/mui.poppicker.css')
-  body
-    script(src='./static/mui.js')
-    script(src='./static/mui.picker.js')
-    script(src='./static/mui.poppicker.js')
-    script(src='./static/city.data-3.js')
-    script(src='http://106.14.201.3:8080/rap.plugin.js?projectId=1')
-    #app
+extends ../common
+block head
+  +head('收货地址编辑','./static/mui.picker.css','./static/mui.poppicker.css')
+block content
+  block script
+    +js(['./static/mui.picker.js','./static/mui.poppicker.js','./static/city.data-3.js'])
+  #app

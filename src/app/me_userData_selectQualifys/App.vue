@@ -3,19 +3,16 @@
     header.header-nav
       span.mui-action-back.iconfont.icon-return
       .header-title 资质设置
-      span(@tap="submitBack") 确定
     .mui-content
       .selected-content
         .selected-title
           span 已选资质
-          i.fr.iconfont.icon-Rubbish(@tap="deleteAll")
-            span 全部清空
         ul.media-view
-          li.media(v-for="(item,index) in selectedArr")
+          li.media(v-for="item in selectedArr")
             .media-content
-              span {{item.one === '建筑业施工企业资质'? '施工资质' : item.one}}-{{item.two}}-{{item.three}}-{{item.four}}
-              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(index,item.id)")
-      .button-group
+              span {{item.name}}-{{item.level}}
+              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(item.rid)")
+      .button-group(v-if="selectedArr.length < 5")
         button.add(@tap="add") 添加
         .tip 手动最多添加5条资质
     .typeGroup(v-if="selectFlag")
@@ -47,6 +44,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import axios from 'axios'
+
   export default {
     name: 'selectQualify',
     data() {
@@ -67,13 +65,24 @@
     },
     mounted() {
       mui.init({});
+      this.getData();
       this.getNation();
       let vueThis = this;
-      mui('body').on('tap', '.mui-poppicker-btn-cancel', () => {
+      mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
       })
     },
     methods: {
+      //资质列表
+      getData() {
+        http({
+          url: api.member_qualify,
+          success: (data) => {
+            console.log(data);
+            this.selectedArr = data;
+          }
+        })
+      },
       //资质设置内容/////////////////////////////////////////////////////////////////
       getNation() {
         this.picker = new mui.PopPicker({
@@ -92,7 +101,7 @@
         this.selectFlag = true;
         let vueThis = this;
         this.picker.show(function (items) {
-          if(!items[2].value){
+          if (!items[2].value) {
             mui.toast('请等待数据加载完成');
             return false
           }
@@ -110,69 +119,38 @@
             this.picker.setData(this.qualifyData[i].children);
           }
         }
-
       },
       //删除///////////////////////
-      deleteArr(index,id) {
-        mui.confirm('确认删除该资质？',' ',['取消','确定'],(e)=>{
-          if(e.index === 1){
+      deleteArr(id) {
+        mui.confirm('确认删除该资质？', ' ', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
             http({
-              url:api.member_qualify,
-              method:'delete',
-              data:{rid:id},
-              success:()=>{
-                mui.toast('资质删除成功');
-                this.selectedArr.splice(index, 1);
+              url: api.member_qualify,
+              method: 'delete',
+              data: {rid: id},
+              success: () => {
+                this.getData();
                 mui.toast('资质删除成功');
               }
             })
           }
         });
       },
-      //删除全部//////////////////////
-      deleteAll() {
-        this.selectedArr = [];
-      },
       //确定///////////////////////
       confirm() {
-        let categoryData = this.selectedArr;
-        let view = plus.webview.currentWebview().opener();
-        mui.fire(view, 'chooseCategory', {
-          categoryData: categoryData
-        });
         mui.back()
       },//确定回调函数
       selectSuccess(items) {
-
         this.selectFlag = false;
-        let item = {
-          one: this.qualifyList[this.qualifyFlag],
-          two: items[0].text,
-          three: items[1].text,
-          four: items[2].text,
-          id: items[2].value,
-        };
-        if (JSON.stringify(this.selectedArr).indexOf(JSON.stringify(item)) === -1) {
-          http({
-            url:api.member_qualify,
-            method:'post',
-            data:{rid:item.id},
-            success:()=>{
-              this.selectedArr.unshift(item);
-              mui.toast('资质添加成功');
-            }
-          })
-        } else {
-          mui.toast('请勿重复添加')
-        }
-      },
-      submitBack() {
-        let categoryData = this.selectedArr;
-        let view = plus.webview.currentWebview().opener();
-        mui.fire(view, 'chooseCategory', {
-          categoryData: categoryData
-        });
-        mui.back()
+        http({
+          url: api.member_qualify,
+          method: 'post',
+          data: {rid: items[2].value},
+          success: () => {
+            this.getData();
+            mui.toast('资质添加成功');
+          }
+        })
       }
     }
   }

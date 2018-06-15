@@ -117,7 +117,7 @@
           },
           method:'post',
           success(){
-            this.openWindow('regist_next')
+            myMethods.openWindow('regist_next')
           }
         })
       }

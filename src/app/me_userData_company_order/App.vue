@@ -73,10 +73,14 @@
           url:api.member_order_company,
           method:'post',
           data:{
-            rid:'rid'
+            name:this.searchMsg
           },
           success:()=>{
-            mui.back()
+            let view = plus.webview.currentWebview().opener();
+            mui.fire(view, 'addSuccess', {
+              msg: '修改成功'
+            });
+            mui.back();
           }
         })
       }

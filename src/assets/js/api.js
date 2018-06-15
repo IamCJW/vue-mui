@@ -38,7 +38,11 @@ export default (config => {
   member_address: '/member/address',//get 主页 post 添加或修改收货地址 delete 删除收货地址
   member_address_detail: '/member/address/detail',//地址详情
   member_coupon: '/member/coupon',//优惠券
-  member_follow: '/member/follow',//我的关注主页
+  member_follow: '/member/follow',//我的关注主页 get post delete
+  member_follow_tender:'/member/follow/tender',//关注业主分页
+  member_follow_company:'/member/follow/company',//关注企业分页
+  member_follow_builder:'/member/follow/builder',//关注建造师分页
+  member_follow_project:'/member/follow/project',//关注项目分页
   search_tender_company_detail: '/search/tender/company/detail',//业主单位详情
   search_tender_company_list: '/search/tender/company/list',//业主单位详情招标数据分页
   member_order_company: '/member/order_company',//订单公司信息管理 get delete post
@@ -54,4 +58,7 @@ export default (config => {
   member_subscribe: '/member/subscribe',//订阅管理
   member_advice_wrong: '/member/advice/wrong',//信息报错
   member_advice: '/member/advice',//意见提交
+  member_wallet: '/member/wallet',//我的钱包
+  member_wallet_list: '/member/wallet/list',//消费明细分页
+  member_address_default:'/member/address/default',//修改默认地址
 })

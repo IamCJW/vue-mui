@@ -100,8 +100,11 @@
           },
           method:'post',
           success:()=>{
-            mui.toast('新增成功');
-            mui.back()
+            let view = plus.webview.currentWebview().opener();
+            mui.fire(view, 'editSuccess', {
+              msg: '新增成功'
+            });
+            mui.back();
           }
         })
       }

@@ -4,7 +4,7 @@
       .header-title
         span.mui-action-back.iconfont.icon-return
         .detail-title {{baseData.company_name}}
-        span.iconfont.icon-MORES
+        span.iconfont.icon-MORES(@tap="menuShow(true)")
       .header-sign
         span 统一社会信用代码:{{baseData.credit_no}}
       .detail-nav-bar
@@ -235,6 +235,15 @@
                       p 身份:{{item.role}}
                       p 裁决日期:{{item.adjudge_date}}
                       p 公示日期:{{item.info_date}}
+    .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
+      .popout
+        .popout-arrow
+        .funitem
+          i.iconfont.icon-share
+          span 分享项目
+        .funitem.border-none(@tap="follow(followed)")
+          i.iconfont.icon-attention-copy(:class="[followed ? 'text-color-third' : '']")
+          span {{followed ? '已关注' : '关注项目'}}
 </template>
 <style lang="stylus" scoped>
   @import "companyDetail.styl"
@@ -250,18 +259,20 @@
     name: 'companyDetail',
     data() {
       return {
-        rid:'',
+        rid: '',
+        followed: false,
+        menuStatus: false,//菜单状态
         pageKey: 1,//页面状态
         baseData: '',//基本信息
         phoneFlag: false,//联系人
         qualificationFlag: false,//企业资质展示
         tenderSuccessData: {
-          pageNum:1,
-          data:[]
+          pageNum: 1,
+          data: []
         },//中标信息
-        builderData:{
-          pageNum:1,
-          data:[]
+        builderData: {
+          pageNum: 1,
+          data: []
         },//建造师
         commercialData: '',//工商信息
         commercialItem1Data: {},//工商基本信息
@@ -281,7 +292,7 @@
     },
     mounted() {
       let vueThis = this;
-      mui.plusReady(()=>{
+      mui.plusReady(() => {
         let muiData = myMethods.getMuiExtras();
         this.rid = muiData.rid;
         this.getData();
@@ -310,7 +321,7 @@
               });
             }
           }
-        },{
+        }, {
           container: '#legalPage',
           up: {
             contentrefresh: "正在加载...",
@@ -332,7 +343,7 @@
               });
             }
           }
-        },{
+        }, {
           container: '#builder',
           up: {
             contentrefresh: "正在加载...",
@@ -368,7 +379,7 @@
       getData() {
         http({
           url: api.search_company_detail,
-          data: {rid: this.rid},
+          data: {code: this.rid},
           success: (data) => {
             this.baseData = data;
             this.commercialData = data.commercial_info;
@@ -377,6 +388,7 @@
             this.legalData.data = data.legal_list;
             this.tenderSuccessData.data = data.tender_success_list;
             this.builderData.data = data.builder_list;
+            this.followed = data.followed;
           }
         })
       },
@@ -404,7 +416,39 @@
       //展开与收缩
       mediaAlert(key) {
         this[key] = !this[key];
-      }
+      },//更多
+      menuShow(key) {
+        this.menuStatus = key;
+      },//关注按钮
+      follow(key) {
+        if (this.followed) {
+          http({
+            url: api.member_follow,
+            method: 'delete',
+            data: {
+              rid: this.rid,
+              type: 3
+            },
+            success: () => {
+              this.followed = !this.followed;
+              mui.toast('取消成功')
+            }
+          })
+        }else {
+          http({
+            url: api.member_follow,
+            method: 'post',
+            data: {
+              rid: this.rid,
+              type: 3
+            },
+            success: () => {
+              this.followed = !this.followed;
+              mui.toast('关注成功')
+            }
+          })
+        }
+      },
     }
   }
 </script>

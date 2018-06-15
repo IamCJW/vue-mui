@@ -83,10 +83,11 @@
             qualify_info:this.chooseQualification
           },
           success:()=>{
-            mui.toast('新增成功');
-            setTimeout(()=>{
-              mui.back()
-            })
+            let view = plus.webview.currentWebview().opener();
+            mui.fire(view, 'addSuccess', {
+              msg: '修改成功'
+            });
+            mui.back();
           }
         })
       },openWindow:myMethods.openWindow

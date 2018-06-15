@@ -28,6 +28,7 @@
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import myMethods from "../../assets/js/methods";
 
   export default {
     name: 'subscription_selectLocation',
@@ -150,7 +151,9 @@
     },
     mounted() {
       this.getNation();
-      this.subscription = plus.webview.currentWebview();
+      mui.plusReady(()=>{
+        this.subscription = myMethods.getMuiExtras;
+      })
     }
   }
 </script>

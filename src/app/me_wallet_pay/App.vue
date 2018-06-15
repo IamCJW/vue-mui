@@ -27,7 +27,7 @@
                 .pay-type
                   i.iconfont.icon-Alipay
                   span 支付宝支付
-      button.fixed-bottom-btn 确认支付￥{{needPay}}
+      button.fixed-bottom-btn(@tap="pay") 确认支付￥{{needPay}}
 </template>
 <style lang="stylus" scoped>
   @import "wallet_pay.styl"
@@ -70,6 +70,12 @@
       },
       changePayType(type){
         this.payType = type
+      },//支付
+      pay(){
+        mui.toast('支付成功');
+        setTimeout(()=>{
+          mui.back();
+        },1000)
       }
     }
   }
