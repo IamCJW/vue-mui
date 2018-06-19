@@ -8,12 +8,18 @@
     .mui-wrapper
       height 100%
     .media-view
-      .media
+      padding $cell-left-right-space
+      .media.media-more
+        background-color #ffffff
+        margin-bottom .1rem
+        box-shadow $box-shadow-default
+        border-radius $border-radius-default
         .media-content
           padding .07rem .12rem
           display-flex()
           flex-align-item(center)
           flex-justify-content(space-between)
+          background-color $main-color-x
           .media-del
             display-flex()
             flex-align-item(center)
@@ -23,9 +29,17 @@
               margin-right .05rem
         .media-alert
           margin 0
+          .media-content
+            background-color #ffffff
+          .media-view
+            padding 0
           .media
             padding .04rem 0
             border-bottom .1rem solid $bg-color-x
+            border-radius 0
+            box-shadow none
+            &:last-child
+              margin-bottom 0
             .media-content
               display block
               .qualify-group

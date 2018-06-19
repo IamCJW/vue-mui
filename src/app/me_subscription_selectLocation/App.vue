@@ -142,7 +142,7 @@
                   province:vueThis.province,
                   city:vueThis.city,
                   district:vueThis.district
-                }
+                },msg:""
               });
               mui.back();
             }

@@ -6,6 +6,7 @@
         .search-item(:class="{active: pageFlag === 1}", @tap="jumpTo(1)") 查建筑师
         .search-item(:class="{active: pageFlag === 2}", @tap="jumpTo(2)") 资质查企业
     .mui-content
+      loading(ref="loading")
       .content-wrapper
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
@@ -17,17 +18,18 @@
                     i.iconfont.icon-SEARCH
                 .search-result 某招标共收录建筑企业{{companyData.total}}家
                 .com-group
-                  .com-item(v-for="item in companyData.result", @tap="openWindow('companyDetail',{rid:item.rid})")
-                    .com-name {{item.company_name}}
-                    .com-sign
-                      span 资质:{{item.qualify_num}}
-                      span 建造师:{{item.builder_num}}
-                      span 中标:{{item.tender_sucess_num}}
-                      span.fr 最近中标:{{item.tender_last_date}}
-                    .com-records
-                      span(v-for="sign in item.province_list")
-                        i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
-                        span {{sign.name}}
+                  transition-group(name="domItem")
+                    .com-item(v-for="item in companyData.result", :key="item.rid" ,@tap="openDetail('companyDetail',{rid:item.rid})")
+                      .com-name {{item.company_name}}
+                      .com-sign
+                        span 资质:{{item.qualify_num}}
+                        span 建造师:{{item.builder_num}}
+                        span 中标:{{item.tender_sucess_num}}
+                        span.fr 最近中标:{{item.tender_last_date}}
+                      .com-records
+                        span(v-for="sign in item.province_list")
+                          i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
+                          span {{sign.name}}
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page2
               .scroll-box
@@ -37,21 +39,22 @@
                     i.iconfont.icon-SEARCH
                 .search-result 某招标共收录建造师{{builderData.total}}名
                 .bui-group
-                  .bui-item(v-for="item in builderData.result", @tap="openWindow('builderDetail',{rid:item.rid})")
-                    .bui-top
-                      .bui-name {{item.user_name}}
-                      .bui-id 注册号:{{item.register_no}}
-                      div 中标数量:{{item.tender_sucess_num}}
-                    .bui-mid
-                      span.bui-sign 二级注册建造师
-                      span.fr
-                        span 专业数:{{item.professional_num}}
-                        span 最近中标:{{item.tender_last_date}}
-                    .bui-company {{item.company_name}}
-                    .bui-records
-                      span(v-for="sign in item.province_list")
-                        i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
-                        span {{sign.name}}
+                  transition-group(name="domItem")
+                    .bui-item(v-for="item in builderData.result", :key="item.rid" , @tap="openDetail('builderDetail',{rid:item.rid})")
+                      .bui-top
+                        .bui-name {{item.user_name}}
+                        .bui-id 注册号:{{item.register_no}}
+                        div 中标数量:{{item.tender_sucess_num}}
+                      .bui-mid
+                        span.bui-sign 二级注册建造师
+                        span.fr
+                          span 专业数:{{item.professional_num}}
+                          span 最近中标:{{item.tender_last_date}}
+                      .bui-company {{item.company_name}}
+                      .bui-records
+                        span(v-for="sign in item.province_list")
+                          i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
+                          span {{sign.name}}
           .content-page(@swiperight="contentSwiperight()")
             ul.media-view
               li.media
@@ -101,12 +104,13 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import loading from '../../components/loading'
 
   export default {
     name: 'selectlocation',
     data() {
       return {
-        pageFlag: 2,
+        pageFlag: 0,
         companyData: {},//建筑企业信息
         builderData: {},//建造师信息
         province: {//省份选择
@@ -118,8 +122,31 @@
         categoryData: [],
       }
     },
+    components: {
+      loading: loading
+    },
     mounted() {
+      this.getData();
       let vueThis = this;
+
+      mui.plusReady(() => {
+        mui.preload({
+          url: './searchCompany.html',
+          id: 'searchCompany'
+        });
+        mui.preload({
+          url: './searchBuilder.html',
+          id: 'searchBuilder'
+        });
+        mui.preload({
+          url: './builderDetail.html',
+          id: 'builderDetail'
+        });
+        mui.preload({
+          url: './companyDetail.html',
+          id: 'companyDetail'
+        })
+      });
       mui.init({
         pullRefresh: [{
           container: '#page1',
@@ -171,17 +198,18 @@
       });
       window.addEventListener('chooseCategory', (e) => {
         vueThis.categoryData = e.detail.categoryData;
-      })
+      });
     },
     created() {
-      this.getData();
     },
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading.show();
         http({
           url: api.search_company,
           success: (data) => {
+            this.$refs.loading.hide();
             this.companyData = data;
           }
         });
@@ -199,7 +227,17 @@
         this.conditionCategory = key
       }
       ,
-      openWindow: myMethods.openWindow,
+      openWindow: myMethods.openWindow,//跳转详情
+      openDetail(url,data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~')
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
+      },
       //页面切换
       jumpTo(key) {
         this.pageFlag = key;
@@ -221,22 +259,22 @@
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },//查询事件
-      search(){
-        let data ={
-          province:this.province.name,
-          company_type:this.condition,
-          filter_type:this.conditionCategory,
-          qualify_filter:[],
+      search() {
+        let data = {
+          province: this.province.name,
+          company_type: this.condition,
+          filter_type: this.conditionCategory,
+          qualify_filter: [],
         };
         let categoryData = this.categoryData;
-        categoryData.forEach((item,index)=>{
-          data.qualify_filter[index]={
-            category:item.two,
-            level:item.three,
-            name:item.four,
+        categoryData.forEach((item, index) => {
+          data.qualify_filter[index] = {
+            category: item.two,
+            level: item.three,
+            name: item.four,
           }
         });
-        this.openWindow('searchFilterCompany',data);
+        this.openWindow('searchFilterCompany', data);
       }
     }
   }

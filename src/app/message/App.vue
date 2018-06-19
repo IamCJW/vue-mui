@@ -9,39 +9,42 @@
           span 系统消息&nbsp;
           i.iconfont(@tap="showFilter()", :class="[filterMsg.flag &&  pageFlag === 1 ? 'icon-TRIANGLE-copy':'icon-TRIANGLE']")
     .mui-content
-      .content-wrapper
+      loading(ref="loading")
+      .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
             .scroll-wrapper#page1
               .scroll-box
                 ul.media-view
-                  li.media(v-for="(item,index) in subscribeData.data", :class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)", @tap="goToDetail(msg_type,rid)")
-                    .media-content
-                      .module-top.overflow-auto
-                        .fl {{item.msg_type_text}} / {{item.info_type}}
-                        .fr
-                          i.iconfont.icon-time
-                          span {{item.info_date}}
-                      .module-content {{item.title}}
+                  transition-group(name="domItem")
+                    li.media(v-for="(item,index) in subscribeData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)", @tap="goToDetail(item.msg_type,item.rid)")
+                      .media-content
+                        .module-top.overflow-auto
+                          .fl {{item.msg_type_text}} / {{item.info_type}}
+                          .fr
+                            i.iconfont.icon-time
+                            span {{item.info_date}}
+                        .module-content {{item.title}}
           .content-page(@swiperight="contentSwiperight()")
             .scroll-wrapper#page2
               .scroll-box
                 ul.media-view
-                  li.media(v-for="(item,index) in systemData.data", :class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,0)")
-                    .media-content
-                      .module-top.overflow-auto
-                        .fl {{item.msg_type_text}}
-                        .fr
-                          i.iconfont.icon-time
-                          span {{item.info_date}}
-                      .module-content {{item.title}}
-    .type-message.mask(v-if="filterMsg.flag", @tap="showFilter")
-      .popout
-        .filter-box
-          .module(v-if="pageFlag === 0")
-            button(v-for="item in filterMsg.data.subscribeData", @tap.stop="selectFilter(item.value)", :class="{active:filterMsg.subscribeFlag === item.value}") {{item.key}}
-          .module(v-if="pageFlag === 1")
-            button(v-for="item in filterMsg.data.systemData", @tap.stop="selectFilter(item.value)", :class="{active:filterMsg.systemFlag === item.value}") {{item.key}}
+                  transition-group(name="domItem")
+                    li.media(v-for="(item,index) in systemData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,0)")
+                      .media-content
+                        .module-top.overflow-auto
+                          .fl {{item.msg_type_text}}
+                          .fr
+                            i.iconfont.icon-time
+                            span {{item.info_date}}
+                        .module-content {{item.title}}
+        .type-message.mask(v-if="filterMsg.flag", @tap="showFilter")
+          .popout
+            .filter-box
+              .module(v-if="pageFlag === 0")
+                button(v-for="item in filterMsg.data.subscribeData", @tap.stop="selectFilter(item.value)", :class="{active:filterMsg.subscribeFlag === item.value}") {{item.key}}
+              .module(v-if="pageFlag === 1")
+                button(v-for="item in filterMsg.data.systemData", @tap.stop="selectFilter(item.value)", :class="{active:filterMsg.systemFlag === item.value}") {{item.key}}
 </template>
 <style lang="stylus" scoped>
   @import "message.styl"
@@ -52,11 +55,12 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-
+  import loading from '../../components/loading'
   export default {
     name: 'message',
     data() {
       return {
+        dataLock:false,
         pageFlag: 0,
         filterMsg: {
           flag: false,
@@ -67,7 +71,7 @@
               key: '建造师动态',
               value: 3
             }, {key: '业主动态', value: 4}],
-            systemData: [{key: '全部', value: 0}, {key: '系统通知', value: 1}, {key: '订单通知', value: 2}]
+            systemData: [{key: '全部', value: 0}, {key: '系统通知', value: 5}, {key: '订单通知', value: 6}]
           }
         },
         subscribeData: {
@@ -79,6 +83,9 @@
           data: {}
         }
       }
+    },
+    components:{
+      loading:loading
     },
     mounted() {
       let vueThis = this;
@@ -96,6 +103,7 @@
                 url: api.message_subscribe_notify,
                 data: {
                   cur_page: vueThis.subscribeData.pageNum,
+                  msg_type: vueThis.filterMsg.subscribeFlag,
                 }, success: (data) => {
                   vueThis.subscribeData.data = vueThis.subscribeData.data.concat(data.result);
                   if (data.total_page === vueThis.subscribeData.pageNum) {
@@ -117,6 +125,7 @@
                 url: api.message_system_notify,
                 data: {
                   cur_page: vueThis.systemData.pageNum,
+                  msg_type: vueThis.filterMsg.systemFlag,
                 }, success: (data) => {
                   vueThis.systemData.data = vueThis.systemData.data.concat(data.result);
                   if (data.total_page === vueThis.systemData.pageNum) {
@@ -131,18 +140,21 @@
         }]
       });
       this.jumpTo(this.pageFlag);
+      this.getData();
     },
     created() {
-      this.getData();
+
     },
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading.show();
         http({
           url: api.message_subscribe_notify,
           success: (data) => {
             this.subscribeData.data = data.result;
-            console.log(this.subscribeData)
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         });
         http({
@@ -196,16 +208,20 @@
         this.filterMsg.flag = !this.filterMsg.flag;
       },
       selectFilter(key) {
-        console.log(this.filterMsg.flag)
+        this.$refs.loading.show();
         this.filterMsg.flag = !this.filterMsg.flag;
-        console.log(this.filterMsg.flag)
         if (this.pageFlag === 0 && this.filterMsg.subscribeFlag !== key) {
           this.filterMsg.subscribeFlag = key;
           http({
             url: api.message_subscribe_notify,
             data: {msg_type: key},
             success: (data) => {
+              this.subscribeData={
+                pageNum: 1,
+                  data: {}
+              };
               this.subscribeData.data = data.result;
+              this.$refs.loading.hide();
             }
           });
         } else if (this.pageFlag === 1 && this.filterMsg.systemFlag !== key) {
@@ -214,7 +230,12 @@
             url: api.message_system_notify,
             data: {msg_type: key},
             success: (data) => {
+              this.systemData={
+                pageNum: 1,
+                data: {}
+              };
               this.systemData.data = data.result;
+              this.$refs.loading.hide();
             }
           });
         }
@@ -224,16 +245,16 @@
         let id = rid;
         switch (type) {
           case 1:
-            openWindow('detail',{rid:id});
+            this.openWindow('detail',{rid:id});
             break;
           case 2:
-            openWindow('companyDetail',{rid:id});
+            this.openWindow('companyDetail',{rid:id});
             break;
           case 3:
-            openWindow('builderDetail',{rid:id});
+            this.openWindow('builderDetail',{rid:id});
             break;
           case 4:
-            openWindow('companyDetail',{rid:id});
+            this.openWindow('companyDetail',{rid:id});
             break;
         }
       }

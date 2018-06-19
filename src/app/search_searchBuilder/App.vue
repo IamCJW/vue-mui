@@ -7,12 +7,16 @@
         input(placeholder="请输入建造职师或证书号" v-model="message")
       span.search(@tap="search()") 搜索
     .mui-content
-      .pro-group
-        .scroll-wrapper#companyGroup
+      loading(ref="loading")
+      .pro-group(v-show="dataLock")
+        .none(v-show="builderData.result.length === 0")
+          i.iconfont.icon-jianzhuqiye
+          span 暂无该词条信息~
+        .scroll-wrapper#companyGroup(v-show="builderData.result.length !== 0")
           .scroll-box
             .search-result(v-if="total") 某招标共收录建筑企业{{builderData.total}}家
             .bui-group
-              .bui-item(v-for="item in builderData.result",@tap="openWindow('builderDetail',{rid:item.rid})")
+              .bui-item(v-for="item in builderData.result", @tap="openDetail('builderDetail',{rid:item.rid})")
                 .bui-top
                   .bui-name {{item.user_name}}
                   .bui-id 注册号:{{item.register_no}}
@@ -37,14 +41,21 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api'
+  import myMethods from '../../assets/js/methods'
+  import loading from "../../components/loading";
 
   export default {
     name: 'searchCompany',
+    components: {loading:loading},
     data() {
       return {
+        dataLock:false,
         total:false,
         message: '',
-        builderData: {}
+        builderData: {
+          cur_page:1,
+          result:[]
+        }
       }
     },
     mounted() {
@@ -77,23 +88,32 @@
     methods: {
       // 搜索事件
       search() {
+        mui('#companyGroup').pullRefresh().refresh(true);
+        this.$refs.loading.show();
+        this.dataLock = false;
         http({
           url: api.search_builder_search,
           data: {search: this.message},
           success: (data) => {
             this.total = true;
-            this.builderData = data
+            this.builderData = data;
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         })
       },
       // 跳转页面
-      openWindow(route, data) {
-        mui.openWindow({
-          url: `./${route}.html`,
-          id: route,
-          extras: data
-        })
-      }
+      openWindow: myMethods.openWindow,//跳转详情
+      openDetail(url, data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~')
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
+      },
     },
   }
 </script>

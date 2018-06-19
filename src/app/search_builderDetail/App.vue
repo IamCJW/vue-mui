@@ -2,16 +2,17 @@
   #app
     header.header-nav
       span.mui-action-back.iconfont.icon-return
-      .header-title {{baseData.user_name}}
+      .header-title {{baseData.user_name  || '姓名'}}
       .hide-module
         .modoule-top
           .user-head
             i.iconfont.icon-Avatar
-          .user-sign {{baseData.level}}
+          .user-sign {{baseData.level  || '建造师等级'}}
           .user-focus(@tap="follow", :class="[followed ? '':'bg-gary']") {{followed?'已关注':'关注'}}
           .user-share 分享
     .mui-content
-      .content-page
+      loading(ref="loading")
+      .content-page(v-if="dataLock")
         .scroll-wrapper#builderTender
           .scroll-box
             .cell-row
@@ -20,7 +21,6 @@
                   div.overflow-auto
                     .fl.text-color-black 执业印章号
                     .fr {{baseData.register_no}}
-
                 .module2(v-for="(item,index) in baseData.professional_list")
                   div.text-color-black.listTitle(v-if="index === 0") 证书列表
                   div.overflow-auto
@@ -70,11 +70,12 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
-
+  import loading from "../../components/loading";
   export default {
     name: 'builderDetail',
     data() {
       return {
+        dataLock:false,
         rid:'',
         baseData: {},
         builderTenderData: {
@@ -84,13 +85,15 @@
         followed:false
       }
     },
+    components:{
+      loading:loading
+    },
     mounted() {
-      this.getData();
       let vueThis = this;
-      mui.plusReady(()=>{
-        let data = myMethods.getMuiExtras();
-        this.rid = data.rid;
-        this.getData();
+      window.addEventListener('getData',(e)=>{
+        vueThis.rid = e.detail.rid;
+        vueThis.dataLock = false;
+        vueThis.getData();
       });
       mui.init({
         pullRefresh: [{
@@ -124,6 +127,12 @@
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading.show();
+        this.baseData={};
+        this.builderTenderData={
+          pageNum: 1,
+            data: {}
+        };
         http({
           url: api.search_builder_detail,
           data: {rid: this.rid},
@@ -131,6 +140,8 @@
             this.baseData = data;
             this.builderTenderData.data = data.tender_success_list;
             this.followed = data.followed;
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         })
       },//关注按钮

@@ -18,7 +18,7 @@
         button.home-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 更多信息
     .mui-content
       loading(ref="loading")
-      .content-wrapper
+      .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
             .scroll-wrapper#page1
@@ -28,25 +28,26 @@
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex0.data", @tap="openDetail({rid:item.rid,type:1})")
-                    .pro-time
-                      i.iconfont.icon-time
-                      span  &nbsp;{{item.info_date}}
-                    .pro-content
-                      .pro-main
-                        .pro-name.mui-ellipsis-2 {{item.name}}
-                        .pro-main-sign.mui-ellipsis
-                          span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
-                            i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
-                            span &nbsp;{{item.tender_type}}
-                          span.pro-location {{item.province}}
-                            template(v-if="item.city") / {{item.city}}
-                              template(v-if='item.district')  / {{item.district}}
-                      .pro-assist
-                        .pro-endTime {{item.end_datetime}}
-                        .pro-price
-                          span {{item.amount}}
-                          | 万
+                  transition-group(name='domItem')
+                    .pro-item(v-for="item in pageIndex0.data", :key="item.rid" , @tap="openDetail({rid:item.rid,type:1})")
+                      .pro-time
+                        i.iconfont.icon-time
+                        span  &nbsp;{{item.info_date}}
+                      .pro-content
+                        .pro-main
+                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-main-sign.mui-ellipsis
+                            span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
+                              span &nbsp;{{item.tender_type}}
+                            span.pro-location {{item.province}}
+                              template(v-if="item.city") / {{item.city}}
+                                template(v-if='item.district')  / {{item.district}}
+                        .pro-assist
+                          .pro-endTime {{item.end_datetime}}
+                          .pro-price
+                            span {{item.amount}}
+                            | 万
           //公告
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page2
@@ -56,24 +57,25 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex1.data", @tap="openDetail({rid:item.rid,type:1})")
-                    .pro-time
-                      i.iconfont.icon-time
-                      span  &nbsp;{{item.info_date}}
-                    .pro-content
-                      .pro-main
-                        .pro-name.mui-ellipsis-2 {{item.name}}
-                        .pro-main-sign.mui-ellipsis
-                          span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
-                            i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
-                            span &nbsp;{{item.tender_type}}
-                          span.pro-location {{item.province}} / {{item.city}}
-                            template(v-if='item.district')  / {{item.district}}
-                      .pro-assist
-                        .pro-endTime {{item.end_datetime}}
-                        .pro-price
-                          span {{item.amount}}
-                          | 万
+                  transition-group(name='domItem')
+                    .pro-item(v-for="item in pageIndex1.data", :key="item.rid" ,@tap="openDetail({rid:item.rid,type:1})")
+                      .pro-time
+                        i.iconfont.icon-time
+                        span  &nbsp;{{item.info_date}}
+                      .pro-content
+                        .pro-main
+                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-main-sign.mui-ellipsis
+                            span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
+                              span &nbsp;{{item.tender_type}}
+                            span.pro-location {{item.province}} / {{item.city}}
+                              template(v-if='item.district')  / {{item.district}}
+                        .pro-assist
+                          .pro-endTime {{item.end_datetime}}
+                          .pro-price
+                            span {{item.amount}}
+                            | 万
           //中标
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page3
@@ -83,24 +85,25 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in pageIndex2.data", @tap="openDetail({rid:item.rid,type:2})")
-                    .pro-time
-                      i.iconfont.icon-time
-                      span  &nbsp;{{item.info_date}}
-                    .pro-content
-                      .pro-main
-                        .pro-name.mui-ellipsis-2 {{item.name}}
-                        .pro-main-sign
-                          span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
-                            i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
-                            span &nbsp;{{item.tender_type}}
-                          span.pro-location {{item.company_name}}
-                      .pro-assist
-                        .pro-price
-                          span {{item.tender_je}}
-                          | 万
-                        .pro-endTime {{item.province}} / {{item.city}}
-                          template(v-if='item.district')  / {{item.district}}
+                  transition-group(name='domItem')
+                    .pro-item(v-for="item in pageIndex2.data", :key="item.rid"  , @tap="openDetail({rid:item.rid,type:2})")
+                      .pro-time
+                        i.iconfont.icon-time
+                        span  &nbsp;{{item.info_date}}
+                      .pro-content
+                        .pro-main
+                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-main-sign
+                            span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
+                              span &nbsp;{{item.tender_type}}
+                            span.pro-location {{item.company_name}}
+                        .pro-assist
+                          .pro-price
+                            span {{item.tender_je}}
+                            | 万
+                          .pro-endTime {{item.province}} / {{item.city}}
+                            template(v-if='item.district')  / {{item.district}}
           //更多
           .content-page(@swiperight="contentSwiperight()")
             .scroll-wrapper#page4
@@ -110,20 +113,21 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item.more(v-for='item in pageIndex3.data', @tap="openDetail({rid:item.rid,type:3})")
-                    .pro-time
-                      i.iconfont.icon-time
-                      span  &nbsp;{{item.info_date}}
-                    .pro-content
-                      .pro-assist
-                        div.pro-style(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标'}")
-                          i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标'}")
-                          span &nbsp;{{item.info_type}}
-                      .pro-main
-                        .pro-name.mui-ellipsis-2 {{item.name}}
-                        .pro-main-sign
-                          span.pro-location {{item.province}} / {{item.city}}
-                            template(v-if='item.district')  / {{item.district}}
+                  transition-group(name='domItem')
+                    .pro-item.more(v-for='item in pageIndex3.data', :key="item.rid", @tap="openDetail({rid:item.rid,type:3})")
+                      .pro-time
+                        i.iconfont.icon-time
+                        span  &nbsp;{{item.info_date}}
+                      .pro-content
+                        .pro-assist
+                          div.pro-style(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标'}")
+                            i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标'}")
+                            span &nbsp;{{item.info_type}}
+                        .pro-main
+                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-main-sign
+                            span.pro-location {{item.province}} / {{item.city}}
+                              template(v-if='item.district')  / {{item.district}}
     //筛选
     transition(name='filter')
       .mask(v-if="filterFlag")
@@ -175,6 +179,7 @@
     name: 'home',
     data() {
       return {
+        dataLock:false,
         iconMsg: {
           "监理": {
             iconClass: "icon-SUPERVISION"
@@ -247,7 +252,8 @@
             this.pageIndex1.data = data.tender_list;
             this.pageIndex2.data = data.success_tender_list;
             this.pageIndex3.data = data.more_list;
-            // this.$refs.loading.hide();
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         });
         http({

@@ -14,7 +14,8 @@
         span.detail-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 工商信息
         span.detail-bar-item(@tap="jumpTo(4)", :class="{active: pageKey===4}") 法律讼诉
     .mui-content
-      .content-wrapper
+      loading(ref="loading")
+      .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           //基本信息
           .content-page(@swipeleft="contentSwipeleft()")
@@ -86,8 +87,6 @@
                           span {{item.tender_je}}
                           | 万
                         .pro-endTime {{item.builder_name}}
-
-
           //建造师
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper.cell-row#builder
@@ -254,11 +253,13 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
-
+  import loading from "../../components/loading";
   export default {
     name: 'companyDetail',
+    components: {loading:loading},
     data() {
       return {
+        dataLock:false,
         rid: '',
         followed: false,
         menuStatus: false,//菜单状态
@@ -292,10 +293,10 @@
     },
     mounted() {
       let vueThis = this;
-      mui.plusReady(() => {
-        let muiData = myMethods.getMuiExtras();
-        this.rid = muiData.rid;
-        this.getData();
+      window.addEventListener('getData',(e) => {
+        vueThis.dataLock = false;
+        vueThis.rid = e.detail.rid;
+        vueThis.getData();
       });
       this.jumpTo(this.pageKey);
       mui.init({
@@ -377,6 +378,7 @@
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading.show();
         http({
           url: api.search_company_detail,
           data: {code: this.rid},
@@ -389,6 +391,8 @@
             this.tenderSuccessData.data = data.tender_success_list;
             this.builderData.data = data.builder_list;
             this.followed = data.followed;
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         })
       },

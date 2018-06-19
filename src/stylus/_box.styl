@@ -1,11 +1,24 @@
 .fr
-  float right!important
+  float right !important
+
 .fl
-  float left!important
+  float left !important
+
 .overflow-auto
-  overflow auto!important
+  overflow auto !important
+
 .border-none
-  border none!important
+  border none !important
 
 .mr-cell
   margin-right $cell-left-right-space
+
+//vue动画
+.domItem-enter-active, .domItem-leave-active {
+  transition: opacity .3s;
+}
+
+.domItem-enter, .domItem-leave-to /* .fade-leave-active below version 2.1.8 */
+{
+  opacity 0
+}

@@ -9,6 +9,7 @@
     width 100%
     text-align center
     margin-top .1rem
+    z-index $z-index-navigation
     i
       display-inline-flex()
       background #fff
@@ -18,8 +19,9 @@
       width .3rem
       color #04a3ee
       font-size: .24rem
+      overflow hidden
       &:before
-        animation: rotateAnimation 1s infinite
+        animation: rotateAnimation .3s infinite
   @keyframes rotateAnimation
     0%
       transform rotate(0deg)

@@ -4,35 +4,34 @@
       span.mui-action-back.iconfont.icon-return
       .header-title 订阅管理
     .mui-content
-      template(v-if="subscriptionData.data.length === 0")
-        .none
-          i.iconfont.icon-subscription
-          span 暂无订阅信息，请先添加订阅~
+      loading(ref="loading")
+      .none(v-show="dataLock && subscriptionData.data.length === 0")
+        i.iconfont.icon-subscription
+        span 暂无订阅信息，请先添加订阅~
         button.mid-btn(@tap="openWindow('subscription_add')") 添加订阅
-      template(v-show="subscriptionData.data.length !== 0")
-        .content-wrapper
-          .mui-wrapper#page1
-            .mui-scroll
-              .content
-                ul.media-view
-                  li.media.media-more(v-for="(item,index) in subscriptionData.data")
-                    .media-content
-                      .media-lable
-                        span 订阅{{index+1}}
-                      .media-del
-                        i.iconfont.icon-Rubbish
-                        switchBox(:status="switchData['status'+item.id]", :key-name="'status'+item.id", @changeStatus="upStatus")
-                    .media-alert
-                      ul.media-view
-                        li.media(@tap="openWindow('subscription_selectLocation',item)")
-                          .media-content.iconfont.icon-right {{item.province+item.city+item.district}}
-                        li.media(@tap="openWindow('subscription_selectQualification',item)")
-                          .media-content.iconfont.icon-right
-                            .qualify-group
-                              .qualify-title
-                                span 订阅资质
-                              .qualify-item(v-for="quanilify in item.quanlify_info")
-                                span {{quanilify.category+quanilify.name}}-{{quanilify.level}}
+      .content-wrapper(v-show="dataLock && subscriptionData.data.length !== 0")
+        .mui-wrapper#page1
+          .mui-scroll
+            .content
+              ul.media-view
+                li.media.media-more(v-for="(item,index) in subscriptionData.data")
+                  .media-content
+                    .media-lable
+                      span 订阅{{index+1}}
+                    .media-del
+                      i.iconfont.icon-Rubbish(@tap="subscriptionDel(item.id)")
+                      switchBox(:status="switchData['status'+item.id]", :key-name="'status'+item.id", @changeStatus="upStatus")
+                  .media-alert
+                    ul.media-view
+                      li.media(@tap="openWindow('subscription_selectLocation',item)")
+                        .media-content.iconfont.icon-right {{item.province+item.city+item.district}}
+                      li.media.border-none(@tap="openWindow('subscription_selectQualification',item)")
+                        .media-content.iconfont.icon-right
+                          .qualify-group
+                            .qualify-title
+                              span 订阅资质
+                            .qualify-item(v-for="quanilify in item.quanlify_info")
+                              span {{quanilify.category+quanilify.name}}-{{quanilify.level}}
         .fixed-bottom-btn(@tap="openWindow('subscription_add')") 添加订阅
 </template>
 <style lang="stylus" scoped>
@@ -45,11 +44,13 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import switchBox from '../../components/switch.vue'
+  import loading from '../../components/loading'
 
   export default {
     name: 'subscription',
     data() {
       return {
+        dataLock: false,
         subscriptionData: {
           pageNum: 1,
           data: []
@@ -58,16 +59,20 @@
     },
     components: {
       switchBox: switchBox,
+      loading: loading,
     },
     mounted() {
       this.getData();
       window.addEventListener('chooseLocation', (e) => {
         mui.toast(e.detail.msg);
+        this.getData();
       });
       window.addEventListener('chooseQualification', (e) => {
+        this.getData();
         mui.toast(e.detail.msg);
       });
-      window.addEventListener('addSuccess',(e)=>{
+      window.addEventListener('addSuccess', (e) => {
+        this.getData();
         mui.toast(e.detail.msg);
       });
       let vueThis = this;
@@ -103,17 +108,20 @@
     methods: {
       //数据请求
       getData() {
-        this.subscriptionData = {
-          pageNum: 1,
-          data: []
-        };
+        this.$refs.loading.show();
         http({
           url: api.member_subscribe,
           success: (data) => {
+            this.subscriptionData = {
+              pageNum: 1,
+              data: []
+            };
             this.subscriptionData.data = data.result;
             data.result.forEach((item) => {
               this.$set(this.switchData, `status${item.id}`, item.status);
-            })
+            });
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         });
       },
@@ -123,15 +131,22 @@
       },
       openWindow: myMethods.openWindow,
       //订阅删除
-      subscriptionDel() {
-        http({
-          url: api.member_subscribe,
-          method: 'post',
-          data: {},
-          success: (data) => {
-            this.getData()
+      subscriptionDel(id) {
+
+        mui.confirm()
+        mui.confirm('确定删除该订阅？', ' ', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
+            http({
+              url: api.member_subscribe,
+              method: 'delete',
+              data: {id:id},
+              success: (data) => {
+                this.getData();
+                mui.toast('删除成功')
+              }
+            });
           }
-        });
+        },'div');
       },
     }
   }
