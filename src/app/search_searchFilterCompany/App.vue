@@ -4,25 +4,27 @@
       span.mui-action-back.iconfont.icon-return
       .header-title 查询结果
     .mui-content
-      .none(v-if="companyData.total === 0")
-        i.iconfont.icon-jianzhuqiye
-        span 暂无此类型公司，请重新筛选条件~
-      .pro-group(v-if="companyData.total !== 0")
-        .scroll-wrapper#companyGroup
+      loading(ref="loading")
+      .pro-group(v-show="dataLock")
+        .none(v-show="companyData.total === 0")
+          i.iconfont.icon-jianzhuqiye
+          span 暂无此类型公司，请重新筛选条件~
+        .scroll-wrapper#companyGroup(v-show="companyData.total !== 0")
           .scroll-box
             .search-result(v-if="total") 共收录该条件建筑企业{{companyData.total}}家
             .com-group
-              .com-item(v-for="item in companyData.result", @tap="openWindow('companyDetail',{rid:item.rid})")
-                .com-name {{item.company_name}}
-                .com-sign
-                  span 资质:{{item.qualify_num}}
-                  span 建造师:{{item.builder_num}}
-                  span 中标:{{item.tender_sucess_num}}
-                  span.fr 最近中标:{{item.tender_last_date}}
-                .com-records
-                  span(v-for="sign in item.province_list")
-                    i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
-                    span {{sign.name}}
+              transition-group(name="domItem")
+                .com-item(v-for="item in companyData.result", :key="item.rid" , @tap="openDetail('companyDetail',{rid:item.rid})")
+                  .com-name {{item.company_name}}
+                  .com-sign
+                    span 资质:{{item.qualify_num}}
+                    span 建造师:{{item.builder_num}}
+                    span 中标:{{item.tender_sucess_num}}
+                    span.fr 最近中标:{{item.tender_last_date}}
+                  .com-records
+                    span(v-for="sign in item.province_list")
+                      i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
+                      span {{sign.name}}
 
 </template>
 <style lang="stylus" scoped>
@@ -34,11 +36,14 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api'
   import myMethods from '../../assets/js/methods'
+  import loading from "../../components/loading";
 
   export default {
     name: 'searchFilterCompany',
+    components: {loading: loading},
     data() {
       return {
+        dataLock: false,
         total: false,
         message: '',
         companyData: {
@@ -50,10 +55,9 @@
     },
     mounted() {
       let vueThis = this;
-      mui.plusReady(() => {
-        let muiData = myMethods.getMuiExtras();
-        this.muiData = muiData;
-        this.getData(muiData);
+      window.addEventListener('getData', (e) => {
+        vueThis.muiData = e.detail;
+        vueThis.getData();
         mui.init({
           pullRefresh: [{
             container: '#companyGroup',
@@ -87,18 +91,34 @@
     methods: {
       //获取数据
       getData(data) {
+        this.$refs.loading.show();
+        this.dataLock = false;
         http({
           url: api.search_company_qualify_search,
           // data: data,
-          method:'post',
+          method: 'post',
           success: (data) => {
             this.total = true;
             this.companyData = data;
+            this.dataLock = true;
+            this.$refs.loading.hide();
+            mui('#companyGroup').pullRefresh().scrollTo(0,0,100);
           }
         })
       },
       // 跳转页面
-      openWindow: myMethods.openWindow
+      openWindow: myMethods.openWindow,
+      //跳转详情
+      openDetail(url,data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~')
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
+      },
     },
   }
 </script>

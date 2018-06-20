@@ -52,19 +52,9 @@
 
     },
     created() {
-      this.getData();
+
     },
     methods: {
-      //数据请求
-      getData() {
-        http({
-          url: api.search_company,
-          success: (data) => {
-            this.companyData = data;
-          }
-        })
-      },//打开页面
-      openWindow: myMethods.openWindow,
       changePay(pay){
         this.needPay = pay
       },

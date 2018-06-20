@@ -9,72 +9,73 @@
       span.detail-bar-item(@tap="jumpTo(2)", :class="{active: pageKey===2}") 建筑企业
       span.detail-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 建造师
     .mui-content
+      loading(ref="loading")
       .content-wrapper
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
             .scroll-wrapper#page1
               .scroll-box
                 ul.media-view
-                  li.media(@tap="openWindow('searchProject')")
+                  li.media(@tap="openDetail('searchProject')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加项目关注
-                  li.media(v-for="item in project_follows.data", @tap="openWindow('detail',{rid:item.rid})")
+                  li.media(v-for="item in project_follows.data", @tap="openDetail('detail',{rid:item.rid})")
                     .media-content
                       .head
-                        i.iconfont.icon-SERVICE
+                        i.iconfont.icon-xiangmu
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap="follow(item.rid,1)") 取消关注
+                      button(@tap.stop="follow(item.rid,1)") 取消关注
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page2
               .scroll-box
                 ul.media-view
-                  li.media(@tap="openWindow('searchProject')")
+                  li.media(@tap="openDetail('searchProject')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加业主关注
-                  li.media(v-for="item in company_follows.data", @tap="openWindow('detail',{rid:item.rid})")
+                  li.media(v-for="item in company_follows.data", @tap="openDetail('companyDetail_own',{rid:item.rid})")
                     .media-content
                       .head
-                        i.iconfont.icon-SERVICE
+                        i.iconfont.icon-yezhu
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap="follow(item.rid,2)") 取消关注
+                      button(@tap.stop="follow(item.rid,2)") 取消关注
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page3
               .scroll-box
                 ul.media-view
-                  li.media(@tap="openWindow('searchCompany')")
+                  li.media(@tap="openDetail('searchCompany')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加建筑企业关注
-                  li.media(v-for="item in company_follows.data", @tap="openWindow('companyDetail',{rid:item.rid})")
+                  li.media(v-for="item in company_follows.data", @tap="openDetail('companyDetail',{rid:item.rid})")
                     .media-content
                       .head
-                        i.iconfont.icon-SERVICE
+                        i.iconfont.icon-jianzhuqiye
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap="follow(item.rid,3)") 取消关注
+                      button(@tap.stop="follow(item.rid,3)") 取消关注
           .content-page(@swiperight="contentSwiperight()")
             .scroll-wrapper#page4
               .scroll-box
                 ul.media-view
-                  li.media(@tap="openWindow('searchBuilder')")
+                  li.media(@tap="openDetail('searchBuilder')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加建造师关注
-                  li.media(v-for="item in builder_follows.data", @tap="openWindow('builderDetail',{rid:item.rid})")
+                  li.media(v-for="item in builder_follows.data", @tap="openDetail('builderDetail',{rid:item.rid})")
                     .media-content
                       .head
-                        i.iconfont.icon-anquanmao
+                        i.iconfont.icon-ren-copy
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap="follow(item.rid,4)") 取消关注
+                      button(@tap.stop="follow(item.rid,4)") 取消关注
 </template>
 <style lang="stylus" scoped>
   @import "follow.styl"
@@ -85,9 +86,11 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import loading from "../../components/loading";
 
   export default {
     name: 'coupon',
+    components: {loading},
     data() {
       return {
         pageKey: 0,
@@ -111,6 +114,31 @@
     },
     mounted() {
       let vueThis = this;
+      window.addEventListener('getData',()=>{
+        this.getData();
+        mui.plusReady(()=>{
+          mui.preload({
+            url: './builderDetail.html',
+            id: 'builderDetail'
+          });
+          mui.preload({
+            url: './companyDetail.html',
+            id: 'companyDetail'
+          });
+          mui.preload({
+            url: './companyDetail_own.html',
+            id: 'companyDetail_own'
+          });
+          mui.preload({
+            url: './searchCompany.html',
+            id: 'searchCompany'
+          });
+          mui.preload({
+            url: './searchBuilder.html',
+            id: 'searchBuilder'
+          });
+        })
+      });
       mui.init({
         pullRefresh: [{
           container: '#page1',
@@ -201,11 +229,11 @@
       this.jumpTo(this.pageKey);
     },
     created() {
-      this.getData();
     },
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading.show();
         this.builder_follows={
           pageNum: 1,
             data: []
@@ -229,6 +257,11 @@
             this.company_follows.data = data.company_follows;
             this.project_follows.data = data.project_follows;
             this.tender_follows.data = data.tender_follows;
+            mui('#page1').pullRefresh().scrollTo(0,0,100);
+            mui('#page2').pullRefresh().scrollTo(0,0,100);
+            mui('#page3').pullRefresh().scrollTo(0,0,100);
+            mui('#page4').pullRefresh().scrollTo(0,0,100);
+            this.$refs.loading.hide();
           }
         });
       },
@@ -268,6 +301,16 @@
         })
       },
       openWindow:myMethods.openWindow,
+      openDetail(url,data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~')
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
+      },
     }
   }
 </script>

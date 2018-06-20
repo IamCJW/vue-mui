@@ -11,6 +11,7 @@
       .content-wrapper
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
+            loading(ref="loading1")
             .coupon-group
               .none(v-if="!useData[0]")
                 i.iconfont.icon-coupon
@@ -29,6 +30,7 @@
                     .coupon-use 立即使用
                   .coupon-bottom 仅{{item.scope.province}}{{item.scope.city}}可用
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
+            loading(ref="loading2")
             .coupon-group.used
               .none(v-if="!usedData[0]")
                 i.iconfont.icon-coupon
@@ -46,6 +48,7 @@
                     .coupon-time {{item.start_date | dateFilter}} - {{item.end_date | dateFilter}}
                   .coupon-bottom 仅{{item.scope.province}}{{item.scope.city}}可用
           .content-page(@swiperight="contentSwiperight()")
+            loading(ref="loading3")
             .coupon-group.used.end
               .none(v-if="!endData[0]")
                 i.iconfont.icon-coupon
@@ -72,9 +75,10 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-
+  import loading from "../../components/loading"
   export default {
     name: 'coupon',
+    components: {loading},
     data() {
       return {
         pageKey:0,
@@ -84,7 +88,10 @@
       }
     },
     mounted() {
-
+      let vueThis = this;
+      window.addEventListener('getData',()=>{
+        vueThis.getData();
+      });
       mui.init({
 
       });
@@ -96,6 +103,9 @@
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading1.show();
+        this.$refs.loading2.show();
+        this.$refs.loading3.show();
         http({
           url: api.member_coupon,
           data:{
@@ -103,6 +113,7 @@
           },
           success: (data) => {
             this.useData = data;
+            this.$refs.loading1.hide();
           }
         });
         http({
@@ -112,6 +123,7 @@
           },
           success: (data) => {
             this.usedData = data;
+            this.$refs.loading2.hide();
           }
         });
         http({
@@ -121,6 +133,7 @@
           },
           success: (data) => {
             this.endData = data;
+            this.$refs.loading3.hide();
           }
         });
       },

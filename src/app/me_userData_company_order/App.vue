@@ -78,7 +78,7 @@
           success:()=>{
             let view = plus.webview.currentWebview().opener();
             mui.fire(view, 'addSuccess', {
-              msg: '修改成功'
+              msg: '添加成功成功'
             });
             mui.back();
           }

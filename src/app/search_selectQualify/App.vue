@@ -25,7 +25,7 @@
   @import "selectQualify.styl"
   .typeGroup
     position fixed
-    bottom 2rem
+    bottom 2.4rem
     background $main-color-x
     z-index 9999999
     width 100%
@@ -68,9 +68,9 @@
       mui.init({});
       this.getNation();
       let vueThis = this;
-      mui('body').on('tap', '.mui-poppicker-btn-cancel', () => {
+      mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
-      })
+      });
     },
     methods: {
       //资质设置内容/////////////////////////////////////////////////////////////////

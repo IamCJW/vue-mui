@@ -150,10 +150,10 @@
       },
     },
     mounted() {
-      this.getNation();
-      mui.plusReady(()=>{
-        this.subscription = myMethods.getMuiExtras;
-      })
+      window.addEventListener('getData',(e)=>{
+        this.subscription = e.detail;
+        this.getNation();
+      });
     }
   }
 </script>

@@ -13,7 +13,7 @@
             .media-value
               .user-head
                 img(:src="userHeadSrc")
-                input(type='file' accept='image/png,image/jpeg,image/jpg' @change="headChange($event)")
+                input(type='file', accept='image/png,image/jpeg,image/jpg', ref='imgFile' , @change="headChange($event)" )
         li.media
           .media-content
             .media-lable 姓名
@@ -31,7 +31,7 @@
             .media-lable 公司名称
             .media-value {{company_info.name || '公司名字设置'}}
         li.media
-          .media-content.iconfont.icon-right(@tap="openWindow('userData_selectQualifys')")
+          .media-content.iconfont.icon-right(@tap="openWindow('selectQualifys')")
             .media-lable 资质条件
             .media-value 条件设置
         li.media
@@ -49,6 +49,7 @@
       .popout
         vueCropper(ref="cropper", :fixed="option.fixed", :fixedNumber="option.fixedNumber", :img="option.img", :info="option.info", :autoCrop="option.autoCrop", :autoCropWidth="option.autoCropWidth", :canMove="option.canMove", :autoCropHeight="option.autoCropHeight", :outputSize="option.size", :outputType="option.outputType")
         button.saveHead(@tap="saveHead") 保存
+        button.saveHead.back(@tap="saveHeadBack") 取消
 </template>
 <style lang="stylus" scoped>
   @import "userData.styl"
@@ -66,6 +67,7 @@
     name: 'userData',
     data() {
       return {
+        imgFile:{},
         userHeadSrc: 'https://gss0.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/a2cc7cd98d1001e92c517af6b30e7bec55e797dd.jpg',
         name: '',
         gender: '',
@@ -93,12 +95,25 @@
     },
     mounted() {
       let vueThis = this;
+      window.addEventListener('getData',(e)=>{
+        this.getData();
+        mui.plusReady(()=>{
+          mui.preload({
+            url:'./userData_company.html',
+            id:'userData_company'
+          });
+          mui.preload({
+            url:'./selectQualifys.html',
+            id:'selectQualifys'
+          })
+        });
+      });
       window.addEventListener('chooseCompany',(e)=>{
         vueThis.company_info.name = e.detail.data.name;
       })
     },
     created() {
-      this.getData();
+
     },
     methods: {
       //数据请求
@@ -140,9 +155,14 @@
         reader.readAsDataURL(uploadFile);
         reader.onloadend = function () {
           vueThis.option.img = reader.result;
+          console.log(vueThis.option.img);
           vueThis.headEdit = true;
+          vueThis.$refs.imgFile.value = '';
         };
-      },//修改性别
+      },saveHeadBack(){
+        this.headEdit = false;
+      },
+      //修改性别
       changeGender() {
         let vueThis = this;
         let changSex = new mui.PopPicker();
@@ -166,7 +186,7 @@
             mui.toast('保存成功')
           }
         })
-      }
+      },
     }
   }
 </script>

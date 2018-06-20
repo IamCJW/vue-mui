@@ -4,10 +4,11 @@
       span.mui-action-back.iconfont.icon-return
       .header-title 订单公司
     .mui-content
-      .none(v-if="!companyData.length")
+      loading(ref="loading")
+      .none(v-if="!companyData.length && dataLock")
         i.iconfont.icon-jianzhuqiye
         span 您还未添加订单公司
-      template(v-if="companyData.length")
+      template(v-if="companyData.length && dataLock")
         .search-result 共{{companyData.length}}家公司
         ul.media-view
           li.media(v-for="(item,index) in companyData")
@@ -28,18 +29,27 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api'
   import myMethods from "../../assets/js/methods";
+  import loading from "../../components/loading";
 
   export default {
     name: 'orderCompany',
+    components: {loading},
     data() {
       return {
+        dataLock:false,
         companyData: {}
       }
     },
     mounted() {
-      let vueThis = this;
-      this.getData();
-      mui.init({});
+      window.addEventListener('getData',()=>{
+        this.getData();
+        mui.plusReady(()=>{
+          mui.preload({
+            url:'./userData_company_order.html',
+            id:'userData_company_order'
+          })
+        });
+      });
       window.addEventListener('addSuccess',()=>{
         this.getData();
       })
@@ -47,10 +57,14 @@
     methods: {
       // 获取基础数据
       getData() {
+        this.$refs.loading.show();
+        this.dataLock = false;
         http({
           url: api.member_order_company,
           success: (data) => {
-            this.companyData = data
+            this.companyData = data;
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         })
       },
@@ -71,7 +85,7 @@
       }
       ,
       // 跳转页面
-      openWindow:myMethods.openWindow()
+      openWindow:myMethods.openWindow
     },
   }
 </script>

@@ -60,7 +60,7 @@
               li.media
                 .media-content.iconfont.icon-right
                   div.media-lable 省份选择
-                  div.media-value(@tap="openWindow('selectProvince')")  {{province.name ? province.name : '请选择'}}
+                  div.media-value(@tap="openDetail('selectProvince')")  {{province.name ? province.name : '请选择'}}
               li.media
                 .media-content
                   div.media-lable 企业要求
@@ -77,7 +77,7 @@
               li.media
                 .media-content.iconfont.icon-right
                   div.media-lable 设置资历条件
-                  div.media-value(@tap="openWindow('selectQualify')") 请设置
+                  div.media-value(@tap="openDetail('selectQualify')") 请设置
             template(v-if="categoryData.length !== 0")
               ul.media-view.categoryData
                 li.media(v-for="item in categoryData")
@@ -145,6 +145,18 @@
         mui.preload({
           url: './companyDetail.html',
           id: 'companyDetail'
+        });
+        mui.preload({
+          url: './selectProvince.html',
+          id: 'selectProvince'
+        });
+        mui.preload({
+          url: './selectQualify.html',
+          id: 'selectQualify'
+        });
+        mui.preload({
+          url: './searchFilterCompany.html',
+          id: 'searchFilterCompany'
         })
       });
       mui.init({
@@ -228,7 +240,7 @@
       }
       ,
       openWindow: myMethods.openWindow,//跳转详情
-      openDetail(url,data) {
+      openDetail(url, data) {
         mui.plusReady(function () {
           let detailPage = plus.webview.getWebviewById(url);
           if (!detailPage) {
@@ -274,7 +286,9 @@
             name: item.four,
           }
         });
-        this.openWindow('searchFilterCompany', data);
+        let detailPage = plus.webview.getWebviewById('searchFilterCompany');
+        mui.fire(detailPage, 'getData', data);
+        myMethods.openWindow('searchFilterCompany');
       }
     }
   }

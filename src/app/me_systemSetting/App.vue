@@ -26,10 +26,10 @@
           .media-content.iconfont.icon-right
             .media-lable 检测新版本
             .media-value v1.0.0.0
-        li.media
+        li.media(@tap="localStorageClear")
           .media-content.iconfont.icon-right
             .media-lable 清理本地缓存
-            .media-value 12.9MB
+            .media-value {{localStorageLength || '正在计算'}}
       .fixed-bottom-btn(openWindow="openWindow('index')") 退出登录
 </template>
 <style lang="stylus" scoped>
@@ -38,6 +38,7 @@
 <script>
   /* global mui */
   /* global mui plus */
+  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
@@ -51,17 +52,15 @@
         notify_wx_message:0,
         notify_busy:0,
         is_wxbind:0,
+        localStorageLength:''
       }
     },
     components:{
       switchBox:switchBox
     },
     mounted() {
-
       mui.init({
-
       });
-
     },
     created() {
       this.getData();
@@ -69,6 +68,7 @@
     methods: {
       //数据请求
       getData() {
+        this.localStorageLengthGet();
         http({
           url: api.member_system_config,
           success: (data) => {
@@ -82,6 +82,20 @@
         this[data.key] = data.value;
       },
       openWindow:myMethods.openWindow,
+      localStorageClear(){
+        window.localStorage.clear();
+        this.localStorageLengthGet();
+        mui.toast('清理完毕');
+      },
+      localStorageLengthGet(){
+        let size = 0;
+        for(let item in window.localStorage) {
+          if(window.localStorage.hasOwnProperty(item)) {
+            size += window.localStorage.getItem(item).replace(/[\u0391-\uFFE5]/g,"aa").length;
+          }
+        }
+        this.localStorageLength = `${(size/1024/1024).toFixed(2)}MB`;
+      }
     }
   }
 </script>

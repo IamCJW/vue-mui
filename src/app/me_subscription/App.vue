@@ -8,7 +8,7 @@
       .none(v-show="dataLock && subscriptionData.data.length === 0")
         i.iconfont.icon-subscription
         span 暂无订阅信息，请先添加订阅~
-        button.mid-btn(@tap="openWindow('subscription_add')") 添加订阅
+        button.mid-btn(@tap="openDetail('subscription_add')") 添加订阅
       .content-wrapper(v-show="dataLock && subscriptionData.data.length !== 0")
         .mui-wrapper#page1
           .mui-scroll
@@ -23,16 +23,16 @@
                       switchBox(:status="switchData['status'+item.id]", :key-name="'status'+item.id", @changeStatus="upStatus")
                   .media-alert
                     ul.media-view
-                      li.media(@tap="openWindow('subscription_selectLocation',item)")
+                      li.media(@tap="openDetail('subscription_selectLocation',item)")
                         .media-content.iconfont.icon-right {{item.province+item.city+item.district}}
-                      li.media.border-none(@tap="openWindow('subscription_selectQualification',item)")
+                      li.media.border-none(@tap="openDetail('subscription_selectQualification',item)")
                         .media-content.iconfont.icon-right
                           .qualify-group
                             .qualify-title
                               span 订阅资质
                             .qualify-item(v-for="quanilify in item.quanlify_info")
                               span {{quanilify.category+quanilify.name}}-{{quanilify.level}}
-        .fixed-bottom-btn(@tap="openWindow('subscription_add')") 添加订阅
+        .fixed-bottom-btn(@tap="openDetail('subscription_add')") 添加订阅
 </template>
 <style lang="stylus" scoped>
   @import "subscription.styl"
@@ -62,7 +62,23 @@
       loading: loading,
     },
     mounted() {
-      this.getData();
+      window.addEventListener('getData',()=>{
+        this.getData();
+        mui.plusReady(()=>{
+          mui.preload({
+            url:'./subscription_add.html',
+            id:'subscription_add'
+          });
+          mui.preload({
+            url:'./subscription_selectLocation.html',
+            id:'subscription_selectLocation'
+          });
+          mui.preload({
+            url:'./subscription_selectQualification.html',
+            id:'subscription_selectQualification'
+          });
+        });
+      });
       window.addEventListener('chooseLocation', (e) => {
         mui.toast(e.detail.msg);
         this.getData();
@@ -109,6 +125,7 @@
       //数据请求
       getData() {
         this.$refs.loading.show();
+        this.dataLock = false;
         http({
           url: api.member_subscribe,
           success: (data) => {
@@ -122,6 +139,7 @@
             });
             this.$refs.loading.hide();
             this.dataLock = true;
+            mui('#page1').pullRefresh().scrollTo()
           }
         });
       },
@@ -130,9 +148,18 @@
         this.$set(this.switchData, data.key, data.value);
       },
       openWindow: myMethods.openWindow,
+      openDetail(url,data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~')
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
+      },
       //订阅删除
       subscriptionDel(id) {
-
         mui.confirm()
         mui.confirm('确定删除该订阅？', ' ', ['取消', '确定'], (e) => {
           if (e.index === 1) {

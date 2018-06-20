@@ -57,7 +57,6 @@
       }
     },
     mounted() {
-      this.getData();
       this.cityPicker = new mui.PopPicker({
         layer: 3
       });
@@ -67,10 +66,7 @@
 
     },
     methods: {
-      //数据请求
-      getData() {
-
-      },//打开页面
+      //打开页面
       openWindow: myMethods.openWindow,
       //更改默认地址
       changeDefault() {
@@ -87,17 +83,24 @@
       },
       //保存
       addressSave(){
+        let data = {
+          city: this.city,
+          contact_name: this.contact_name,
+          contact_tel: this.contact_tel,
+          district: this.district,
+          province: this.province,
+          street: this.street,
+          defaulted: this.defaulted,
+        };
+        for (let item in data){
+          if (data[item] === ''){
+            mui.toast('所有选项不能为空~');
+            return
+          }
+        }
         http({
           url:api.member_address,
-          data:{
-            city: this.city,
-            contact_name: this.contact_name,
-            contact_tel: this.contact_tel,
-            district: this.district,
-            province: this.province,
-            street: this.street,
-            defaulted: this.defaulted,
-          },
+          data:data,
           method:'post',
           success:()=>{
             let view = plus.webview.currentWebview().opener();

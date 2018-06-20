@@ -42,12 +42,12 @@
     },
     mounted() {
       let vueThis = this;
-      this.getData();
-      mui.plusReady(()=>{
-        this.subscription = plus.webview.currentWebview();
+      window.addEventListener('getData',(e)=>{
+        this.subscription = e.detail;
+        this.getData();
       });
       window.addEventListener('chooseCategory',()=>{
-        vueThis.getData();
+        this.getData();
       })
     },
     created() {

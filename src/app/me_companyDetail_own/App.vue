@@ -3,23 +3,16 @@
     header.detail-header
       .header-title
         span.mui-action-back.iconfont.icon-return
-        .detail-title {{baseData.company_name}}
-        .iconGroup
-          span.iconfont.icon-share
-          span.iconfont.icon-attention
+        .detail-title {{baseData.company_name || '公司名称'}}
+        span.iconfont.icon-MORES(@tap="menuShow(true)")
       .header-sign
-        span {{baseData.province}} / {{baseData.city}}
+        span {{baseData.province || '省份'}} / {{baseData.city || '城市'}}
     .mui-content
+      loading(ref='loading')
       .content-page
         .scroll-wrapper.cell-row#proGroup
           .scroll-box
             .pro-group
-              .filter-wrapper
-                .filter.fl
-                  span 共10个招标
-                .filter(@tap="popoutFilter(true,false)")
-                  span 筛选&nbsp;
-                  i.iconfont.icon-filter
               .pro-item(v-for="item in proData.data")
                 .pro-time
                   i.iconfont.icon-time
@@ -39,6 +32,15 @@
                     .pro-price
                       span {{item.amount}}
                       | 万
+      .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
+        .popout
+          .popout-arrow
+          .funitem
+            i.iconfont.icon-share
+            span 分享项目
+          .funitem.border-none(@tap="follow(followed)")
+            i.iconfont.icon-attention-copy(:class="[followed ? 'text-color-third' : '']")
+            span {{followed ? '已关注' : '关注项目'}}
 </template>
 <style lang="stylus" scoped>
   @import "companyDetail_own.styl"
@@ -46,24 +48,31 @@
 <script>
   /* global mui */
   /* global mui plus */
-  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import loading from '../../components/loading'
 
   export default {
     name: 'companyDetail',
     data() {
       return {
-        baseData:{},
+        menuStatus: false,//菜单状态
+        followed: false,
+        baseData: {},
         proData: {
           pageNum: 1,
           data: []
-        }
+        },
+        rid: ''
       }
     },
+    components: {loading},
     mounted() {
       let vueThis = this;
-      this.getData();
+      window.addEventListener('getData', (e) => {
+        this.rid = e.detail.rid;
+        this.getData();
+      });
       mui.init({
         pullRefresh: [{
           container: '#proGroup',
@@ -74,7 +83,7 @@
               http({
                 url: api.search_tender_company_list,
                 data: {
-                  code: '0000',//////////////////////////////////公司编码
+                  code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.proData.pageNum
                 }, success: (data) => {
                   vueThis.proData.data = vueThis.proData.data.concat(data.result);
@@ -96,14 +105,50 @@
     methods: {
       //数据请求
       getData() {
+        this.$refs.loading.show();
         http({
           url: api.search_tender_company_detail,
-          data: {code: 'rid'},
+          data: {code: this.rid},
           success: (data) => {
             this.baseData = data;
             this.proData.data = data.result;
+            this.followed = data.followed;
+            this.$refs.loading.hide();
+            mui('#page1').pullRefresh().scrollTo(0,0,100)
           }
         })
+      },//更多
+      menuShow(key) {
+        this.menuStatus = key;
+      },//关注按钮
+      follow(key) {
+        if (this.followed) {
+          http({
+            url: api.member_follow,
+            method: 'delete',
+            data: {
+              rid: this.rid,
+              type: 3
+            },
+            success: () => {
+              this.followed = !this.followed;
+              mui.toast('取消成功')
+            }
+          })
+        } else {
+          http({
+            url: api.member_follow,
+            method: 'post',
+            data: {
+              rid: this.rid,
+              type: 2
+            },
+            success: () => {
+              this.followed = !this.followed;
+              mui.toast('关注成功')
+            }
+          })
+        }
       },
     }
   }

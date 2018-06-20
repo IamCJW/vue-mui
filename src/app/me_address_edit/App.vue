@@ -58,11 +58,10 @@
       }
     },
     mounted() {
-      mui.plusReady(()=>{
-        this.rid = myMethods.getMuiExtras()
+      window.addEventListener('getData',(e)=>{
+        this.rid = e.detail.rid;
         this.getData();
       });
-
       this.cityPicker = new mui.PopPicker({
         layer: 3
       });
@@ -105,18 +104,25 @@
       },
       //保存
       addressSave(){
+        let data = {
+          city: this.city,
+          contact_name: this.contact_name,
+          contact_tel: this.contact_tel,
+          district: this.district,
+          province: this.province,
+          street: this.street,
+          defaulted: this.defaulted,
+          rid:this.rid
+        };
+        for (let item in data){
+          if (data[item] === ''){
+            mui.toast('所有选项不能为空~');
+            return
+          }
+        }
         http({
           url:api.member_address,
-          data:{
-            city: this.city,
-            contact_name: this.contact_name,
-            contact_tel: this.contact_tel,
-            district: this.district,
-            province: this.province,
-            street: this.street,
-            defaulted: this.defaulted,
-            rid:this.rid
-          },
+          data:data,
           method:'post',
           success:()=>{
             let view = plus.webview.currentWebview().opener();

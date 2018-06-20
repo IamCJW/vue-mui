@@ -24,12 +24,12 @@
             .scroll-wrapper#page1
               .scroll-box
                 .filter-wrapper
-                  .filter(@tap="openWindow('subscription')")
+                  .filter(@tap="openDetail('subscription')")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
                   transition-group(name='domItem')
-                    .pro-item(v-for="item in pageIndex0.data", :key="item.rid" , @tap="openDetail({rid:item.rid,type:1})")
+                    .pro-item(v-for="item in pageIndex0.data", :key="item.rid" , @tap="openDetail('detail',{rid:item.rid,type:1})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -58,7 +58,7 @@
                     i.iconfont.icon-filter
                 .pro-group
                   transition-group(name='domItem')
-                    .pro-item(v-for="item in pageIndex1.data", :key="item.rid" ,@tap="openDetail({rid:item.rid,type:1})")
+                    .pro-item(v-for="item in pageIndex1.data", :key="item.rid" ,@tap="openDetail('detail',{rid:item.rid,type:1})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -86,7 +86,7 @@
                     i.iconfont.icon-filter
                 .pro-group
                   transition-group(name='domItem')
-                    .pro-item(v-for="item in pageIndex2.data", :key="item.rid"  , @tap="openDetail({rid:item.rid,type:2})")
+                    .pro-item(v-for="item in pageIndex2.data", :key="item.rid"  , @tap="openDetail('detail',{rid:item.rid,type:2})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -114,7 +114,7 @@
                     i.iconfont.icon-filter
                 .pro-group
                   transition-group(name='domItem')
-                    .pro-item.more(v-for='item in pageIndex3.data', :key="item.rid", @tap="openDetail({rid:item.rid,type:3})")
+                    .pro-item.more(v-for='item in pageIndex3.data', :key="item.rid", @tap="openDetail('detail',{rid:item.rid,type:3})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -179,7 +179,7 @@
     name: 'home',
     data() {
       return {
-        dataLock:false,
+        dataLock: false,
         iconMsg: {
           "监理": {
             iconClass: "icon-SUPERVISION"
@@ -410,14 +410,14 @@
       },
       // 跳转页面
       openWindow: myMethods.openWindow,
-      openDetail(data) {
+      openDetail(url,data) {
         mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById('detail');
+          let detailPage = plus.webview.getWebviewById(url);
           if (!detailPage) {
             mui.toast('目标正在初始化，请稍候~')
           }
           mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow('detail');
+          myMethods.openWindow(url);
         });
       },
       //页面切换
@@ -490,6 +490,9 @@
           }, {
             url: './detail.html',
             id: 'detail'
+          }, {
+            url: './subscription.html',
+            id: 'subscription'
           }
         ], pullRefresh: [{
           container: '#page1',
