@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 订阅资历选择
     .mui-content
       template(v-if="qualificationData.length === 0")
         .none
@@ -68,7 +65,6 @@
       },//更新开关的值
       upStatus(data) {
         this.$set(this.qualificationSelected, data.key, data.value);
-        console.log(this)
       },//确定按钮
       selectBack() {
         let data = [];

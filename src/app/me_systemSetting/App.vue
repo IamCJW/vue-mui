@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 系统设置
     .mui-content
       ul.media-view
         li.media

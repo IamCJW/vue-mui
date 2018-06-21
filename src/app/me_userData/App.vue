@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 个人资料
     .mui-content
       ul.media-view
         li.media
@@ -97,16 +94,7 @@
       let vueThis = this;
       window.addEventListener('getData',(e)=>{
         this.getData();
-        mui.plusReady(()=>{
-          mui.preload({
-            url:'./userData_company.html',
-            id:'userData_company'
-          });
-          mui.preload({
-            url:'./selectQualifys.html',
-            id:'selectQualifys'
-          })
-        });
+        myMethods.NVpreload(['userData_company','selectQualifys']);
       });
       window.addEventListener('chooseCompany',(e)=>{
         vueThis.company_info.name = e.detail.data.name;
@@ -155,7 +143,6 @@
         reader.readAsDataURL(uploadFile);
         reader.onloadend = function () {
           vueThis.option.img = reader.result;
-          console.log(vueThis.option.img);
           vueThis.headEdit = true;
           vueThis.$refs.imgFile.value = '';
         };

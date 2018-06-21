@@ -436,7 +436,6 @@
           //调用百度地图api 中的获取当前位置接口
           geolocation.getCurrentPosition(function (r) {
             let point = new BMap.Point(r.longitude, r.latitude);
-            console.log(point);
             let geoc = new BMap.Geocoder();
             geoc.getLocation(point, function (rs) {
               let address = rs.addressComponents;
@@ -492,7 +491,19 @@
             id: 'detail'
           }, {
             url: './subscription.html',
-            id: 'subscription'
+            id: 'subscription',
+            styles: {
+              titleNView: {
+                titleColor: "#ffffff",
+                titleSize: "16px",
+                backgroundColor: "#04a3ee",
+                progress: {
+                  color: "#f4d10d",
+                  height: "2px"
+                },
+                autoBackButton: true,
+              }
+            },
           }
         ], pullRefresh: [{
           container: '#page1',

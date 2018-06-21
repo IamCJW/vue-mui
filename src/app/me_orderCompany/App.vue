@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 订单公司
     .mui-content
       loading(ref="loading")
       .none(v-if="!companyData.length && dataLock")
@@ -46,7 +43,7 @@
         mui.plusReady(()=>{
           mui.preload({
             url:'./userData_company_order.html',
-            id:'userData_company_order'
+            id:'userData_company_order',
           })
         });
       });

@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 订阅管理
     .mui-content
       loading(ref="loading")
       .none(v-show="dataLock && subscriptionData.data.length === 0")
@@ -64,20 +61,7 @@
     mounted() {
       window.addEventListener('getData',()=>{
         this.getData();
-        mui.plusReady(()=>{
-          mui.preload({
-            url:'./subscription_add.html',
-            id:'subscription_add'
-          });
-          mui.preload({
-            url:'./subscription_selectLocation.html',
-            id:'subscription_selectLocation'
-          });
-          mui.preload({
-            url:'./subscription_selectQualification.html',
-            id:'subscription_selectQualification'
-          });
-        });
+        myMethods.NVpreload(['subscription_add','subscription_selectLocation','subscription_selectQualification']);
       });
       window.addEventListener('chooseLocation', (e) => {
         mui.toast(e.detail.msg);
@@ -139,7 +123,7 @@
             });
             this.$refs.loading.hide();
             this.dataLock = true;
-            mui('#page1').pullRefresh().scrollTo()
+            mui('#page1').pullRefresh().scrollTo(0,0,100);
           }
         });
       },

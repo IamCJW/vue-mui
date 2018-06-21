@@ -104,7 +104,6 @@
         let district = localStorage.getItem(lsKey.locationDistrict);
         this.location = `${province}${city}${district}`;
         this.oldSelects = localStorage.getItem(lsKey.locationOldSelect) ? JSON.parse(localStorage.getItem(lsKey.locationOldSelect)) : [];
-        console.log(this.oldSelects)
       },
       //选择器选择///////////////////////////////////////////////////
       selectLocation(key, type) {
@@ -155,7 +154,6 @@
                 }
               }
             });
-            console.log(this.oldSelects);
             localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
             mui.back();
         }

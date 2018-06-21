@@ -75,7 +75,6 @@
       selectCity(){
         let vueThis = this;
         this.cityPicker.show(function(items) {
-          console.log(items)
           vueThis.province = items[0].text;
           vueThis.city = items[1].text;
           vueThis.district = items[2].text;

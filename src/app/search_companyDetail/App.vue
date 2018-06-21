@@ -93,7 +93,7 @@
               .scroll-box
                 .filter-wrapper
                   .filter.fl
-                    span 共{{baseData.builder_num}}名建筑师
+                    span 共{{baseData.builder_num}}名建造师
                   .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter

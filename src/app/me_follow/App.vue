@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 我的关注
     .detail-nav-bar
       span.detail-bar-item(@tap="jumpTo(0)", :class="{active: pageKey===0}") 项目
       span.detail-bar-item(@tap="jumpTo(1)", :class="{active: pageKey===1}") 业主
@@ -270,7 +267,6 @@
         this.pageKey = key;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`;
-        console.log(this.$refs.barscroll.style.left)
       },
       //左滑事件
       contentSwipeleft() {

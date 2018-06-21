@@ -57,7 +57,6 @@
             },
             success: (data) => {
               this.companyList = data;
-              console.log(data)
             }
           })
         }
@@ -83,7 +82,7 @@
             mui.back();
           }
         })
-      }
+      },
     }
   }
 </script>

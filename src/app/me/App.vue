@@ -50,7 +50,7 @@
         li.media(@tap="openDetail('follow')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 我的关注
-        li.media(@tap="openWindow('advice')")
+        li.media(@tap="openWindowNView('advice')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 反馈意见
         li.media(@tap="openDetail('aboutUs')")
@@ -78,48 +78,8 @@
       }
     },
     mounted() {
-      mui.plusReady(() => {
-        mui.preload({
-          url: "./coupon.html",
-          id: "coupon"
-        });
-        mui.preload({
-          url: "./userData.html",
-          id: "userData"
-        });
-        mui.preload({
-          url: "./orderCompany.html",
-          id: "orderCompany"
-        });
-        mui.preload({
-          url: "./address.html",
-          id: "address"
-        });
-        mui.preload({
-          url: "./order.html",
-          id: "order"
-        });
-        mui.preload({
-          url: "./systemSetting.html",
-          id: "systemSetting"
-        });
-        mui.preload({
-          url: "./subscription.html",
-          id: "subscription"
-        });
-        mui.preload({
-          url: "./follow.html",
-          id: "follow"
-        });
-        mui.preload({
-          url: "./wallet.html",
-          id: "wallet"
-        });
-        mui.preload({
-          url: "./aboutUs.html",
-          id: "aboutUs"
-        });
-      });
+      let arr = ['coupon','userData','orderCompany','address','order','systemSetting','subscription','follow','wallet','aboutUs'];
+      myMethods.NVpreload(arr);
     },
     created() {
       this.getData();
@@ -135,6 +95,7 @@
         })
       },//打开页面
       openWindow: myMethods.openWindow,//打开详情
+      openWindowNView:myMethods.openWindowNView,
       //跳转详情
       openDetail(url, data) {
         mui.plusReady(function () {

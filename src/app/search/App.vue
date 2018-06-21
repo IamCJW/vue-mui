@@ -3,7 +3,7 @@
     header.search-header
       .search-nav-list
         .search-item(:class="{active: pageFlag === 0}", @tap="jumpTo(0)") 查建筑企业
-        .search-item(:class="{active: pageFlag === 1}", @tap="jumpTo(1)") 查建筑师
+        .search-item(:class="{active: pageFlag === 1}", @tap="jumpTo(1)") 查建造师
         .search-item(:class="{active: pageFlag === 2}", @tap="jumpTo(2)") 资质查企业
     .mui-content
       loading(ref="loading")
@@ -71,7 +71,7 @@
                     div(v-if="province.shortName", @tap="companySelect(2)")
                       i.iconfont(:class="[condition===2 ? 'icon-selectss' : 'icon-CIRCLE']")
                       span 入{{province.shortName}}企业
-                    div(@tap="companySelect(3)")
+                    div(v-if="province.shortName", @tap="companySelect(3)")
                       i.iconfont(:class="[condition===3 ? 'icon-selectss' : 'icon-CIRCLE']")
                       span 本地企业
               li.media
@@ -255,7 +255,6 @@
         this.pageFlag = key;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`;
-        console.log(this.$refs.barscroll.style.left)
       },
       //左滑事件
       contentSwipeleft() {

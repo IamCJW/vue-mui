@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 企业名称设置
     .mui-content
       .cell-row.search-wrapper
         .search-box
@@ -56,7 +53,6 @@
             },
             success: (data) => {
               this.companyList = data;
-              console.log(data)
             }
           })
         }

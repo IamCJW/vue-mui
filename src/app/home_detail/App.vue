@@ -64,9 +64,9 @@
               td.th 中标金额
               td(colspan="3") {{item.tender_je}}
             tr(v-if="item.builder_name === ''")
-              td.th 建筑师名称
+              td.th 建造师名称
               td.th {{item.builder_name}}
-              td.th 建筑师证书
+              td.th 建造师证书
               td {{item.certificate_no}}
           tr
             td.th 信息来源

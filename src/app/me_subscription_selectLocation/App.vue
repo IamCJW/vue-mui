@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 地域选择
     .mui-content.bg-gary
       .indexed-list
         .indexed-content(ref='indexed')

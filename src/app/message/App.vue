@@ -89,6 +89,12 @@
     },
     mounted() {
       let vueThis = this;
+      mui.plusReady(()=>{
+        mui.preload({
+          url:"companyDetail_own.html",
+          id:"companyDetail_own"
+        })
+      });
       mui.init({
         gestureConfig: {
           longtap: true, //默认为false
@@ -170,7 +176,6 @@
         this.pageFlag = key;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`;
-        console.log(this.$refs.barscroll.style.left)
       },
       //左滑事件
       contentSwipeleft() {
@@ -241,20 +246,28 @@
         }
       },
       openWindow: myMethods.openWindow,//消息跳转详情
-      goToDetail(type, rid) {
-        let id = rid;
+      goToDetail(type, data) {
+        let detailPage ={};
         switch (type) {
           case 1:
-            this.openWindow('detail',{rid:id});
+            detailPage  = plus.webview.getWebviewById('detail');
+            mui.fire(detailPage, 'getData', data);
+            this.openWindow('detail');
             break;
           case 2:
-            this.openWindow('companyDetail',{rid:id});
+            detailPage = plus.webview.getWebviewById('companyDetail');
+            mui.fire(detailPage, 'getData', data);
+            this.openWindow('companyDetail');
             break;
           case 3:
-            this.openWindow('builderDetail',{rid:id});
+            detailPage = plus.webview.getWebviewById('builderDetail');
+            mui.fire(detailPage, 'getData', data);
+            this.openWindow('builderDetail');
             break;
           case 4:
-            this.openWindow('companyDetail',{rid:id});
+            detailPage = plus.webview.getWebviewById('companyDetail_own');
+            mui.fire(detailPage, 'getData', data);
+            this.openWindow('companyDetail_own');
             break;
         }
       }

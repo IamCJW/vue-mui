@@ -77,7 +77,6 @@
           url:api.member_address_detail,
           data:{rid:this.rid},
           success:(data)=>{
-            console.log(data)
             this.city=data.city;
             this.contact_name=data.contact_name;
             this.contact_tel=data.contact_tel;
@@ -96,7 +95,6 @@
       selectCity(){
         let vueThis = this;
         this.cityPicker.show(function(items) {
-          console.log(items)
           vueThis.province = items[0].text;
           vueThis.city = items[1].text;
           vueThis.district = items[2].text;

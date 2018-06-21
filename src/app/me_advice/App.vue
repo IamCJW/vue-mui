@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 意见反馈
     .mui-content
       .box.cell-row
         textarea(v-model="advice", placeholder="请写下您的意见或建议", maxlength="200")

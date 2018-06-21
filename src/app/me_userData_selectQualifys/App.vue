@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 资质设置
     .mui-content
       .selected-content
         .selected-title
@@ -64,13 +61,22 @@
       }
     },
     mounted() {
-      mui.init({});
       this.getData();
       this.getNation();
       let vueThis = this;
       mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
       });
+      mui.init({});
+      mui.plusReady(() => {
+        plus.key.addEventListener('backbutton', function () {
+            vueThis.selectFlag = false;
+          }
+        );
+      });
+      if (this.selectedArr.length === 0) {
+        this.add();
+      }
     },
     methods: {
       //资质列表
@@ -78,7 +84,6 @@
         http({
           url: api.member_qualify,
           success: (data) => {
-            console.log(data);
             this.selectedArr = data;
           }
         })

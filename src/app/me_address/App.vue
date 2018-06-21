@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 收货地址管理
     .mui-content
       loading(ref="loading")
       .content-page

@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 我的订单
     .detail-nav-bar
       span.detail-bar-item(:class="{active: pageKey === 0}", @tap="jumpTo(0)") 全部
       span.detail-bar-item(:class="{active: pageKey === 1}", @tap="jumpTo(1)") 待付款

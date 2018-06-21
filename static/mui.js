@@ -2720,21 +2720,6 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
           }
         });
       } else {
-        //已支持iframe嵌入
-        //				if (subpages.length > 0) {
-        //					var err = document.createElement('div');
-        //					err.className = 'mui-error';
-        //					//文字描述
-        //					var span = document.createElement('span');
-        //					span.innerHTML = '在该浏览器下，不支持创建子页面，具体参考';
-        //					err.appendChild(span);
-        //					var a = document.createElement('a');
-        //					a.innerHTML = '"mui框架适用场景"';
-        //					a.href = 'http://ask.dcloud.net.cn/article/113';
-        //					err.appendChild(a);
-        //					document.body.appendChild(err);
-        //					console.log('在该浏览器下，不支持创建子页面');
-        //				}
 
       }
 
@@ -2965,7 +2950,6 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
       var options = $.options;
       var pullRefreshOptions = options.pullRefresh || {};
       pullRefreshOptions = Object.prototype.toString.call(pullRefreshOptions) == '[object Array]' ? pullRefreshOptions : [pullRefreshOptions];
-      console.log(pullRefreshOptions);
       for (var pp in pullRefreshOptions) {
         _pullRefreshOptions = pullRefreshOptions[pp];
         var hasPulldown = _pullRefreshOptions.down && _pullRefreshOptions.down.hasOwnProperty('callback');
