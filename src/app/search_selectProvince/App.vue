@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 省份选择
     .mui-content.bg-gary
       .indexed-list
         .indexed-content(ref='indexed')
@@ -22,6 +19,7 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'selectlocation',
@@ -40,27 +38,46 @@
     methods: {
       //获取地址信息/////////////////////////////////////////////////////////////////
       getNation() {
-        http({
-          url: api.nation,
-          success: (data) => {
-            this.nationData = data;
-            data.forEach((item) => {
-              if (this.letter.indexOf(item.prefix)) {
-                this.letter.push(item.prefix)
+        if (localStorage.getItem(lsKey.nationData) !== null) {
+          this.nationData = JSON.parse(localStorage.getItem(lsKey.nationData));
+          this.nationData.forEach((item) => {
+            if (this.letter.indexOf(item.prefix)) {
+              this.letter.push(item.prefix)
+            }
+          });
+          this.letter = this.letter.sort();
+          this.letter.forEach((item) => {
+            let _item = item;
+            this.nation[_item] = [];
+            this.nationData.forEach((item) => {
+              if (item.prefix === _item) {
+                this.nation[_item].push(item)
               }
-            });
-            this.letter = this.letter.sort();
-            this.letter.forEach((item) => {
-              let _item = item;
-              this.nation[_item] = [];
+            })
+          });
+        } else {
+          http({
+            url: api.nation,
+            success: (data) => {
+              this.nationData = data;
               data.forEach((item) => {
-                if (item.prefix === _item) {
-                  this.nation[_item].push(item)
+                if (this.letter.indexOf(item.prefix)) {
+                  this.letter.push(item.prefix)
                 }
-              })
-            });
-          }
-        });
+              });
+              this.letter = this.letter.sort();
+              this.letter.forEach((item) => {
+                let _item = item;
+                this.nation[_item] = [];
+                data.forEach((item) => {
+                  if (item.prefix === _item) {
+                    this.nation[_item].push(item)
+                  }
+                })
+              });
+            }
+          });
+        }
       },
       //地址选择锚点定位//////////////////////////////////////////
       chooseGroup(type) {
@@ -74,13 +91,13 @@
         }, 200)
       },
       //选择器选择///////////////////////////////////////////////////
-      selectLocation(name,shortName) {
+      selectLocation(name, shortName) {
         this.province = name;
         let view = plus.webview.currentWebview().opener();
         mui.fire(view, 'chooseProvince', {
           province: {
-            name:name,
-            shortName:shortName
+            name: name,
+            shortName: shortName
           }
         });
         mui.back()

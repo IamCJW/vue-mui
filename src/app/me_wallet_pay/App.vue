@@ -1,9 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 余额充值
-      span 联系客服
     .mui-content
       .module
         .module-title 选择充值金额

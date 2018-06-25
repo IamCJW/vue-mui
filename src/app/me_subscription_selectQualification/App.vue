@@ -5,7 +5,7 @@
         .none
           i.iconfont.icon-subscription
           span 暂无可选择资质~
-        button.mid-btn(@tap="openWindow('selectQualifys')") 添加资质
+        button.mid-btn(@tap="openNViewPreload('selectQualifys')") 添加资质
       template(v-if="qualificationData.length !== 0")
         ul.media-view
           li.media(v-for="item in qualificationData")
@@ -38,7 +38,6 @@
       switchBox: switchBox,
     },
     mounted() {
-      let vueThis = this;
       window.addEventListener('getData',(e)=>{
         this.subscription = e.detail;
         this.getData();
@@ -88,7 +87,7 @@
               rid: this.subscription.id
             },
             success() {
-              let view = plus.webview.currentWebview().opener();
+              let view = plus.webview.getWebviewById('subscription');
               mui.fire(view, 'chooseQualification', {
                 msg: '修改成功'
               });
@@ -96,7 +95,7 @@
             }
           })
         } else {
-          let view = plus.webview.currentWebview().opener();
+          let view = plus.webview.getWebviewById('subscription_add');
           mui.fire(view, 'chooseQualification', {
             data: data,
             selectedQualify: this.qualificationSelected
@@ -105,6 +104,7 @@
         }
       },
       openWindow:myMethods.openWindow,
+      openNViewPreload:myMethods.openNViewPreload,
     }
   }
 </script>

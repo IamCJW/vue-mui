@@ -44,34 +44,52 @@
         city: '',//选择的市
         district: '',//选择的区
         oldSelects: [],//最近访问
-        subscription:'',//订阅内容
+        subscription: '',//订阅内容
       }
     },
     methods: {
       //获取地址信息/////////////////////////////////////////////////////////////////
       getNation() {
-        http({
-          url: api.nation,
-          success: (data) => {
-            this.nationData = data;
-            data.forEach((item) => {
-              if (this.letter.indexOf(item.prefix)) {
-                this.letter.push(item.prefix)
+        if (localStorage.getItem(lsKey.nationData) !== null) {
+          this.nationData = JSON.parse(localStorage.getItem(lsKey.nationData));
+          this.nationData.forEach((item) => {
+            if (this.letter.indexOf(item.prefix)) {
+              this.letter.push(item.prefix)
+            }
+          });
+          this.letter = this.letter.sort();
+          this.letter.forEach((item) => {
+            let _item = item;
+            this.nation[_item] = [];
+            this.nationData.forEach((item) => {
+              if (item.prefix === _item) {
+                this.nation[_item].push(item)
               }
-            });
-            this.letter = this.letter.sort();
-            this.letter.forEach((item) => {
-              let _item = item;
-              this.nation[_item] = [];
+            })
+          });
+        } else {
+          http({
+            url: api.nation,
+            success: (data) => {
+              this.nationData = data;
               data.forEach((item) => {
-                if (item.prefix === _item) {
-                  this.nation[_item].push(item)
+                if (this.letter.indexOf(item.prefix)) {
+                  this.letter.push(item.prefix)
                 }
-              })
-            });
-            this.selectInit();
-          }
-        });
+              });
+              this.letter = this.letter.sort();
+              this.letter.forEach((item) => {
+                let _item = item;
+                this.nation[_item] = [];
+                data.forEach((item) => {
+                  if (item.prefix === _item) {
+                    this.nation[_item].push(item)
+                  }
+                })
+              });
+            }
+          });
+        }
       },
       //地址选择锚点定位//////////////////////////////////////////
       chooseGroup(type) {
@@ -112,34 +130,35 @@
             break;
           case 3:
             this.district = key;
-            if (this.subscription.id){
+            console.log(this.subscription.id);
+            if (this.subscription.id) {
               http({
-                url:api.member_subscribe,
-                method:'post',
-                data:{
-                  province:this.province,
-                  city:this.city,
-                  district:this.district,
-                  qualify_info:this.subscription.qualify_info,
-                  rid:this.subscription.id
+                url: api.member_subscribe,
+                method: 'post',
+                data: {
+                  province: this.province,
+                  city: this.city,
+                  district: this.district,
+                  qualify_info: this.subscription.qualify_info,
+                  rid: this.subscription.id
                 },
-                success(){
-                  let view = plus.webview.currentWebview().opener();
+                success() {
+                  let view = plus.webview.getWebviewById('subscription');
                   mui.fire(view, 'chooseLocation', {
-                    msg:'修改成功'
+                    msg: '修改成功'
                   });
                   mui.back();
                 }
               })
-            }else {
-              let view = plus.webview.currentWebview().opener();
+            } else {
+              let view = plus.webview.getWebviewById('subscription_add');
               let vueThis = this;
               mui.fire(view, 'chooseLocation', {
                 location: {
-                  province:vueThis.province,
-                  city:vueThis.city,
-                  district:vueThis.district
-                },msg:""
+                  province: vueThis.province,
+                  city: vueThis.city,
+                  district: vueThis.district
+                }, msg: ""
               });
               mui.back();
             }
@@ -147,7 +166,7 @@
       },
     },
     mounted() {
-      window.addEventListener('getData',(e)=>{
+      window.addEventListener('getData', (e) => {
         this.subscription = e.detail;
         this.getNation();
       });

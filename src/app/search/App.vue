@@ -147,17 +147,10 @@
           id: 'companyDetail'
         });
         mui.preload({
-          url: './selectProvince.html',
-          id: 'selectProvince'
-        });
-        mui.preload({
           url: './selectQualify.html',
           id: 'selectQualify'
         });
-        mui.preload({
-          url: './searchFilterCompany.html',
-          id: 'searchFilterCompany'
-        })
+        myMethods.NVpreload(['selectProvince','searchFilterCompany']);
       });
       mui.init({
         pullRefresh: [{

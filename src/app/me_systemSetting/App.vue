@@ -56,11 +56,14 @@
       switchBox:switchBox
     },
     mounted() {
+      window.addEventListener('getData',()=>{
+        this.getData();
+      });
       mui.init({
       });
     },
     created() {
-      this.getData();
+
     },
     methods: {
       //数据请求
@@ -83,6 +86,12 @@
         window.localStorage.clear();
         this.localStorageLengthGet();
         mui.toast('清理完毕');
+        mui.plusReady(()=>{
+          let homeView = plus.webview.getWebviewById('home');
+          mui.fire(homeView,'localStorageClear',{msg:'缓存被清理'})
+          let selectLocation = plus.webview.getWebviewById('selectLocation');
+          mui.fire(selectLocation,'localStorageClear',{msg:'缓存被清理'})
+        })
       },
       localStorageLengthGet(){
         let size = 0;

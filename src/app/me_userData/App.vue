@@ -24,11 +24,11 @@
         li.media
           .media-content 公司信息
         li.media
-          .media-content.iconfont.icon-right(@tap="openWindow('userData_company')")
+          .media-content.iconfont.icon-right(@tap="openNViewPreload('userData_company')")
             .media-lable 公司名称
             .media-value {{company_info.name || '公司名字设置'}}
         li.media
-          .media-content.iconfont.icon-right(@tap="openWindow('selectQualifys')")
+          .media-content.iconfont.icon-right(@tap="openNViewPreload('selectQualifys')")
             .media-lable 资质条件
             .media-value 条件设置
         li.media
@@ -94,7 +94,6 @@
       let vueThis = this;
       window.addEventListener('getData',(e)=>{
         this.getData();
-        myMethods.NVpreload(['userData_company','selectQualifys']);
       });
       window.addEventListener('chooseCompany',(e)=>{
         vueThis.company_info.name = e.detail.data.name;
@@ -116,7 +115,7 @@
           }
         })
       },//打开页面
-      openWindow: myMethods.openWindow,
+      openNViewPreload:myMethods.openNViewPreload,
       //头像保存
       saveHead() {
         this.$refs.cropper.getCropData((data) => {

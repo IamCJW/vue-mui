@@ -155,7 +155,17 @@
               }
             });
             localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
-            mui.back();
+            let vueThis = this;
+            mui.plusReady(()=>{
+              let view = plus.webview.getWebviewById('home');
+              mui.fire(view,'changeLocation',{
+                province:vueThis.province,
+                city:vueThis.city,
+                district:vueThis.district,
+              });
+              mui.back();
+            });
+
         }
       },
       //历史记录访问//////////////////////////////////////////
@@ -168,17 +178,13 @@
       }
     },
     mounted() {
-      mui.init({
-        beforeback: function () {
-          let view = plus.webview.currentWebview().opener();
-          mui.fire(view, 'chooseProvince',{
-            msg:'选择地址'
-          });
-          return true
-        }
-      });
+      mui.init({});
       this.dataInit();
       this.getNation();
+      window.addEventListener('localStorageClear',()=>{
+        this.dataInit();
+        this.getNation();
+      })
     }
   }
 </script>

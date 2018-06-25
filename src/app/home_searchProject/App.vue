@@ -16,7 +16,7 @@
               span 暂无相关项目信息~
             .pro-group.cell-row
               transition-group(name="domItem")
-                .pro-item(v-for="item in proData.data",:key="item.rid",@tap="openWindow(item)")
+                .pro-item(v-for="item in proData.data",:key="item.rid",@tap="openWindow('detail',item)")
                   .pro-assist
                     div(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                       i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
@@ -37,6 +37,7 @@
   import api from '../../assets/js/api'
   import http from '../../assets/js/http.js'
   import loading from '../../components/loading'
+  import myMethods from '../../assets/js/methods'
 
   export default {
     name: 'searchProject',
@@ -108,7 +109,7 @@
           }
         })
       },
-      openWindow: (item) => {
+      openWindow: (url,item) => {
         let data = {};
         data['rid'] = item.rid;
         switch (item.tender_type) {
@@ -121,11 +122,12 @@
           default:
             data['type'] = 3;
         }
-        mui.openWindow({
-          url: `./detail.html`,
-          id: 'detail',
-          extras: data
-        })
+        let detailPage = plus.webview.getWebviewById(url);
+        if (!detailPage) {
+          mui.toast('目标正在初始化，请稍候~')
+        }
+        mui.fire(detailPage, 'getData', data);
+        myMethods.openWindow(url);
       },
     },
   }

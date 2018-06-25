@@ -2,9 +2,9 @@
   #app
     .mui-content
       ul.media-view
-        li.media(@tap="openWindow('subscription_selectLocation')")
+        li.media(@tap="openNViewPreload('subscription_selectLocation')")
           .media-content.iconfont.icon-right {{location.province ? location.province+location.city+location.district : '请选择订阅区域'}}
-        li.media(@tap="openWindow('subscription_selectQualification')")
+        li.media(@tap="openNViewPreload('subscription_selectQualification')")
           .media-content.iconfont.icon-right
             .qualify-group
               .qualify-title
@@ -82,12 +82,13 @@
           success:()=>{
             let view = plus.webview.currentWebview().opener();
             mui.fire(view, 'addSuccess', {
-              msg: '修改成功'
+              msg: '添加成功'
             });
             mui.back();
           }
         })
-      },openWindow:myMethods.openWindow
+      },
+      openNViewPreload:myMethods.openNViewPreload,
     }
   }
 </script>

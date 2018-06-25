@@ -4,7 +4,7 @@
       .title 账户余额(元)
       .wallet-content
         .value {{cur_je}}
-        button(@tap="openWindow('wallet_pay')") 账户充值
+        button(@tap="openNViewPreload('wallet_pay')") 账户充值
     .mui-content
       loading(ref="loading")
       .content-page(v-show="dataLock")
@@ -53,10 +53,6 @@
       let vueThis = this;
       window.addEventListener("getData", () => {
         vueThis.getData();
-        mui.preload({
-          url: 'wallet_pay.html',
-          id: 'wallet_pay'
-        });
         mui.init({
           pullRefresh: [{
             container: '#page1',
@@ -103,7 +99,7 @@
         })
       },//打开页面
       openWindow: myMethods.openWindow,
-      //左滑事件
+      openNViewPreload:myMethods.openNViewPreload,
     }
   }
 </script>

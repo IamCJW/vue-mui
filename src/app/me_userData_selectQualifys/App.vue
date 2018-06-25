@@ -61,8 +61,10 @@
       }
     },
     mounted() {
-      this.getData();
-      this.getNation();
+      window.addEventListener('getData', () => {
+        this.getData();
+        this.getNation();
+      });
       let vueThis = this;
       mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
@@ -74,9 +76,6 @@
           }
         );
       });
-      if (this.selectedArr.length === 0) {
-        this.add();
-      }
     },
     methods: {
       //资质列表
@@ -85,6 +84,9 @@
           url: api.member_qualify,
           success: (data) => {
             this.selectedArr = data;
+            if (this.selectedArr.length === 0) {
+              this.add();
+            }
           }
         })
       },
@@ -93,13 +95,19 @@
         this.picker = new mui.PopPicker({
           layer: 3
         });
-        http({
-          url: api.common_base_qualify,
-          success: (data) => {
-            this.qualifyData = data;
-            this.picker.setData(this.qualifyData[0].children);
-          }
-        });
+        if (localStorage.getItem(lsKey.qualify) !== null) {
+          this.qualifyData = JSON.parse(localStorage.getItem(lsKey.qualify));
+          this.picker.setData(this.qualifyData[0].children);
+        } else {
+          http({
+            url: api.common_base_qualify,
+            success: (data) => {
+              this.qualifyData = data;
+              this.picker.setData(this.qualifyData[0].children);
+              localStorage.setItem(lsKey.qualify, data);
+            }
+          });
+        }
       },
       //添加///////////////////////////////////////
       add() {

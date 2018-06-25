@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const myMethods = {
-    // 正则表达式，
+    // 电话验证正则表达式，
     regexPhone(phone) {
       let regex = /^[1][3,4,5,7,8][0-9]{9}$/;
       if (regex.test(phone)) {
@@ -9,7 +9,8 @@ const myMethods = {
       } else {
         return false
       }
-    },// 验证码定时器
+    },
+    // 验证码定时器
     timeClock(text, time, flag) {
       text = `${time}s后获取`;
       let clock = window.setInterval(() => {
@@ -41,28 +42,35 @@ const myMethods = {
         plus.navigator.setStatusBarBackground('#04a3ee');
       })
     })(),
-    openWindowNView(url) {
-      mui.openWindow({
+    //预加载页面，并打开页面
+    openNViewPreload(url, data) {
+      mui.preload({
         url: `./${url}.html`,
         id: url,
-        styles: {                             // 窗口参数 参考5+规范中的WebviewStyle,也就是说WebviewStyle下的参数都可以在此设置
-          titleNView: {                       // 窗口的标题栏控件
-            titleColor: "#ffffff",             // 字体颜色,颜色值格式为"#RRGGBB",默认值为"#000000"
-            titleSize: "16px",                 // 字体大小,默认17px
-            backgroundColor: "#04a3ee",        // 控件背景颜色,颜色值格式为"#RRGGBB",默认值为"#F7F7F7"
-            progress: {                        // 标题栏控件的进度条样式
-              color: "#f4d10d",                // 进度条颜色,默认值为"#00FF00"
-              height: "2px"                    // 进度条高度,默认值为"2px"
+        styles: {
+          titleNView: {
+            titleColor: "#ffffff",
+            titleSize: "16px",
+            backgroundColor: "#04a3ee",
+            progress: {
+              color: "#f4d10d",
+              height: "2px"
             },
             autoBackButton: true,
           }
         }
-      })
+      });
+      mui.plusReady(function () {
+        let detailPage = plus.webview.getWebviewById(url);
+        mui.fire(detailPage, 'getData', data);
+        mui.openWindow(url);
+      });
     },
-    NVpreload(arr){
+    //原生导航头预加载
+    NVpreload(arr) {
       mui.plusReady(() => {
-        let Arr = arr
-        Arr.forEach((item)=>{
+        let Arr = arr;
+        Arr.forEach((item) => {
           mui.preload({
             url: `./${item}.html`,
             id: item,

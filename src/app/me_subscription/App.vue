@@ -5,7 +5,7 @@
       .none(v-show="dataLock && subscriptionData.data.length === 0")
         i.iconfont.icon-subscription
         span 暂无订阅信息，请先添加订阅~
-        button.mid-btn(@tap="openDetail('subscription_add')") 添加订阅
+        button.mid-btn(@tap="openNViewPreload('subscription_add')") 添加订阅
       .content-wrapper(v-show="dataLock && subscriptionData.data.length !== 0")
         .mui-wrapper#page1
           .mui-scroll
@@ -20,16 +20,16 @@
                       switchBox(:status="switchData['status'+item.id]", :key-name="'status'+item.id", @changeStatus="upStatus")
                   .media-alert
                     ul.media-view
-                      li.media(@tap="openDetail('subscription_selectLocation',item)")
+                      li.media(@tap="openNViewPreload('subscription_selectLocation',item)")
                         .media-content.iconfont.icon-right {{item.province+item.city+item.district}}
-                      li.media.border-none(@tap="openDetail('subscription_selectQualification',item)")
+                      li.media.border-none(@tap="openNViewPreload('subscription_selectQualification',item)")
                         .media-content.iconfont.icon-right
                           .qualify-group
                             .qualify-title
                               span 订阅资质
                             .qualify-item(v-for="quanilify in item.quanlify_info")
                               span {{quanilify.category+quanilify.name}}-{{quanilify.level}}
-        .fixed-bottom-btn(@tap="openDetail('subscription_add')") 添加订阅
+        .fixed-bottom-btn(@tap="openNViewPreload('subscription_add')") 添加订阅
 </template>
 <style lang="stylus" scoped>
   @import "subscription.styl"
@@ -132,16 +132,7 @@
         this.$set(this.switchData, data.key, data.value);
       },
       openWindow: myMethods.openWindow,
-      openDetail(url,data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openNViewPreload:myMethods.openNViewPreload,
       //订阅删除
       subscriptionDel(id) {
         mui.confirm()

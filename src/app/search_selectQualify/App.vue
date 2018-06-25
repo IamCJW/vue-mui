@@ -45,7 +45,7 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-  import axios from 'axios'
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'selectQualify',
@@ -63,17 +63,17 @@
         },
         picker: {},
         qualityData: {},
-        old_back:{},
+        old_back: {},
       }
     },
     mounted() {
       let vueThis = this;
       mui.init({});
       this.old_back = mui.back;
-      mui.back = function(){
-        let btn = ["确定","取消"];
-        mui.confirm('确定放弃保存所选资质？',' ',btn,function(e){
-          if(e.index === 0){
+      mui.back = function () {
+        let btn = ["确定", "取消"];
+        mui.confirm('确定放弃保存所选资质？', ' ', btn, function (e) {
+          if (e.index === 0) {
             vueThis.old_back();
           }
         });
@@ -92,87 +92,88 @@
         this.add();
       }
     },
-    methods:
-      {
-        //资质设置内容/////////////////////////////////////////////////////////////////
-        getNation() {
-          this.picker = new mui.PopPicker({
-            layer: 3
-          });
+    methods: {
+      //资质设置内容/////////////////////////////////////////////////////////////////
+      getNation() {
+        this.picker = new mui.PopPicker({
+          layer: 3
+        });
+        if (localStorage.getItem(lsKey.qualify) !== null) {
+          this.qualifyData = JSON.parse(localStorage.getItem(lsKey.qualify));
+          this.picker.setData(this.qualifyData[0].children);
+        } else {
           http({
             url: api.common_base_qualify,
             success: (data) => {
               this.qualifyData = data;
               this.picker.setData(this.qualifyData[0].children);
+              localStorage.setItem(lsKey.qualify, data);
             }
           });
         }
-        ,
-        //添加///////////////////////////////////////
-        add() {
-          this.selectFlag = true;
-          let vueThis = this;
-          this.picker.show(function (items) {
-            if (!items[2].value) {
-              mui.toast('请等待数据加载完成');
-              return false
-            }
-            vueThis.selectSuccess(items);
-          });
-        }
-        ,
-        changeQualify(key) {
-          if (!this.qualifyData) {
-            mui.toast('正在加载数据，请稍后切换');
-            return
+      },
+      //添加///////////////////////////////////////
+      add() {
+        this.selectFlag = true;
+        let vueThis = this;
+        this.picker.show(function (items) {
+          if (!items[2].value) {
+            mui.toast('请等待数据加载完成');
+            return false
           }
-          this.qualifyFlag = key;
-          for (let i in this.qualifyData) {
-            if (this.qualifyData[i].text === this.qualifyList[key]) {
-              this.picker.setData(this.qualifyData[i].children);
-            }
-          }
-
+          vueThis.selectSuccess(items);
+        });
+      },
+      changeQualify(key) {
+        if (!this.qualifyData) {
+          mui.toast('正在加载数据，请稍后切换');
+          return
         }
-        ,
-        //删除///////////////////////
-        deleteArr(index, id) {
-          mui.confirm('确认删除该资质？', ' ', ['取消', '确定'], (e) => {
-            if (e.index === 1) {
-              this.selectedArr.splice(index, 1);
-            }
-          });
-        }
-        ,
-        //删除全部//////////////////////
-        deleteAll() {
-          this.selectedArr = [];
-        }
-        ,//确定回调函数
-        selectSuccess(items) {
-          this.selectFlag = false;
-          let item = {
-            one: this.qualifyList[this.qualifyFlag],
-            two: items[0].text,
-            three: items[1].text,
-            four: items[2].text,
-            id: items[2].value,
-          };
-          if (JSON.stringify(this.selectedArr).indexOf(JSON.stringify(item)) === -1) {
-            this.selectedArr.unshift(item);
-          } else {
-            mui.toast('请勿重复添加')
+        this.qualifyFlag = key;
+        for (let i in this.qualifyData) {
+          if (this.qualifyData[i].text === this.qualifyList[key]) {
+            this.picker.setData(this.qualifyData[i].children);
           }
         }
-        ,
-        submitBack() {
-          let categoryData = this.selectedArr;
-          let view = plus.webview.currentWebview().opener();
-          mui.fire(view, 'chooseCategory', {
-            categoryData: categoryData
-          });
-          this.old_back()
+      },
+      //删除///////////////////////
+      deleteArr(index, id) {
+        mui.confirm('确认删除该资质？', ' ', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
+            this.selectedArr.splice(index, 1);
+          }
+        });
+      }
+      ,
+      //删除全部//////////////////////
+      deleteAll() {
+        this.selectedArr = [];
+      }
+      ,//确定回调函数
+      selectSuccess(items) {
+        this.selectFlag = false;
+        let item = {
+          one: this.qualifyList[this.qualifyFlag],
+          two: items[0].text,
+          three: items[1].text,
+          four: items[2].text,
+          id: items[2].value,
+        };
+        if (JSON.stringify(this.selectedArr).indexOf(JSON.stringify(item)) === -1) {
+          this.selectedArr.unshift(item);
+        } else {
+          mui.toast('请勿重复添加')
         }
       }
+      ,
+      submitBack() {
+        let categoryData = this.selectedArr;
+        let view = plus.webview.currentWebview().opener();
+        mui.fire(view, 'chooseCategory', {
+          categoryData: categoryData
+        });
+        this.old_back()
+      }
+    }
   }
 </script>
