@@ -76,7 +76,7 @@
           if (e.index === 0) {
             vueThis.old_back();
           }
-        });
+        },'div');
       };
       this.getNation();
       mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
@@ -142,7 +142,7 @@
           if (e.index === 1) {
             this.selectedArr.splice(index, 1);
           }
-        });
+        },'div');
       }
       ,
       //删除全部//////////////////////

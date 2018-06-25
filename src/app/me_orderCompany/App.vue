@@ -78,7 +78,7 @@
               this.companyData = data
             }
           })
-        })
+        },'div')
       }
       ,
       // 跳转页面

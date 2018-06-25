@@ -1,0 +1,95 @@
+@import "../../stylus/_mixin.styl"
+.box
+  float left
+  width 100vw
+  height 100vh
+  padding 0 .12rem
+  overflow hidden
+  overflow-y auto
+  .scroll-wrapper
+    height 100%
+    .scroll-box
+      .search-wrapper
+        padding .12rem 0 0
+        .search-box
+          position relative
+          display-flex()
+          flex-align-item(center)
+          flex-justify-content(center)
+          width 3.2rem
+          height .35rem
+          margin 0 auto .12rem
+          box-shadow $box-shadow-default
+          border $border-default
+          border-radius $border-radius-default
+          color $text-color-light-xx
+          .iconfont
+            position absolute
+            color #333333
+            right .3rem
+      .search-result
+        background: $main-color;
+        color: rgba(255,255,255,0.8);
+        font-size: 0.1rem;
+        line-height: 1;
+        text-align: center;
+        padding: 0.04rem 0.12rem;
+        margin: 0.05rem -0.24rem 0;
+.pro-item
+  width 100%
+  border-radius .06rem
+  box-shadow $box-shadow-default
+  border $border-default
+  margin-bottom .12rem
+  margin-top .12rem
+  .pro-time
+    display-flex()
+    flex-align-item(center)
+    color $text-color-light-xx
+    font-size .12rem
+    padding .07rem .1rem 0 .1rem
+    .iconfont
+      font-size .14rem
+  .pro-content
+    display-flex()
+    flex-align-item(center)
+    flex-justify-content(space-between)
+    height .75rem
+    .pro-main
+      flex-flex(1)
+      border-right $border-default
+      .pro-name
+        display-flex()
+        flex-align-item(center)
+        height .5rem
+        padding 0 .1rem
+      .pro-main-sign
+        padding 0 .1rem
+        width: 2.3rem
+        .pro-style
+          .iconfont
+            font-size .16rem
+        .pro-location
+          color $text-color-light-x
+          font-size .12rem
+          margin-left .07rem
+    .pro-assist
+      display-flex()
+      flex-direction(column)
+      flex-align-item(center)
+      flex-justify-content(center)
+      flex-flex(0,1.12rem)
+      font-size .12rem
+      padding 0 .05rem
+      text-align center
+      height 100%
+      color $text-color-light-x
+      div
+        height 38.8%
+        width 100%
+        display-flex()
+        flex-align-item(center)
+        flex-justify-content(center)
+        line-height 1.2
+      div:last-child
+        border-top $border-default

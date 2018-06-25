@@ -1,6 +1,6 @@
 <template lang="pug">
   #app
-    .header-me
+    .header-me(@swiperight="openTabNav('search',2)")
       .user-setting(@tap="openNViewPreload('userData')") 个人资料
       .user-msg
         div.user-head
@@ -21,7 +21,7 @@
         .me-nav-item(@tap="openNViewPreload('address')")
           i.iconfont.icon-Shippingaddress
           span 收货地址
-    .mui-content
+    .mui-content(@swiperight="openTabNav('search',2)")
       .order-box
         .order-title 我的订单
         .order-type-group
@@ -53,7 +53,7 @@
         li.media(@tap="openNViewPreload('advice')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 反馈意见
-        li.media(@tap="openNViewPreload('aboutUs')")
+        li.media(@tap="openNViewPreload('aboutUS')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 关于我们
         li.media
@@ -95,6 +95,7 @@
       },//打开页面
       openWindow: myMethods.openWindow,//打开详情
       openNViewPreload:myMethods.openNViewPreload,
+      openTabNav :myMethods.openTabNav,
     }
   }
 </script>

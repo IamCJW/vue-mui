@@ -135,7 +135,6 @@
       openNViewPreload:myMethods.openNViewPreload,
       //订阅删除
       subscriptionDel(id) {
-        mui.confirm()
         mui.confirm('确定删除该订阅？', ' ', ['取消', '确定'], (e) => {
           if (e.index === 1) {
             http({

@@ -127,7 +127,7 @@
               }
             })
           }
-        })
+        },'div')
       },//修改默认地址
       changeDefault(id, value) {
         http({

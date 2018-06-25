@@ -12,54 +12,52 @@
           .user-share 分享
     .mui-content
       loading(ref="loading")
-      .content-page(v-if="dataLock")
-        .scroll-wrapper#builderTender
-          .scroll-box
-            .cell-row
-              .base-msg
-                .module2
-                  div.overflow-auto
-                    .fl.text-color-black 执业印章号
-                    .fr {{baseData.register_no}}
-                .module2(v-for="(item,index) in baseData.professional_list")
-                  div.text-color-black.listTitle(v-if="index === 0") 证书列表
-                  div.overflow-auto
-                    .fl {{item.professional}}
-                    .fr {{item.expire_date}}过期
-                  div 证书编号：{{item.certificate_no}}
-                .module2
-                  div.overflow-auto
-                    .fl
-                      span.text-color-black 中标总数
-                      span  {{baseData.tender_sucess_num}}
-                    .fr
-                      span.text-color-black 最近中标
-                      span  {{baseData.last_tender_sucess_date}}
-                .module2
-                  div.overflow-auto
-                    .fl.text-color-black 注册公司
-                    .fr {{baseData.company_name}}
-                .module3
-                  span(v-for="sign in baseData.province_list")
-                    i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
-                    span {{sign.name}}
-            .cell-row
-              .pro-group
-                .pro-item(v-for="item in builderTenderData.data")
-                  .pro-time
-                    i.iconfont.icon-time
-                    span  &nbsp;{{item.tender_date}}
-                  .pro-content
-                    .pro-main
-                      .pro-name.mui-ellipsis-2 {{item.title}}
-                      .pro-main-sign
-                        span.pro-company {{item.company_name}}
-                    .pro-assist
-                      .pro-price
-                        span {{item.tender_je}}
-                        | 万
-                      .pro-location {{item.province}} / {{item.city}}
-                        template(v-if='item.district')  / {{item.district}}
+      .scroll-wrapper#builderTender(v-show="dataLock")
+        .scroll-box
+          .cell-row
+            .base-msg
+              .module2
+                div.overflow-auto
+                  .fl.text-color-black 执业印章号
+                  .fr {{baseData.register_no}}
+              .module2(v-for="(item,index) in baseData.professional_list")
+                div.text-color-black.listTitle(v-if="index === 0") 证书列表
+                div.overflow-auto
+                  .fl {{item.professional}}
+                  .fr {{item.expire_date}}过期
+                div 证书编号：{{item.certificate_no}}
+              .module2
+                div.overflow-auto
+                  .fl
+                    span.text-color-black 中标总数
+                    span  {{baseData.tender_sucess_num}}
+                  .fr
+                    span.text-color-black 最近中标
+                    span  {{baseData.last_tender_sucess_date}}
+              .module2
+                div.overflow-auto
+                  .fl.text-color-black 注册公司
+                  .fr {{baseData.company_name}}
+              .module3
+                span(v-for="sign in baseData.province_list")
+                  i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
+                  span {{sign.name}}
+          .cell-row
+            .pro-group
+              .pro-item(v-for="item in builderTenderData.data", @tap="openDetail('detail',{rid:item.rid,type:2})")
+                .pro-time
+                  i.iconfont.icon-time
+                  span  &nbsp;{{item.tender_date}}
+                .pro-content
+                  .pro-main
+                    .pro-name.mui-ellipsis-2 {{item.title}}
+                    .pro-main-sign
+                      span.pro-company {{item.company_name}}
+                  .pro-assist
+                    .pro-price
+                      span {{item.tender_je}}
+                      | 万
+                    .pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
 </template>
 <style lang="stylus" scoped>
   @import "builderDetail.styl"
@@ -70,34 +68,42 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
-  import loading from "../../components/loading";
+  import loading from "../../components/loading"
+
   export default {
     name: 'builderDetail',
     data() {
       return {
-        dataLock:false,
-        rid:'',
+        dataLock: false,
+        rid: '',
         baseData: {},
         builderTenderData: {
           pageNum: 1,
           data: {}
         },
-        followed:false
+        followed: false,
       }
     },
-    components:{
-      loading:loading
+    components: {
+      loading: loading
     },
     mounted() {
       let vueThis = this;
-      window.addEventListener('getData',(e)=>{
-        vueThis.rid = e.detail.rid;
-        vueThis.dataLock = false;
-        vueThis.getData();
-      });
       mui.init({
         pullRefresh: [{
           container: '#builderTender',
+          down: {
+            callback: function () {
+              vueThis.builderTenderData.pageNum = 1;
+              http({
+                url: api.search_builder_tender_success,
+                success: (data) => {
+                  vueThis.builderTenderData.data = data.result;
+                  mui('#builderTender').pullRefresh().endPulldownToRefresh();
+                }
+              });
+            }
+          },
           up: {
             contentrefresh: "正在加载...",
             callback: function () {
@@ -105,7 +111,6 @@
               http({
                 url: api.search_builder_tender_success,
                 data: {
-                  code: vueThis.rid,
                   cur_page: vueThis.builderTenderData.pageNum
                 }, success: (data) => {
                   vueThis.builderTenderData.data = vueThis.builderTenderData.data.concat(data.result);
@@ -119,7 +124,12 @@
             }
           }
         }]
-      })
+      });
+      window.addEventListener('getData', (e) => {
+        vueThis.rid = e.detail.rid;
+        vueThis.dataLock = false;
+        vueThis.getData();
+      });
     },
     created() {
 
@@ -128,10 +138,10 @@
       //数据请求
       getData() {
         this.$refs.loading.show();
-        this.baseData={};
-        this.builderTenderData={
+        this.baseData = {};
+        this.builderTenderData = {
           pageNum: 1,
-            data: {}
+          data: {}
         };
         http({
           url: api.search_builder_detail,
@@ -159,7 +169,7 @@
               mui.toast('取消成功')
             }
           })
-        }else {
+        } else {
           http({
             url: api.member_follow,
             method: 'post',
@@ -173,6 +183,16 @@
             }
           })
         }
+      },
+      openDetail(url, data) {
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          if (!detailPage) {
+            mui.toast('目标正在初始化，请稍候~');
+          }
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
       },
     }
   }

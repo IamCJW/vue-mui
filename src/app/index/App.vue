@@ -10,6 +10,7 @@
 
 <script>
   /* global mui */
+  import myMethods from '../../assets/js/methods'
   export default {
     name: 'index',
     data() {
@@ -34,11 +35,13 @@
       }
     },
     mounted() {
-      let navHeight = this.changeRem(0.49);
       mui.init({
         wipeBack: true,
       });
-
+      window.addEventListener('changeTabNav',(e)=>{
+        console.log(e.detail.index);
+        this.activeIndex = e.detail.index;
+      });
       mui.plusReady(() => {
         let styles = {top: this.changeRem(0), bottom: this.changeRem(0.49), zindex: 1};
         let main = plus.webview.currentWebview();
@@ -57,7 +60,6 @@
       openTabPage: function (index) {
         // 如果当前 tab 已被激活，则返回
         if (index === this.activeIndex) return;
-
         let styles = {top: this.changeRem(0), bottom: this.changeRem(0.49), zindex: 1};
         mui.plusReady(() => {
           let main = plus.webview.currentWebview();
@@ -67,17 +69,12 @@
             main.append(subWebview)
           }
           // 显示要打开的子 webview
-          plus.webview.show(this.tabs[index].id);
-          plus.webview.hide(this.tabs[this.activeIndex].id);
+          plus.webview.show(this.tabs[index].id,'fade-in',300);
           // 设置当前 tab index
           this.activeIndex = index
         });
       },
-      changeRem: function (rem) {
-        let windowWidth = document.documentElement.clientWidth;
-        let px = windowWidth * 0.26667 * rem;
-        return `${px}px`;
-      }
+      changeRem: myMethods.changeRem,
     }
   }
 </script>

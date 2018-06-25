@@ -46,15 +46,15 @@
         table
           tr
             td(colspan="4")
-              .time 发布时间: {{pushMsg.info_date}}
+              .time 发布时间: {{pullMsg.info_date}}
           tr
             td.th 招标人
-            td(colspan="3") {{pushMsg.tender_info.tender_name}}
-          tr(v-if="pushMsg.proxy_name === ''")
+            td(colspan="3") {{pullMsg.tender_info.tender_name}}
+          tr(v-if="pullMsg.proxy_name === ''")
             td.th 招标代理
-            td(colspan="3") {{pushMsg.proxy_name}}
+            td(colspan="3") {{pullMsg.proxy_name}}
             td
-          template(v-for="(item,index) in pushMsg.section_info")
+          template(v-for="(item,index) in pullMsg.section_info")
             tr
               td.th(colspan="4") {{item.name}}
             tr
@@ -70,12 +70,12 @@
               td {{item.certificate_no}}
           tr
             td.th 信息来源
-            td(colspan="3") {{pushMsg.resource}}
+            td(colspan="3") {{pullMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
           tr
             td.td(colspan="4")
-              .orContent {{pushMsg.content}}
+              .orContent {{pullMsg.content}}
       // 其他
       .content-table(v-show="navPage !== '中标公示' && navPage !== '招标公告'")
         table
@@ -280,7 +280,7 @@
               success: (data) => {
                 this.pullMsg = data;
                 this.navigate_list = data.navigate_list;
-                this.navPage = '中标公告';
+                this.navPage = '中标公示';
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
               }

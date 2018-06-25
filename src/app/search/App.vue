@@ -9,7 +9,7 @@
       loading(ref="loading")
       .content-wrapper
         .content-full-scroll(ref='barscroll')
-          .content-page(@swipeleft="contentSwipeleft()")
+          .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('message',1)")
             .scroll-wrapper#page1
               .scroll-box
                 .search-wrapper
@@ -55,7 +55,7 @@
                         span(v-for="sign in item.province_list")
                           i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
                           span {{sign.name}}
-          .content-page(@swiperight="contentSwiperight()")
+          .content-page(@swiperight="contentSwiperight()", @swipeleft="openTabNav('me',4)")
             ul.media-view
               li.media
                 .media-content.iconfont.icon-right
@@ -233,6 +233,7 @@
       }
       ,
       openWindow: myMethods.openWindow,//跳转详情
+      openTabNav :myMethods.openTabNav,
       openDetail(url, data) {
         mui.plusReady(function () {
           let detailPage = plus.webview.getWebviewById(url);

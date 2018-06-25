@@ -44,12 +44,13 @@
     z-index 2
 .header-nav~.mui-content
   height 100vh
+  position relative
   padding-top .88rem
-  .content-page
+  .scroll-wrapper
     height 100%
     position relative
-    .scroll-wrapper
-      height 100%
+.bg-gary
+  background-color #ddd!important
 .base-msg
   margin-top .12rem
   width 100%
@@ -65,10 +66,11 @@
     .listTitle
       margin-bottom .07rem
   .module3
-    padding .1rem 0 0
+    padding .1rem 0
+    margin-bottom -.1rem
     overflow auto
     span
-      font-size .1rem
+      font-size .12rem
       float left
       width .66rem
       display-inline-flex()
@@ -126,6 +128,7 @@
       height 100%
       color $text-color-light-x
       div
+        line-height 1.2
         height 49%
         width 100%
         display-flex()

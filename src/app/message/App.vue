@@ -12,7 +12,7 @@
       loading(ref="loading")
       .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
-          .content-page(@swipeleft="contentSwipeleft()")
+          .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('home',0)")
             .scroll-wrapper#page1
               .scroll-box
                 ul.media-view
@@ -25,7 +25,7 @@
                             i.iconfont.icon-time
                             span {{item.info_date}}
                         .module-content {{item.title}}
-          .content-page(@swiperight="contentSwiperight()")
+          .content-page(@swiperight="contentSwiperight()", @swipeleft="openTabNav('search',2)")
             .scroll-wrapper#page2
               .scroll-box
                 ul.media-view
@@ -207,7 +207,7 @@
               }
             })
           }
-        })
+        },'div')
       },
       showFilter() {
         this.filterMsg.flag = !this.filterMsg.flag;
@@ -246,6 +246,7 @@
         }
       },
       openWindow: myMethods.openWindow,//消息跳转详情
+      openTabNav :myMethods.openTabNav,
       goToDetail(type, data) {
         let detailPage ={};
         switch (type) {
@@ -270,7 +271,8 @@
             this.openWindow('companyDetail_own');
             break;
         }
-      }
+      },
+      openTabNav:myMethods.openTabNav,
     }
   }
 </script>

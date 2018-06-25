@@ -40,16 +40,14 @@
                             span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                               i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
                               span &nbsp;{{item.tender_type}}
-                            span.pro-location {{item.province}}
-                              template(v-if="item.city") / {{item.city}}
-                                template(v-if='item.district')  / {{item.district}}
+                            span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
                         .pro-assist
                           .pro-endTime {{item.end_datetime}}
                           .pro-price
                             span {{item.amount}}
                             | 万
           //公告
-          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
+          .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .scroll-wrapper#page2
               .scroll-box
                 .filter-wrapper
@@ -69,15 +67,14 @@
                             span.pro-style(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                               i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
                               span &nbsp;{{item.tender_type}}
-                            span.pro-location {{item.province}} / {{item.city}}
-                              template(v-if='item.district')  / {{item.district}}
+                            span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
                         .pro-assist
                           .pro-endTime {{item.end_datetime}}
                           .pro-price
                             span {{item.amount}}
                             | 万
           //中标
-          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
+          .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .scroll-wrapper#page3
               .scroll-box
                 .filter-wrapper
@@ -102,10 +99,9 @@
                           .pro-price
                             span {{item.tender_je}}
                             | 万
-                          .pro-endTime {{item.province}} / {{item.city}}
-                            template(v-if='item.district')  / {{item.district}}
+                          .pro-endTime {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
           //更多
-          .content-page(@swiperight="contentSwiperight()")
+          .content-page(@swiperight="contentSwiperight", @swipeleft="openTabNav('message',1)")
             .scroll-wrapper#page4
               .scroll-box
                 .filter-wrapper
@@ -126,8 +122,7 @@
                         .pro-main
                           .pro-name.mui-ellipsis-2 {{item.name}}
                           .pro-main-sign
-                            span.pro-location {{item.province}} / {{item.city}}
-                              template(v-if='item.district')  / {{item.district}}
+                            span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
     //筛选
     transition(name='filter')
       .mask(v-if="filterFlag")
@@ -247,10 +242,10 @@
         //获取项目数据
         http({
           url: api.home,
-          data:{
-            province:this.province,
-            city:this.city,
-            district:this.district,
+          data: {
+            province: this.province,
+            city: this.city,
+            district: this.district,
           },
           success: (data) => {
             this.pageIndex0.data = data.subscribe_list;
@@ -259,10 +254,10 @@
             this.pageIndex3.data = data.more_list;
             this.$refs.loading.hide();
             this.dataLock = true;
-            mui('#page1').pullRefresh().scrollTo(0,0,100);
-            mui('#page2').pullRefresh().scrollTo(0,0,100);
-            mui('#page3').pullRefresh().scrollTo(0,0,100);
-            mui('#page4').pullRefresh().scrollTo(0,0,100);
+            mui('#page1').pullRefresh().scrollTo(0, 0, 100);
+            mui('#page2').pullRefresh().scrollTo(0, 0, 100);
+            mui('#page3').pullRefresh().scrollTo(0, 0, 100);
+            mui('#page4').pullRefresh().scrollTo(0, 0, 100);
           }
         });
         http({
@@ -419,7 +414,7 @@
       },
       // 跳转页面
       openWindow: myMethods.openWindow,
-      openNViewPreload:myMethods.openNViewPreload,
+      openNViewPreload: myMethods.openNViewPreload,
       openDetail(url, data) {
         mui.plusReady(function () {
           let detailPage = plus.webview.getWebviewById(url);
@@ -482,7 +477,10 @@
         let key = this.pageKey;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
-      }
+      },
+      //跳转主页内容
+      openTabNav:myMethods.openTabNav,
+      changeRem:myMethods.changeRem,
     },
     mounted() {
       this.location();
@@ -675,7 +673,7 @@
         vueThis.getData();
         this.localLocation = `${this.city}-${this.district}`
       });
-      window.addEventListener('localStorageClear',()=>{
+      window.addEventListener('localStorageClear', () => {
         this.location();
         this.getData();
       });

@@ -22,7 +22,7 @@
         li.media
           .media-content.iconfont.icon-right
             .media-lable 检测新版本
-            .media-value v1.0.0.0
+            .media-value(:class="[isNew ? 'iconfont icon-warning':'']",@tap="verCheck") {{version ? 'v'+version : '正在检测'}}
         li.media(@tap="localStorageClear")
           .media-content.iconfont.icon-right
             .media-lable 清理本地缓存
@@ -45,22 +45,36 @@
     name: 'coupon',
     data() {
       return {
-        notify_im_message:0,
-        notify_wx_message:0,
-        notify_busy:0,
-        is_wxbind:0,
-        localStorageLength:''
+        notify_im_message: 0,
+        notify_wx_message: 0,
+        notify_busy: 0,
+        is_wxbind: 0,
+        localStorageLength: '',
+        version: '',
+        isNew: true,
+        verData:{},
       }
     },
-    components:{
-      switchBox:switchBox
+    components: {
+      switchBox: switchBox
     },
     mounted() {
-      window.addEventListener('getData',()=>{
+      let vueThis = this;
+      mui.plusReady(() => {
+        vueThis.version = plus.runtime.version;
+        http({
+          url:api.system_check_version,
+          data:{ver:vueThis.version},
+          success:(data)=>{
+            vueThis.verData = data;
+            vueThis.isNew = true;
+          }
+        })
+      });
+      window.addEventListener('getData', () => {
         this.getData();
       });
-      mui.init({
-      });
+      mui.init({});
     },
     created() {
 
@@ -72,35 +86,47 @@
         http({
           url: api.member_system_config,
           success: (data) => {
-            for (let index in data){
-             this[index] = data[index];
+            for (let index in data) {
+              this[index] = data[index];
             }
           }
         });
       },
-      upStatus(data){
+      upStatus(data) {
         this[data.key] = data.value;
       },
-      openWindow:myMethods.openWindow,
-      localStorageClear(){
+      openWindow: myMethods.openWindow,
+      localStorageClear() {
         window.localStorage.clear();
         this.localStorageLengthGet();
         mui.toast('清理完毕');
-        mui.plusReady(()=>{
+        mui.plusReady(() => {
           let homeView = plus.webview.getWebviewById('home');
-          mui.fire(homeView,'localStorageClear',{msg:'缓存被清理'})
+          mui.fire(homeView, 'localStorageClear', {msg: '缓存被清理'})
           let selectLocation = plus.webview.getWebviewById('selectLocation');
-          mui.fire(selectLocation,'localStorageClear',{msg:'缓存被清理'})
+          mui.fire(selectLocation, 'localStorageClear', {msg: '缓存被清理'})
         })
       },
-      localStorageLengthGet(){
+      localStorageLengthGet() {
         let size = 0;
-        for(let item in window.localStorage) {
-          if(window.localStorage.hasOwnProperty(item)) {
-            size += window.localStorage.getItem(item).replace(/[\u0391-\uFFE5]/g,"aa").length;
+        for (let item in window.localStorage) {
+          if (window.localStorage.hasOwnProperty(item)) {
+            size += window.localStorage.getItem(item).replace(/[\u0391-\uFFE5]/g, "aa").length;
           }
         }
-        this.localStorageLength = `${(size/1024/1024).toFixed(2)}MB`;
+        this.localStorageLength = `${(size / 1024 / 1024).toFixed(2)}MB`;
+      },
+      verCheck(){
+        let vueThis = this;
+        if (this.isNew){
+          mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`,'提醒',['取消','确定'],function () {
+            if(e.index === 1){
+              mui.openWindow(vueThis.verData.url);
+            }
+          },'div')
+        } else {
+          mui.toast('暂未检测到新版本~')
+        }
       }
     }
   }

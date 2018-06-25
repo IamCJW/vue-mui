@@ -29,7 +29,7 @@
             .scroll-wrapper#page2
               .scroll-box
                 ul.media-view
-                  li.media(@tap="openDetail('searchProject')")
+                  li.media(@tap="openDetail('searchCompany_own')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加业主关注
@@ -133,6 +133,10 @@
           mui.preload({
             url: './searchBuilder.html',
             id: 'searchBuilder'
+          });
+          mui.preload({
+            url: './searchCompany_own.html',
+            id: 'searchCompany_own'
           });
         })
       });
@@ -294,7 +298,7 @@
               }
             })
           }
-        })
+        },'div')
       },
       openWindow:myMethods.openWindow,
       openDetail(url,data) {
