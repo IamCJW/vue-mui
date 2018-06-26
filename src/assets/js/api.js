@@ -1,4 +1,5 @@
-const prefix = 'http://106.14.201.3:8080/mockjsdata/1'; // api地址前缀
+// const prefix = 'http://106.14.201.3:8080/mockjsdata/1'; // mock地址
+const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
 export default (config => {
   let copy = {};
   for (let key in config) {
@@ -45,13 +46,13 @@ export default (config => {
   member_follow_project: '/member/follow/project',//关注项目分页
   search_tender_company_detail: '/search/tender/company/detail',//业主单位详情
   search_tender_company_list: '/search/tender/company/list',//业主单位详情招标数据分页
-  search_tender_company:'/search/tender/company',//查找业主单位
+  search_tender_company: '/search/tender/company',//查找业主单位
   member_order_company: '/member/order_company',//订单公司信息管理 get delete post
   member_system_config: '/member/system/config',//系统设置 get post
   member_app_check_version: '/member/app/check_version',//APP版本检查
   user_login: '/user/login',//用户登录
   user_register: '/user/register',//用户注册
-  user_auth: 'user_auth',//第三方登录
+  user_auth: '/user/auth',//第三方登录
   user_auth_register: '/user/auth/register',//第三方登录用户注册
   user_auth_bind: '/user/auth/bind',//第三方账号登录绑定
   common_sendcode: '/common/sendcode',//获取验证码

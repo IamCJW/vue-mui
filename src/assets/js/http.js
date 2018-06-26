@@ -56,8 +56,7 @@ const httpServer = (opts) => {
       if(data.code === '00000'){
         opts.success(data.data);
       }else {
-        mui.toast(data.msg);
-        opts.error();
+        opts.error(res.data);
       }
     }
   ).catch((response) => {

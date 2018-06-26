@@ -24,8 +24,8 @@
         .login-third
           .title 其他登录方式
           .content
-            i.iconfont.icon-WECHAT
-            i.iconfont.icon-QQFRIENDS
+            i.iconfont.icon-WECHAT(@tap="otherLogin('weixin')")
+            i.iconfont.icon-QQFRIENDS(@tap="otherLogin('qq')")
         .tip 登录代表您已经同意
           a 《用户协议》
           | 和
@@ -45,13 +45,13 @@
     name: 'login',
     data() {
       return {
-        loginType: false,
+        loginType: true,
         phone: '',
         code: '',
         pwd: '',
         codeFlag: true,
-        codeText:'获取验证码',
-        totalTime:'10'
+        codeText: '获取验证码',
+        totalTime: '60'
       }
     },
     mounted() {
@@ -85,17 +85,17 @@
           })
         }
       },// 验证码定时器
-      timeClock(){
+      timeClock() {
         this.codeText = `${this.totalTime}s后获取`;
-        let clock = window.setInterval(()=>{
-          this.totalTime --;
+        let clock = window.setInterval(() => {
+          this.totalTime--;
           this.codeText = `${this.totalTime}s后获取`;
-          if(this.totalTime < 1){
+          if (this.totalTime < 1) {
             window.clearInterval(clock);
-            this.codeText='重新获取';
-            this.codeFlag=false;
+            this.codeText = '重新获取';
+            this.codeFlag = false;
           }
-        },1000)
+        }, 1000)
       }
       ,//打开页面
       openWindow: myMethods.openWindow,
@@ -126,14 +126,83 @@
           mobile: this.phone,
           pwd: this.loginType ? this.pwd : this.code
         };
+        console.log(data);
         http({
           url: api.user_login,
           data: data,
           method: 'post',
-          success: () => {
-            myMethods.openWindow('./index.html')
+          success: (data) => {
+            console.log(data);
+
           }
         })
+      },
+      otherLogin(type) {
+        mui.plusReady(() => {
+          plus.oauth.getServices((services) => {
+            let sever;
+            for (let i = 0; i < services.length; i++) {
+              if (services[i].id == type) {
+                sever = services[i];
+                break;
+              }
+            }
+            if (!sever.authResult) {
+              sever.login(function (e) {
+                console.log(sever.authResult.access_token);
+                sever.getUserInfo(function (e) {
+                  let data = {
+                    flag: type === 'weixin' ? 1 : 2,
+                    icon: sever.userInfo.headimgurl,
+                    nick_name: sever.userInfo.nickname,
+                  };
+                  if (type==='qq'){
+                    http({
+                      url:'https://graph.qq.com/oauth2.0/me',
+                      data:{
+                        access_token:sever.authResult.access_token,
+                      },
+                      error(data){
+                        let str = data.replace('callback(','');
+                        str = str.replace(');','');
+                        str = str.trim();
+                        data['openid']= JSON.parse(str).openid;
+                      }
+                    })
+                  } else {
+                    data['openid']= sever.userInfo.nickname.openid
+                  }
+                  http({
+                    url: api.user_auth,
+                    data: data,
+                    success(data){
+
+                    },
+                    error(data){
+                      mui.preload({
+                        url:'./login_other.html',
+                        id:'login_other'
+                      })
+                      let detailPage = plus.webview.getWebviewById('login_other');
+                      mui.fire(detailPage, 'getData', data);
+                      mui.openWindow('login_other');
+                    }
+                  });
+                }, function (e) {
+                  mui.toast('获取用户信息失败');
+                });
+              }, function (e) {
+                mui.toast('登录认证失败');
+              });
+            } else {
+              //已经登录认证
+              mui.toast('登录成功');
+            }
+          }, (e) => {
+            console.log("获取登录授权认证服务失败");
+            mui.toast('获取登录授权认证服务失败');
+          });
+        });
       },
     }
   }

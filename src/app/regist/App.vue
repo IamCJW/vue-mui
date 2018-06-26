@@ -12,11 +12,18 @@
           .input-item
             i.iconfont.icon-yanzhengma
             input(placeholder="请输入验证码" type="tel" v-model="code" @input="changeValue")
-            span.code(:class="{disabled:codeFlag}") {{codeText}}
+            span.code(:class="{disabled:codeFlag}", @tap="getCode") {{codeText}}
         .tip(v-show="phoneFlag") 我们已给手机号码
           span {{phone}}
           | 发送了一条4位数验证码
         .tip(v-show="!phoneFlag") 请输入11位手机号码
+        .input-group
+          .input-item
+            i.iconfont.icon-yanzhengma
+            input(placeholder="请输入密码", type="password" , minlength="6", v-model="passwordOne")
+          .input-item
+            i.iconfont.icon-yanzhengma
+            input(placeholder="请再次输入", type="password" , minlength="6", v-model="passwordTwo")
         button.mid-btn(@tap="next" :disabled="btnDisable" :class="{disabled:btnDisable}") 下一步
 </template>
 <style lang="stylus" scoped>
@@ -39,8 +46,10 @@
         btnDisable: true,
         first: true,
         codeText: '重新获取',
-        totalTime: '10',
-        codeFlag: true
+        totalTime: '60',
+        codeFlag: true,
+        passwordOne:'',
+        passwordTwo:''
       }
     },
     mounted() {
@@ -94,30 +103,51 @@
       // 获取验证码
       getCode() {
         if (!this.codeFlag) {
+          this.totalTime = 10;
           this.codeFlag = true;
           this.timeClock();
           http({
             url: api.common_sendcode,
+            method: 'post',
             data: {
               mobile_no: this.phone
             },
-            method: 'post',
-            success: () => {
+            success() {
               mui.toast('获取成功')
             }
           })
         }
       },//下一步
-      next(){
+      next() {
+        if(this.passwordOne === '' || this.passwordTwo === ''){
+          mui.toast('密码不能为空');
+          return
+        }
+        if(this.passwordOne !== this.passwordTwo){
+          mui.toast('密码输入不一致');
+          return
+        }
         http({
-          url:api.common_verify_code,
-          data:{
-            code:this.code,
-            mobile_no:this.phone
+          url: api.user_register,
+          data: {
+            code: this.code,
+            mobile: this.phone,
+            pwd:this.passwordOne
           },
-          method:'post',
-          success(){
-            myMethods.openWindow('regist_next')
+          method: 'post',
+          success() {
+            mui.toast('注册成功，正在为您登录');
+            http({
+              url: api.user_register,
+              data: {
+                flag: 1,
+                mobile: this.phone,
+                pwd:this.passwordOne
+              },
+              success(){
+                myMethods.openWindow('index');
+              }
+            });
           }
         })
       }
