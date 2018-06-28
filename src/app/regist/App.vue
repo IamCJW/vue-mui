@@ -135,7 +135,7 @@
             pwd:this.passwordOne
           },
           method: 'post',
-          success() {
+          success:()=>{
             mui.toast('注册成功，正在为您登录');
             http({
               url: api.user_register,

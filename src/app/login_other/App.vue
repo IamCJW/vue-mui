@@ -2,7 +2,7 @@
   #app
     .mui-content
       .header-login
-        i.iconfont.icon-sdf
+        i.iconfont.icon-sdf.mui-action-back
       .box
         .nav-tab
           .nav-item(:class="{'active':loginType}", @tap="changeType(true)") 新用户

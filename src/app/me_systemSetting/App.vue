@@ -27,7 +27,7 @@
           .media-content.iconfont.icon-right
             .media-lable 清理本地缓存
             .media-value {{localStorageLength || '正在计算'}}
-      .fixed-bottom-btn(openWindow="openWindow('index')") 退出登录
+      button.fixed-bottom-btn(@tap="loginOut") 退出登录
 </template>
 <style lang="stylus" scoped>
   @import "systemSetting.styl"
@@ -35,7 +35,7 @@
 <script>
   /* global mui */
   /* global mui plus */
-  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
+  import {plusKey} from '../../assets/js/locationStorage.js'
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
@@ -52,7 +52,7 @@
         localStorageLength: '',
         version: '',
         isNew: true,
-        verData:{},
+        verData: {},
       }
     },
     components: {
@@ -63,9 +63,9 @@
       mui.plusReady(() => {
         vueThis.version = plus.runtime.version;
         http({
-          url:api.system_check_version,
-          data:{ver:vueThis.version},
-          success:(data)=>{
+          url: api.system_check_version,
+          data: {ver: vueThis.version},
+          success: (data) => {
             vueThis.verData = data;
             vueThis.isNew = true;
           }
@@ -96,6 +96,7 @@
         this[data.key] = data.value;
       },
       openWindow: myMethods.openWindow,
+      //清除缓存
       localStorageClear() {
         window.localStorage.clear();
         this.localStorageLengthGet();
@@ -107,6 +108,7 @@
           mui.fire(selectLocation, 'localStorageClear', {msg: '缓存被清理'})
         })
       },
+      //获取本地缓存
       localStorageLengthGet() {
         let size = 0;
         for (let item in window.localStorage) {
@@ -116,17 +118,37 @@
         }
         this.localStorageLength = `${(size / 1024 / 1024).toFixed(2)}MB`;
       },
-      verCheck(){
+      //版本检查
+      verCheck() {
         let vueThis = this;
-        if (this.isNew){
-          mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`,'提醒',['取消','确定'],function () {
-            if(e.index === 1){
+        if (this.isNew) {
+          mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`, '提醒', ['取消', '确定'], function () {
+            if (e.index === 1) {
               mui.openWindow(vueThis.verData.url);
             }
-          },'div')
+          }, 'div')
         } else {
           mui.toast('暂未检测到新版本~')
         }
+      },
+      //退出登录
+      loginOut() {
+        http({
+          url: api.member_logout,
+          success() {
+            plus.storage.removeItem(plusKey.token);
+            plus.storage.removeItem(plusKey.state);
+            let view = plus.webview.getWebviewById('me');
+            mui.fire(view, 'loginOut',{
+              msg:'退出登录成功~'
+            });
+            plus.webview.currentWebview.close();
+            console.log('123133');
+          },
+          error(data) {
+            mui.toast(data.msg);
+          }
+        })
       }
     }
   }

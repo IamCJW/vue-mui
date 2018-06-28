@@ -7,14 +7,13 @@
         ul.media-view
           li.media(v-for="item in selectedArr")
             .media-content
-              span {{item.name}}-{{item.level}}
+              span {{item.name}}—{{item.level}}
               i.iconfont.icon-Rubbish.fr(@tap="deleteArr(item.rid)")
       .button-group(v-if="selectedArr.length < 5")
         button.add(@tap="add") 添加
         .tip 手动最多添加5条资质
     .typeGroup(v-if="selectFlag")
       .typeItem(v-for="(item,key) in qualifyList", :class="{active:qualifyFlag === key}", @tap="changeQualify(key)") {{item === '建筑业施工企业资质'? '施工资质' : item}}
-
 </template>
 <style lang="stylus" scoped>
   @import "selectQualifys.styl"
@@ -40,7 +39,7 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-  import axios from 'axios'
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'selectQualify',
@@ -56,7 +55,7 @@
           4: '监理资质',
           5: '一体化资质',
         },
-        picker: {},
+        picker: {show: {}},
         qualityData: {}
       }
     },
@@ -97,14 +96,26 @@
         });
         if (localStorage.getItem(lsKey.qualify) !== null) {
           this.qualifyData = JSON.parse(localStorage.getItem(lsKey.qualify));
-          this.picker.setData(this.qualifyData[0].children);
+          for (let i in this.qualifyData) {
+            if (this.qualifyData[i].text === this.qualifyList[1]) {
+              this.picker.setData(this.qualifyData[i].children);
+            }
+          }
         } else {
           http({
             url: api.common_base_qualify,
             success: (data) => {
+              console.log(data);
               this.qualifyData = data;
-              this.picker.setData(this.qualifyData[0].children);
-              localStorage.setItem(lsKey.qualify, data);
+              for (let i in this.qualifyData) {
+                if (this.qualifyData[i].text === this.qualifyList[1]) {
+                  this.picker.setData(this.qualifyData[i].children);
+                }
+              }
+              localStorage.setItem(lsKey.qualify, JSON.stringify(data));
+            },
+            error: (data) => {
+              mui.toast(data.msg)
             }
           });
         }
@@ -135,19 +146,23 @@
       },
       //删除///////////////////////
       deleteArr(id) {
+        let vueThis = this;
+        let rid = id;
         mui.confirm('确认删除该资质？', ' ', ['取消', '确定'], (e) => {
           if (e.index === 1) {
             http({
               url: api.member_qualify,
               method: 'delete',
-              data: {rid: id},
+              data: {rid: rid},
               success: () => {
-                this.getData();
+                vueThis.getData();
                 mui.toast('资质删除成功');
+              }, error: (data) => {
+                mui.toast(data.msg);
               }
             })
           }
-        },'div');
+        }, 'div');
       },
       //确定///////////////////////
       confirm() {
@@ -162,6 +177,9 @@
           success: () => {
             this.getData();
             mui.toast('资质添加成功');
+          },
+          error: (data) => {
+            mui.toast(data.msg);
           }
         })
       }

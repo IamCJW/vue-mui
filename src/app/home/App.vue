@@ -164,7 +164,7 @@
 <script>
   /* global mui */
   /* global mui plus*/
-  import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
+  import {lsKey, plusKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http'
   import api from '../../assets/js/api'
   import myMethods from '../../assets/js/methods.js'
@@ -479,8 +479,8 @@
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },
       //跳转主页内容
-      openTabNav:myMethods.openTabNav,
-      changeRem:myMethods.changeRem,
+      openTabNav: myMethods.openTabNav,
+      changeRem: myMethods.changeRem,
     },
     mounted() {
       this.location();
@@ -677,6 +677,14 @@
         this.location();
         this.getData();
       });
+      mui.plusReady(() => {
+        if (plus.storage.getItem(plusKey.firstOpen)) {
+
+          plus.navigator.setFullscreen(false);
+          plus.navigator.closeSplashscreen();
+
+        }
+      })
     },
     created() {
 

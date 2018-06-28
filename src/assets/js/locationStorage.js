@@ -19,6 +19,13 @@ let ssKey = {
   filterCity: 'localStorage_filter_city',//筛选的省
   filterDistrict: 'localStorage_filter_district',//筛选的省
 };
+let plusKey = {
+  firstOpen:'first_open',//应用是否第一次启动
+  token:'token',//登录标识
+  state:'state',//登录状态
+  temporaryToken:'temporary_token',//临时的标识
+};
 
 
-export {lsKey, ssKey}
+
+export {lsKey, ssKey , plusKey}

@@ -1,7 +1,7 @@
 @import "../../stylus/_mixin.styl"
-.mui-content
+html
   background-color #fcfcfc
-  min-height 100vh
+.mui-content
   padding .12rem
   .header-login
     width 100%
@@ -9,11 +9,11 @@
     top 0
     height .44rem
     overflow hidden
+    left 0
     display-flex()
     .iconfont
       font-size .24rem
       padding .12rem
-      margin -.12rem
       color $main-color
   .box
     position relative
@@ -96,42 +96,8 @@
         &.other
           margin -.1rem auto 0
           height auto
-    .login-third
-      margin-top .5rem
-      .title
-        position relative
-        text-align center
-        width 100%
-        color $text-color-light-xxx
-        font-size .12rem
-        &:after,&:before
-          content ''
-          position absolute
-          background-color $text-color-light-xxx
-          height .01rem
-          opacity .5
-          top .1rem
-        &:after
-          right 0
-          left 2.3rem
-        &:before
-          left 0
-          right 2.3rem
-      .content
-        display-flex()
-        flex-align-item(center)
-        flex-justify-content(space-around)
-        padding .35rem .6rem
-        .iconfont
-          font-size .4rem
-          line-height 1
     .tip
       text-align center
       color $text-color-light-xxx
       font-size .12rem
       padding-bottom .15rem
-.icon-WECHAT
-  color #1afa29
-.icon-QQFRIENDS
-  color #0ca7f8
-

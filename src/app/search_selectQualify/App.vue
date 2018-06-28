@@ -107,7 +107,7 @@
             success: (data) => {
               this.qualifyData = data;
               this.picker.setData(this.qualifyData[0].children);
-              localStorage.setItem(lsKey.qualify, data);
+              localStorage.setItem(lsKey.qualify,JSON.stringify(data));
             }
           });
         }

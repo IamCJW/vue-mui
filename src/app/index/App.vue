@@ -11,6 +11,8 @@
 <script>
   /* global mui */
   import myMethods from '../../assets/js/methods'
+  import {plusKey} from "../../assets/js/locationStorage";
+
   export default {
     name: 'index',
     data() {
@@ -38,22 +40,44 @@
       mui.init({
         wipeBack: true,
       });
-      window.addEventListener('changeTabNav',(e)=>{
+      window.addEventListener('changeTabNav', (e) => {
         console.log(e.detail.index);
         this.activeIndex = e.detail.index;
       });
-      mui.plusReady(() => {
+      let preload = ()=>{
         let styles = {top: this.changeRem(0), bottom: this.changeRem(0.49), zindex: 1};
         let main = plus.webview.currentWebview();
         this.tabs.forEach((item, index) => {
           let subWebview = plus.webview.create(item.url, item.id, styles);
           main.append(subWebview);
-          if(index === 0){
+          if (index === 0) {
             subWebview.show();
-          }else {
+          } else {
             subWebview.hide();
           }
         })
+      };
+      mui.plusReady(() => {
+        if (plus.storage.getItem(plusKey.firstOpen)) {
+          preload();
+        } else {
+          plus.navigator.setFullscreen(true);
+          mui.openWindow({
+            id: 'guide',
+            url: './guide.html',
+            styles: {
+            },
+            show: {
+              aniShow: 'none'
+            },
+            waiting: {
+              autoShow: false
+            }
+          });
+          setTimeout(function() {
+            preload();
+          }, 200);
+        }
       })
     },
     methods: {
@@ -68,8 +92,10 @@
             let subWebview = plus.webview.create(this.tabs[index].url, this.tabs[index].id, styles);
             main.append(subWebview)
           }
+          let view = plus.webview.getWebviewById(this.tabs[index].id);
+          mui.fire(view,'getData',{});
           // 显示要打开的子 webview
-          plus.webview.show(this.tabs[index].id,'fade-in',300);
+          plus.webview.show(this.tabs[index].id, 'fade-in', 300);
           // 设置当前 tab index
           this.activeIndex = index
         });

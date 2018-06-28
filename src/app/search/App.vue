@@ -126,7 +126,12 @@
       loading: loading
     },
     mounted() {
-      this.getData();
+
+      window.addEventListener('getData',()=>{
+        this.getData();
+      });
+
+
       let vueThis = this;
 
       mui.plusReady(() => {

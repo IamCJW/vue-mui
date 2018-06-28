@@ -4,10 +4,13 @@
       .user-setting(@tap="openNViewPreload('userData')") 个人资料
       .user-msg
         div.user-head
-          img(src="../../assets/me-default.png")
-        .user-name {{userData.name || '用户昵称'}}
-        .user-loginStation(@tap="openWindow('login')")
+          img(:src="userData.icon || './static/me-default.png'")
+        .user-name(v-show="!loginState") 用户昵称
+        .user-name(v-show="loginState") {{userData.name || '匿名'}}
+        .user-loginStation(@tap="openWindow('login')", v-show="!loginState")
           span 您还没有登录，请登录>
+        .user-loginStation(v-show="loginState")
+          span 您的账户已上线~
       .me-nav
         .me-nav-item(@tap="openNViewPreload('wallet')")
           i.iconfont.icon-wallet
@@ -74,14 +77,25 @@
     name: 'me',
     data() {
       return {
-        userData: {}
+        userData: {},
+        loginState: false,
       }
     },
     mounted() {
-
+      window.addEventListener('getData', () => {
+        this.getData();
+      });
+      window.addEventListener('loginSuccess', (e) => {
+        this.getData();
+        mui.toast(e.detail.msg);
+      });
+      window.addEventListener('loginOut', (e) => {
+        this.getData();
+        mui.toast(e.detail.msg);
+      });
     },
     created() {
-      this.getData();
+
     },
     methods: {
       //数据请求
@@ -90,12 +104,21 @@
           url: api.member_info,
           success: (data) => {
             this.userData = data;
+            this.loginState = true;
+            mui.toast('登录成功')
+          },
+          error: (data) => {
+            if (data.code === '404') {
+              this.loginState = true;
+            } else {
+              mui.toast('您需要先登录才能使用该页功能~')
+            }
           }
         })
       },//打开页面
       openWindow: myMethods.openWindow,//打开详情
-      openNViewPreload:myMethods.openNViewPreload,
-      openTabNav :myMethods.openTabNav,
+      openNViewPreload: myMethods.openNViewPreload,
+      openTabNav: myMethods.openTabNav,
     }
   }
 </script>

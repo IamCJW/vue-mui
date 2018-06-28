@@ -1,6 +1,8 @@
 <template lang="pug">
   #app
     .mui-content
+      .header-login
+        i.iconfont.icon-sdf.mui-action-back
       .box
         .logo
           img(src="../../assets/logo.png")
@@ -40,6 +42,7 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import {plusKey} from '../../assets/js/locationStorage'
 
   export default {
     name: 'login',
@@ -126,14 +129,25 @@
           mobile: this.phone,
           pwd: this.loginType ? this.pwd : this.code
         };
-        console.log(data);
         http({
           url: api.user_login,
           data: data,
           method: 'post',
           success: (data) => {
-            console.log(data);
-
+            mui.plusReady(()=>{
+              console.log('登录打印');
+              console.log(data);
+              plus.storage.setItem(plusKey.token,data);
+              plus.storage.setItem(plusKey.state,"true");
+              let view = plus.webview.getWebviewById('me');
+              mui.fire(view,'loginSuccess',{
+                msg:'登录成功'
+              });
+              plus.webview.currentWebview().close();
+            });
+          },
+          error:(data)=>{
+            mui.toast(data.msg);
           }
         })
       },
@@ -149,7 +163,6 @@
             }
             if (!sever.authResult) {
               sever.login(function (e) {
-                console.log(sever.authResult.access_token);
                 sever.getUserInfo(function (e) {
                   let data = {
                     flag: type === 'weixin' ? 1 : 2,

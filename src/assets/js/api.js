@@ -1,5 +1,6 @@
 // const prefix = 'http://106.14.201.3:8080/mockjsdata/1'; // mock地址
-const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
+// const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
+const prefix = 'http://192.168.50.26';//本地测试地址
 export default (config => {
   let copy = {};
   for (let key in config) {
@@ -64,4 +65,6 @@ export default (config => {
   member_wallet_list: '/member/wallet/list',//消费明细分页
   member_address_default: '/member/address/default',//修改默认地址
   system_check_version: '/system/check_version',//版本检查
+  system_token: '/system/token',//游客token
+  member_logout:'/member/logout',//退出登录
 })

@@ -145,8 +145,9 @@
           }
         }]
       });
-      this.jumpTo(this.pageFlag);
-      this.getData();
+      window.addEventListener('getData',()=>{
+        this.getData();
+      });
     },
     created() {
 
