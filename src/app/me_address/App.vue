@@ -5,19 +5,22 @@
       .content-page
         .scroll-wrapper#page1
           .scroll-box
-            .address-group
+            .none(v-if="!addressData.data.length && dataLock")
+              i.iconfont.icon-Shippingaddress
+              span 您还未添加收货地址
+            .address-group(v-if="addressData.data.length && dataLock")
               div.address-box(v-for="item in addressData.data")
                 i.iconfont.select(:class="item.defaulted ? 'icon-selectss':'icon-CIRCLE'", @tap="changeDefault(item.rid,!item.defaulted)")
                 .address-content
                   .address-top
                     .fun-name {{item.contact_name}}
                     .fun-group
-                      i.iconfont.icon-Rubbish(@tap="delAddress(item.rid)")
+                      i.iconfont.icon-Rubbish(@tap="delAddress(item.rid,item)")
                       i.iconfont.icon-edit(@tap="openDetail('address_edit',{item:item})")
                   .address-tel {{item.contact_tel}}
                   .address-location {{item.province}}{{item.city}}
                   .address-location {{item.district}}{{item.street}}
-      button.fixed-bottom-btn(@tap="openWindow('address_edit_new')") 新增收货地址
+      button.fixed-bottom-btn(@tap="openDetail('address_edit_new')") 新增收货地址
 </template>
 <style lang="stylus" scoped>
   @import "address.styl"
@@ -35,14 +38,16 @@
     components: {loading},
     data() {
       return {
+        dataLock: false,
         addressData: {
           pageNum: 1,
-          data: {}
+          data: []
         }
       }
     },
     mounted() {
       let vueThis = this;
+      this.getData()
       window.addEventListener('editSuccess', (e) => {
         mui.toast(e.detail.msg);
         this.getData()
@@ -50,38 +55,13 @@
       window.addEventListener('getData', () => {
         this.getData();
         mui.preload({
-          url:'./address_edit.html',
-          id:'address_edit'
+          url: './address_edit.html',
+          id: 'address_edit'
         });
         mui.preload({
-          url:'./address_edit_new.html',
-          id:'address_edit_new'
+          url: './address_edit_new.html',
+          id: 'address_edit_new'
         });
-        mui.init({
-          pullRefresh: [{
-            container: '#page1',
-            up: {
-              contentrefresh: "正在加载...",
-              callback: function () {
-                vueThis.addressData.pageNum += 1;
-                http({
-                  url: api.member_address,
-                  data: {
-                    province: vueThis.province,
-                    cur_page: vueThis.addressData.pageNum
-                  }, success: (data) => {
-                    vueThis.addressData.data = vueThis.addressData.data.concat(data.result);
-                    if (data.total_page === vueThis.addressData.pageNum) {
-                      this.endPullupToRefresh(true);
-                    } else {
-                      this.endPullupToRefresh(false);
-                    }
-                  }
-                });
-              }
-            }
-          }]
-        })
       });
     },
     created() {
@@ -90,6 +70,7 @@
     methods: {
       //数据请求
       getData() {
+        this.dataLock = false;
         this.$refs.loading.show();
         this.addressData = {
           pageNum: 1,
@@ -98,46 +79,43 @@
         http({
           url: api.member_address,
           success: (data) => {
-            this.addressData.data = data.result;
+            this.addressData.data = data.result || [];
             this.$refs.loading.hide();
-            mui('#page1').pullRefresh().scrollTo(0,0,100)
+            this.dataLock = true;
+            mui('#page1').pullRefresh().scrollTo(0, 0, 100)
+          },
+          noFind: () => {
+
           }
         })
       },//打开页面
       openWindow: myMethods.openWindow,//跳转详情
-      openDetail(url, data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
-      delAddress(id) {
+      openDetail:myMethods.openNViewPreload,
+      delAddress(id,item) {
+        let rid = id;
         mui.confirm('确定删除该地址', ' ', ['取消', '确定'], (e) => {
           if (e.index === 1) {
             http({
               url: api.member_address,
-              method: 'post',
-              data: {rid: id},
+              method: 'delete',
+              data: {rid: rid},
               success: (data) => {
-                this.getData()
+                this.getData();
+                mui.toast('删除成功~')
               }
             })
           }
-        },'div')
+        }, 'div')
       },//修改默认地址
-      changeDefault(id, value) {
+      changeDefault(id) {
         http({
           url: api.member_address_default,
           method: 'post',
           data: {
-            defaulted: value,
             rid: id
           },
-          success() {
+          success:()=> {
+            mui.toast('修改默认地址成功~');
             this.getData();
           }
         })

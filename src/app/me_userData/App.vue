@@ -60,6 +60,7 @@
   import api from '../../assets/js/api.js'
   import Cropper from 'vue-cropper'
   import axios from 'axios'
+  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'userData',
@@ -135,12 +136,17 @@
           http({
             url: api.member_icon,
             method: 'post',
+            dataType:true,
             data: formData,
             headers: {
-              contentType: 'multipart/form-data'
+              'Content-Type':'multipart/form-data',
             },
             success: () => {
               mui.toast('修改头像成功')
+              let view = plus.webview.getWebviewById('me');
+              mui.fire(view,'changeUserData',{
+                msg:'修改头像'
+              });
             }
           })
         })
@@ -180,7 +186,11 @@
           method: 'post',
           data: data,
           success: () => {
-            mui.toast('保存成功')
+            mui.toast('保存成功');
+            let view = plus.webview.getWebviewById('me');
+            mui.fire(view,'changeUserData',{
+              msg:'修改基础信息'
+            });
           }
         })
       },

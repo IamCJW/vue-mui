@@ -93,6 +93,10 @@
         this.getData();
         mui.toast(e.detail.msg);
       });
+      window.addEventListener('changeUserData', (e) => {
+        this.getData();
+        mui.toast(e.detail.msg);
+      });
     },
     created() {
 
@@ -105,6 +109,7 @@
           success: (data) => {
             this.userData = data;
             this.loginState = true;
+            console.log(data.icon);
             mui.toast('登录成功')
           },
           error: (data) => {

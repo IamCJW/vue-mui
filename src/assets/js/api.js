@@ -1,6 +1,6 @@
 // const prefix = 'http://106.14.201.3:8080/mockjsdata/1'; // mock地址
-// const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
-const prefix = 'http://192.168.50.26';//本地测试地址
+const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
+// const prefix = 'http://192.168.50.26';//本地测试地址
 export default (config => {
   let copy = {};
   for (let key in config) {

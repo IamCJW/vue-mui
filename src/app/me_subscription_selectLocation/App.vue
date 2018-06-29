@@ -135,6 +135,7 @@
               http({
                 url: api.member_subscribe,
                 method: 'post',
+                dataType:true,
                 data: {
                   province: this.province,
                   city: this.city,

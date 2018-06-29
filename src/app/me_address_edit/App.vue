@@ -14,7 +14,7 @@
           .media-content.iconfont
             .media-lable 手机号码
             .media-value
-              input(placeholder='请输入手机号', v-model="contact_tel")
+              input(placeholder='请输入手机号',type="tel", v-model="contact_tel")
         li.media
           .media-content.iconfont.icon-right(@tap="selectCity")
             .media-lable 所在城市
@@ -59,8 +59,15 @@
     },
     mounted() {
       window.addEventListener('getData',(e)=>{
-        this.rid = e.detail.rid;
-        this.getData();
+        let data = e.detail.item;
+        this.rid = data.rid;
+        this.city=data.city;
+        this.contact_name=data.contact_name;
+        this.contact_tel=data.contact_tel;
+        this.district=data.district;
+        this.province=data.province;
+        this.street=data.street;
+        this.defaulted=data.defaulted;
       });
       this.cityPicker = new mui.PopPicker({
         layer: 3
@@ -73,19 +80,7 @@
     methods: {
       //数据请求
       getData() {
-        http({
-          url:api.member_address_detail,
-          data:{rid:this.rid},
-          success:(data)=>{
-            this.city=data.city;
-            this.contact_name=data.contact_name;
-            this.contact_tel=data.contact_tel;
-            this.district=data.district;
-            this.province=data.province;
-            this.street=data.street;
-            this.defaulted=data.defaulted;
-          }
-        })
+
       },//打开页面
       openWindow: myMethods.openWindow,
       //更改默认地址
@@ -120,6 +115,7 @@
         }
         http({
           url:api.member_address,
+          dataType:true,
           data:data,
           method:'post',
           success:()=>{

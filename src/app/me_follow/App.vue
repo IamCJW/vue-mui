@@ -12,7 +12,12 @@
           .content-page(@swipeleft="contentSwipeleft()")
             .scroll-wrapper#page1
               .scroll-box
-                ul.media-view
+                template(v-if='!project_follows.data.length && dataLock')
+                  .none
+                    i.iconfont.icon-xiangmu
+                    span 暂未关注项目~
+                  button.mid-btn(@tap="openDetail('searchProject')") 添加项目关注
+                ul.media-view(v-if='project_follows.data.length && dataLock')
                   li.media(@tap="openDetail('searchProject')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
@@ -28,7 +33,12 @@
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page2
               .scroll-box
-                ul.media-view
+                template(v-if='!company_follows.data.length && dataLock')
+                  .none
+                    i.iconfont.icon-yezhu
+                    span 暂未关注业主~
+                  button.mid-btn(@tap="openDetail('searchCompany_own')") 添加业主关注
+                ul.media-view(v-if='company_follows.data.length && dataLock')
                   li.media(@tap="openDetail('searchCompany_own')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
@@ -44,10 +54,15 @@
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page3
               .scroll-box
-                ul.media-view
+                template(v-if='!company_follows.data.length && dataLock')
+                  .none
+                    i.iconfont.icon-yezhu
+                    span 暂未关注建筑企业~
+                  button.mid-btn(@tap="openDetail('searchCompany')") 添加建筑企业关注
+                ul.media-view(v-if='company_follows.data.length && dataLock')
                   li.media(@tap="openDetail('searchCompany')")
                     .media-content.add
-                      i.iconfont.icon-attentions &nbsp;
+                      i.iconfont.icon-jianzhuqiye &nbsp;
                       span 添加建筑企业关注
                   li.media(v-for="item in company_follows.data", @tap="openDetail('companyDetail',{rid:item.rid})")
                     .media-content
@@ -60,7 +75,12 @@
           .content-page(@swiperight="contentSwiperight()")
             .scroll-wrapper#page4
               .scroll-box
-                ul.media-view
+                template(v-if='!builder_follows.data.length && dataLock')
+                  .none
+                    i.iconfont.icon-ren-copy
+                    span 暂未关注建造师~
+                  button.mid-btn(@tap="openDetail('searchBuilder')") 添加建造师关注
+                ul.media-view(v-if='builder_follows.data.length && dataLock')
                   li.media(@tap="openDetail('searchBuilder')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
@@ -90,6 +110,7 @@
     components: {loading},
     data() {
       return {
+        dataLock:false,
         pageKey: 0,
         builder_follows: {
           pageNum: 1,
@@ -254,16 +275,17 @@
         http({
           url: api.member_follow,
           success: (data) => {
-            this.builder_follows.data = data.builder_follows;
-            this.company_follows.data = data.company_follows;
-            this.project_follows.data = data.project_follows;
-            this.tender_follows.data = data.tender_follows;
+            this.builder_follows.data = data.builder_follows || [];
+            this.company_follows.data = data.company_follows || [];
+            this.project_follows.data = data.project_follows || [];
+            this.tender_follows.data = data.tender_follows || [];
             mui('#page1').pullRefresh().scrollTo(0,0,100);
             mui('#page2').pullRefresh().scrollTo(0,0,100);
             mui('#page3').pullRefresh().scrollTo(0,0,100);
             mui('#page4').pullRefresh().scrollTo(0,0,100);
             this.$refs.loading.hide();
-          }
+            this.dataLock = true;
+          },
         });
       },
       //页面切换

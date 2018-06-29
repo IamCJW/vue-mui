@@ -34,10 +34,11 @@
     data() {
       return {
         dataLock:false,
-        companyData: {}
+        companyData: []
       }
     },
     mounted() {
+      this.getData();
       window.addEventListener('getData',()=>{
         this.getData();
         mui.plusReady(()=>{
@@ -62,22 +63,31 @@
             this.companyData = data;
             this.$refs.loading.hide();
             this.dataLock = true;
+          },
+          noFind:(data)=>{
+            this.companyData = [];
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         })
       },
       //删除按钮
       deleteCompany(rid){
-        mui.confirm('确认删除该订单公司？',' ',['取消','确定'],(rid)=>{
-          http({
-            url: api.member_order_company,
-            methods:'delete',
-            data:{
-              rid:rid
-            },
-            success: (data) => {
-              this.companyData = data
-            }
-          })
+        let id = rid;
+        let vueThis = this;
+        mui.confirm('确认删除该订单公司？',' ',['取消','确定'],(e)=>{
+          if(e.index === 1){
+            http({
+              url: api.member_order_company,
+              method:'delete',
+              data:{
+                rid:id,
+              },
+              success: () => {
+                vueThis.getData();
+              }
+            })
+          }
         },'div')
       }
       ,

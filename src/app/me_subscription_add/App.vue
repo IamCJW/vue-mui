@@ -73,6 +73,7 @@
         http({
           url:api.member_subscribe,
           method:'post',
+          dataType:true,
           data:{
             province:this.location.province,
             city:this.location.city,

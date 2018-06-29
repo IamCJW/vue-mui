@@ -14,7 +14,7 @@
           .media-content.iconfont
             .media-lable 手机号码
             .media-value
-              input(placeholder='请输入手机号', v-model="contact_tel")
+              input(placeholder='请输入手机号',type="tel", v-model="contact_tel")
         li.media
           .media-content.iconfont.icon-right(@tap="selectCity")
             .media-lable 所在城市
@@ -53,10 +53,19 @@
         province: '',
         street: '',
         defaulted: false,
-        cityPicker:{}
+        cityPicker: {}
       }
     },
     mounted() {
+      window.addEventListener('getData', () => {
+        this.city = '';
+        this.contact_name = '';
+        this.contact_tel = '';
+        this.district = '';
+        this.province = '';
+        this.street = '';
+        this.defaulted = false;
+      });
       this.cityPicker = new mui.PopPicker({
         layer: 3
       });
@@ -72,16 +81,16 @@
       changeDefault() {
         this.defaulted = !this.defaulted
       },//选择城市
-      selectCity(){
+      selectCity() {
         let vueThis = this;
-        this.cityPicker.show(function(items) {
+        this.cityPicker.show(function (items) {
           vueThis.province = items[0].text;
           vueThis.city = items[1].text;
           vueThis.district = items[2].text;
         });
       },
       //保存
-      addressSave(){
+      addressSave() {
         let data = {
           city: this.city,
           contact_name: this.contact_name,
@@ -91,17 +100,18 @@
           street: this.street,
           defaulted: this.defaulted,
         };
-        for (let item in data){
-          if (data[item] === ''){
+        for (let item in data) {
+          if (data[item] === '') {
             mui.toast('所有选项不能为空~');
             return
           }
         }
         http({
-          url:api.member_address,
-          data:data,
-          method:'post',
-          success:()=>{
+          url: api.member_address,
+          data: data,
+          dataType: true,
+          method: 'post',
+          success: () => {
             let view = plus.webview.currentWebview().opener();
             mui.fire(view, 'editSuccess', {
               msg: '新增成功'
