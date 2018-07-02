@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入企业名称和统一信用代码" v-model="message")
+        input(placeholder="请输入企业名称" v-model="message")
       span.search(@tap="search()") 搜索
     .mui-content
       loading(ref="loading")
@@ -14,7 +14,7 @@
           span 暂无该词条信息~
         .scroll-wrapper#companyGroup(v-show="total !== 0 !== 0")
           .scroll-box
-            .search-result(v-if="total !== 0") 某招标共收录建筑企业{{total}}家
+            .search-result(v-if="total !== 0") 某招标共收录业主企业{{total}}家
             .pro-group
               transition-group(name='domItem')
                 .pro-item(v-for="item in companyData.result", :key="item.rid"  , @tap="openDetail('companyDetail_own')")

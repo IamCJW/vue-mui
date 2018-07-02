@@ -22,7 +22,7 @@
         li.media
           .media-content.iconfont.icon-right
             .media-lable 检测新版本
-            .media-value(:class="[isNew ? 'iconfont icon-warning':'']",@tap="verCheck") {{version ? 'v'+version : '正在检测'}}
+            .media-value(:class="[isNew ? 'iconfont icon-warning':'']", @tap="verCheck") {{version ? 'v'+version : '正在检测'}}
         li.media(@tap="localStorageClear")
           .media-content.iconfont.icon-right
             .media-lable 清理本地缓存
@@ -138,12 +138,25 @@
           success() {
             plus.storage.removeItem(plusKey.token);
             plus.storage.removeItem(plusKey.state);
-            let view = plus.webview.getWebviewById('me');
-            mui.fire(view, 'loginOut',{
-              msg:'退出登录成功~'
+            plus.oauth.getServices(function (services) {
+              for (let i in services) {
+                let s = services[i];
+                if (s.authResult) {
+                  s.logout(function (e) {
+                    console.log('清除授权列表成功~')
+                  }, function (e) {
+                    console.log('清除授权列表失败~')
+                  });
+                }
+              }
+            }, function (e) {
+              console.log('获取授权列表失败~')
             });
-            plus.webview.currentWebview.close();
-            console.log('123133');
+            let view = plus.webview.getWebviewById('me');
+            mui.fire(view, 'loginOut', {
+              msg: '退出登录成功~'
+            });
+            plus.webview.currentWebview().close();
           },
           error(data) {
             mui.toast(data.msg);

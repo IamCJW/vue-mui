@@ -72,6 +72,7 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'me',
@@ -104,25 +105,33 @@
     methods: {
       //数据请求
       getData() {
-        http({
-          url: api.member_info,
-          success: (data) => {
-            this.userData = data;
-            this.loginState = true;
-            console.log(data.icon);
-            mui.toast('登录成功')
-          },
-          error: (data) => {
-            if (data.code === '404') {
-              this.loginState = true;
-            } else {
-              mui.toast('您需要先登录才能使用该页功能~')
-            }
+        let vueThis = this;
+        mui.plusReady(() => {
+          if (plus.storage.getItem(plusKey.state)) {
+            http({
+              url: api.member_info,
+              success: (data) => {
+                vueThis.userData = data;
+                vueThis.loginState = true;
+              },
+              error: (data) => {
+                mui.toast(data.msg)
+              }
+            })
+          }else {
+            this.loginState = false;
+            this.userData = {};
           }
-        })
+        });
       },//打开页面
       openWindow: myMethods.openWindow,//打开详情
-      openNViewPreload: myMethods.openNViewPreload,
+      openNViewPreload(url, data) {
+        if(this.loginState){
+          myMethods.openNViewPreload(url, data)
+        }else{
+         this.openWindow('login');
+        }
+      },
       openTabNav: myMethods.openTabNav,
     }
   }

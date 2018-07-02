@@ -36,6 +36,7 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'loginOther',
@@ -50,10 +51,15 @@
         codeText: '获取验证码',
         totalTime: '60',
         flag: '',
-        openid: ''
+        openid: '',
+        clientid:'',
       }
     },
     mounted() {
+      let vueThis = this;
+      mui.plusReady(()=>{
+        vueThis.clientid = plus.storage.getItem(plusKey.clientid);
+      });
       window.addEventListener('getData', (e) => {
         this.flag = e.detail.flag;
         this.openid = e.detail.openid;
@@ -109,7 +115,7 @@
       changeType(boolean) {
         this.loginType = boolean;
       },
-      // 登录////////////////////////////////
+      // 注册////////////////////////////////
       register() {
         if (this.pwd === '' || this.pwd1 === '') {
           mui.toast('密码不能为空');
@@ -127,22 +133,12 @@
             pwd: this.pwd,
             code:this.code,
             openid:this.openid,
+            getui_id:this.clientid,
           },
+          type:true,
           method: 'post',
-          success() {
-            mui.toast('注册成功，正在为您登录');
-            http({
-              url: api.user_login,
-              data: {
-                flag:1,
-                pwd: this.pwd,
-                mobile:this.phone,
-              },
-              success(data) {
-                console.log(data);
-                // myMethods.openWindow('index');
-              }
-            });
+          success(data) {
+            this.successDo(data);
           }
         })
       },
@@ -154,13 +150,26 @@
             flag:this.flag,
             code:this.code,
             openid:this.openid,
+            getui_id:this.clientid,
           },
           method: 'post',
+          type:true,
           success(data) {
-            console.log(data)
+            this.successDo(data);
           }
         })
       },
+      //成功登录操作
+      successDo(data){
+        plus.storage.setItem(plusKey.token, data);
+        plus.storage.setItem(plusKey.state, "true");
+        let view = plus.webview.getWebviewById('me');
+        mui.fire(view, 'loginSuccess', {
+          msg: '登录成功'
+        });
+        plus.webview.currentWebview().opener().close();
+        plus.webview.currentWebview().close();
+      }
     }
   }
 </script>

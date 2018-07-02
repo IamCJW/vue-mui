@@ -174,6 +174,7 @@
     name: 'home',
     data() {
       return {
+        error:false,
         dataLock: false,
         iconMsg: {
           "监理": {
@@ -254,10 +255,16 @@
             this.pageIndex3.data = data.more_list;
             this.$refs.loading.hide();
             this.dataLock = true;
+            this.error = false;
             mui('#page1').pullRefresh().scrollTo(0, 0, 100);
             mui('#page2').pullRefresh().scrollTo(0, 0, 100);
             mui('#page3').pullRefresh().scrollTo(0, 0, 100);
             mui('#page4').pullRefresh().scrollTo(0, 0, 100);
+          },
+          error:(data)=>{
+            this.$refs.loading.hide();
+            this.dataLock = true;
+            this.error = true;
           }
         });
         http({
@@ -679,10 +686,8 @@
       });
       mui.plusReady(() => {
         if (plus.storage.getItem(plusKey.firstOpen)) {
-
           plus.navigator.setFullscreen(false);
           plus.navigator.closeSplashscreen();
-
         }
       })
     },

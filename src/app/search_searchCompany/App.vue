@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入企业名称和统一信用代码" v-model="message")
+        input(placeholder="请输入企业名称或统一信用代码" v-model="message")
       span.search(@tap="search()") 搜索
     .mui-content
       loading(ref="loading")

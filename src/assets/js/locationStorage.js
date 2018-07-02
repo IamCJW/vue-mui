@@ -24,6 +24,7 @@ let plusKey = {
   token:'token',//登录标识
   state:'state',//登录状态
   temporaryToken:'temporary_token',//临时的标识
+  clientid:'clientid',//推送标识
 };
 
 

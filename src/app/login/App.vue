@@ -54,7 +54,8 @@
         pwd: '',
         codeFlag: true,
         codeText: '获取验证码',
-        totalTime: '60'
+        totalTime: '60',
+        clientid: '',
       }
     },
     mounted() {
@@ -108,6 +109,7 @@
       },
       // 登录////////////////////////////////
       login() {
+        this.getClientid();
         if (this.phone === '') {
           mui.toast('手机号不能为空');
           return
@@ -127,36 +129,37 @@
         let data = {
           flag: this.loginType ? 1 : 2,
           mobile: this.phone,
-          pwd: this.loginType ? this.pwd : this.code
+          pwd: this.loginType ? this.pwd : this.code,
+          getui_id: this.clientid,
         };
         http({
           url: api.user_login,
           data: data,
           method: 'post',
           success: (data) => {
-            mui.plusReady(()=>{
-              console.log('登录打印');
-              console.log(data);
-              plus.storage.setItem(plusKey.token,data);
-              plus.storage.setItem(plusKey.state,"true");
+            mui.plusReady(() => {
+              plus.storage.setItem(plusKey.token, data);
+              plus.storage.setItem(plusKey.state, "true");
               let view = plus.webview.getWebviewById('me');
-              mui.fire(view,'loginSuccess',{
-                msg:'登录成功'
+              mui.fire(view, 'loginSuccess', {
+                msg: '登录成功'
               });
               plus.webview.currentWebview().close();
             });
           },
-          error:(data)=>{
+          error: (data) => {
             mui.toast(data.msg);
           }
         })
       },
       otherLogin(type) {
-        mui.plusReady(() => {
+        let vueThis = this;
+        this.getClientid();
+        mui.plusReady(function () {
           plus.oauth.getServices((services) => {
             let sever;
             for (let i = 0; i < services.length; i++) {
-              if (services[i].id == type) {
+              if (services[i].id === type) {
                 sever = services[i];
                 break;
               }
@@ -164,43 +167,7 @@
             if (!sever.authResult) {
               sever.login(function (e) {
                 sever.getUserInfo(function (e) {
-                  let data = {
-                    flag: type === 'weixin' ? 1 : 2,
-                    icon: sever.userInfo.headimgurl,
-                    nick_name: sever.userInfo.nickname,
-                  };
-                  if (type==='qq'){
-                    http({
-                      url:'https://graph.qq.com/oauth2.0/me',
-                      data:{
-                        access_token:sever.authResult.access_token,
-                      },
-                      error(data){
-                        let str = data.replace('callback(','');
-                        str = str.replace(');','');
-                        str = str.trim();
-                        data['openid']= JSON.parse(str).openid;
-                      }
-                    })
-                  } else {
-                    data['openid']= sever.userInfo.nickname.openid
-                  }
-                  http({
-                    url: api.user_auth,
-                    data: data,
-                    success(data){
-
-                    },
-                    error(data){
-                      mui.preload({
-                        url:'./login_other.html',
-                        id:'login_other'
-                      })
-                      let detailPage = plus.webview.getWebviewById('login_other');
-                      mui.fire(detailPage, 'getData', data);
-                      mui.openWindow('login_other');
-                    }
-                  });
+                  vueThis.oauthDo(type, sever)
                 }, function (e) {
                   mui.toast('获取用户信息失败');
                 });
@@ -208,15 +175,72 @@
                 mui.toast('登录认证失败');
               });
             } else {
-              //已经登录认证
-              mui.toast('登录成功');
+              vueThis.oauthDo(type, sever)
             }
-          }, (e) => {
-            console.log("获取登录授权认证服务失败");
-            mui.toast('获取登录授权认证服务失败');
-          });
-        });
+          })
+        })
       },
+      //获取应用唯一标识
+      getClientid() {
+        mui.plusReady(() => {
+          if (plus.storage.getItem(plusKey.clientid)) {
+            this.clientid = plus.storage.getItem(plusKey.clientid);
+          } else {
+            this.clientid = plus.push.ClientInfo.clientid;
+            plus.storage.setItem(plusKey.clientid, this.clientid);
+          }
+        })
+      }
+      ,
+      //第三方登录操作
+      oauthDo(type, sever) {
+        let opts = {
+          flag: type === 'weixin' ? 1 : 2,
+          icon: sever.userInfo.headimgurl,
+          nick_name: sever.userInfo.nickname,
+          getui_id: this.getui_id,
+        };
+        if (type === 'qq') {
+          http({
+            url: 'https://graph.qq.com/oauth2.0/me',
+            data: {
+              access_token: sever.authResult.access_token,
+            },
+            error(data) {
+              let str = data.replace('callback(', '');
+              str = str.replace(');', '');
+              str = str.trim();
+              opts['openid'] = JSON.parse(str).openid;
+            }
+          })
+        } else {
+          opts['openid'] = sever.userInfo.openid
+        }
+        http({
+          url: api.user_auth,
+          type:true,
+          method:'post',
+          data: opts,
+          success(data) {
+            plus.storage.setItem(plusKey.token, data);
+            plus.storage.setItem(plusKey.state, "true");
+            let view = plus.webview.getWebviewById('me');
+            mui.fire(view, 'loginSuccess', {
+              msg: '登录成功'
+            });
+            plus.webview.currentWebview().close();
+          },
+          noFind(data) {
+            mui.preload({
+              url: './login_other.html',
+              id: 'login_other'
+            });
+            let detailPage = plus.webview.getWebviewById('login_other');
+            mui.fire(detailPage, 'getData', opts);
+            mui.openWindow('login_other');
+          }
+        });
+      }
     }
   }
 </script>
