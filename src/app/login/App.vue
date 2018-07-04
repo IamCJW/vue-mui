@@ -132,6 +132,7 @@
           pwd: this.loginType ? this.pwd : this.code,
           getui_id: this.clientid,
         };
+        console.log('我是个推ID'+this.clientid)
         http({
           url: api.user_login,
           data: data,
@@ -182,12 +183,13 @@
       },
       //获取应用唯一标识
       getClientid() {
+        let vueThis = this;
         mui.plusReady(() => {
           if (plus.storage.getItem(plusKey.clientid)) {
-            this.clientid = plus.storage.getItem(plusKey.clientid);
+            vueThis.clientid = plus.storage.getItem(plusKey.clientid);
           } else {
-            this.clientid = plus.push.ClientInfo.clientid;
-            plus.storage.setItem(plusKey.clientid, this.clientid);
+            vueThis.clientid = plus.push.getClientInfo().clientid;
+            plus.storage.setItem(plusKey.clientid, vueThis.clientid);
           }
         })
       }

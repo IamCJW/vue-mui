@@ -40,12 +40,16 @@
       img
         width 100%
 
+  .mui-fullscreen.mui-slider .mui-slider-item > a
+    top: 0;
+    transform:translateY(0);
 
 </style>
 <script>
   /* global mui */
   /* global mui plus */
   import {plusKey} from "../../assets/js/locationStorage";
+
   export default {
     name: 'login',
     data() {

@@ -41,7 +41,7 @@
         if (localStorage.getItem(lsKey.nationData) !== null) {
           this.nationData = JSON.parse(localStorage.getItem(lsKey.nationData));
           this.nationData.forEach((item) => {
-            if (this.letter.indexOf(item.prefix)) {
+            if (this.letter.indexOf(item.prefix) === (-1)) {
               this.letter.push(item.prefix)
             }
           });
@@ -61,7 +61,7 @@
             success: (data) => {
               this.nationData = data;
               data.forEach((item) => {
-                if (this.letter.indexOf(item.prefix)) {
+                if (this.letter.indexOf(item.prefix) === (-1)) {
                   this.letter.push(item.prefix)
                 }
               });
@@ -106,6 +106,9 @@
     mounted() {
       mui.init({});
       this.getNation();
+      window.addEventListener('localStorageClear', () => {
+        this.getNation();
+      });
     }
   }
 </script>

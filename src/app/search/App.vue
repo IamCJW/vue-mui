@@ -6,12 +6,12 @@
         .search-item(:class="{active: pageFlag === 1}", @tap="jumpTo(1)") 查建造师
         .search-item(:class="{active: pageFlag === 2}", @tap="jumpTo(2)") 资质查企业
     .mui-content
-      loading(ref="loading")
       .content-wrapper
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('message',1)")
             .scroll-wrapper#page1
               .scroll-box
+                loading(ref="loading")
                 .search-wrapper
                   .search-box(@tap="openWindow('searchCompany')")
                     span 请输入企业名称和统一信用代码
@@ -111,8 +111,14 @@
     data() {
       return {
         pageFlag: 0,
-        companyData: {},//建筑企业信息
-        builderData: {},//建造师信息
+        companyData: {
+          result:[],
+          cur_page:1
+        },//建筑企业信息
+        builderData: {
+          result:[],
+          cur_page:1
+        },//建造师信息
         province: {//省份选择
           name: '',
           shortName: ''
@@ -120,20 +126,18 @@
         condition: 1,//企业要求
         conditionCategory: 1,//资质设置
         categoryData: [],
+        errorData:false,
       }
     },
     components: {
-      loading: loading
+      loading: loading,
     },
     mounted() {
-
+      this.getData();
       window.addEventListener('getData',()=>{
         this.getData();
       });
-
-
       let vueThis = this;
-
       mui.plusReady(() => {
         mui.preload({
           url: './searchCompany.html',
@@ -162,6 +166,7 @@
           container: '#page1',
           up: {
             contentrefresh: "正在加载...",
+            contentnomore: '再拉也没有数据~',
             callback: function () {
               vueThis.companyData.cur_page += 1;
               http({
@@ -170,7 +175,7 @@
                   cur_page: vueThis.companyData.cur_page,
                 }, success: (data) => {
                   vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
-                  if (data.total_page === vueThis.companyData.cur_page) {
+                  if (data.total_page <= vueThis.companyData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
@@ -183,6 +188,7 @@
           container: '#page2',
           up: {
             contentrefresh: "正在加载...",
+            contentnomore: '再拉也没有数据~',
             callback: function () {
               vueThis.builderData.cur_page += 1;
               http({
@@ -191,7 +197,7 @@
                   cur_page: vueThis.builderData.cur_page,
                 }, success: (data) => {
                   vueThis.builderData.result = vueThis.builderData.result.concat(data.result);
-                  if (data.total_page === vueThis.builderData.cur_page) {
+                  if (data.total_page <= vueThis.builderData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
@@ -221,6 +227,10 @@
           success: (data) => {
             this.$refs.loading.hide();
             this.companyData = data;
+          },
+          error:(data)=>{
+            this.$refs.loading.hide();
+            this.errorData = true;
           }
         });
         http({
@@ -235,8 +245,7 @@
       },
       categorySelect(key) {
         this.conditionCategory = key
-      }
-      ,
+      },
       openWindow: myMethods.openWindow,//跳转详情
       openTabNav :myMethods.openTabNav,
       openDetail(url, data) {

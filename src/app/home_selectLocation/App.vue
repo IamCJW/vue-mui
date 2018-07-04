@@ -13,7 +13,7 @@
       .oldSelect-box
         .oldSelect-title 最近访问
         .oldSelect-group
-          span.border-box(v-for="item in oldSelects" @tap="selectLocationOld(item.province,item.city,item.district)") {{item.city}}{{item.district}}
+          span.border-box(v-for="item in oldSelects" @tap="selectLocationOld(item.province,item.city,item.district)") {{item.province}}{{item.city}}{{item.district}}
       .indexed-list
         .indexed-content(ref='indexed')
           .indexed-list-alert(v-show="alertFlag.code") {{alertFlag.letter}}
@@ -68,21 +68,24 @@
           success: (data) => {
             this.nationData = data;
             data.forEach((item) => {
-              if (this.letter.indexOf(item.prefix)) {
+              if (this.letter.indexOf(item.prefix) === (-1)) {
                 this.letter.push(item.prefix)
               }
             });
             this.letter = this.letter.sort();
             this.letter.forEach((item) => {
               let _item = item;
-              this.nation[_item] = [];
+              let cityArr = [];
               data.forEach((item) => {
                 if (item.prefix === _item) {
-                  this.nation[_item].push(item)
+                  cityArr.push(item)
                 }
-              })
+              });
+              this.$set(this.nation, _item, cityArr);
             });
-            this.selectInit();
+            this.selectLocation(localStorage.getItem(lsKey.locationProvince), 1);
+            this.selectLocation(localStorage.getItem(lsKey.locationCity), 2);
+            this.selectLocation(localStorage.getItem(lsKey.locationDistrict), 4);
           }
         });
       },
@@ -107,6 +110,8 @@
       },
       //选择器选择///////////////////////////////////////////////////
       selectLocation(key, type) {
+        console.log(key);
+        console.log(type);
         switch (type) {
           case 1:
             this.province = key;
@@ -119,9 +124,18 @@
                 return
               }
             });
-            this.location = `${this.province}${this.city}${this.district}`;
+            this.location = `${this.province}`;
             break;
           case 2:
+            if (key === '全省') {
+              this.city = key;
+              this.citySel = [];
+              if( this.district !== '全市'){
+                this.district = '';
+              }
+              this.selectedDo();
+              return
+            }
             this.city = key;
             this.district = '';
             let cityArr = this.provinceSel.city;
@@ -131,57 +145,84 @@
                 return
               }
             });
-            this.location = `${this.province}${this.city}${this.district}`;
+            this.location = `${this.province}${this.city}`;
             break;
           case 3:
+            if (key === '全市') {
+              this.district = key;
+              this.selectedDo();
+              return
+            }
             this.district = key;
             this.location = `${this.province}${this.city}${this.district}`;
-            //将定位存入本地缓存
-            localStorage.setItem(lsKey.locationProvince, this.province);
-            localStorage.setItem(lsKey.locationCity, this.city);
-            localStorage.setItem(lsKey.locationDistrict, this.district);
-            //历史查询存入缓存
-            if (this.oldSelects.length < 1) {
-              this.oldSelects.unshift({province: this.province, city: this.city, district: this.district})
-            }
-            this.oldSelects.forEach((item) => {
-              if (item.district !== this.district) {
-                if (this.oldSelects.length < 3) {
-                  this.oldSelects.unshift({province: this.province, city: this.city, district: this.district});
-                } else {
-                  this.oldSelects.shift();
-                  this.oldSelects.unshift({province: this.province, city: this.city, district: this.district});
-                }
-              }
-            });
-            localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
-            let vueThis = this;
-            mui.plusReady(()=>{
-              let view = plus.webview.getWebviewById('home');
-              mui.fire(view,'changeLocation',{
-                province:vueThis.province,
-                city:vueThis.city,
-                district:vueThis.district,
-              });
-              mui.back();
-            });
-
+            this.selectedDo();
+            break;
+          case 4:
+            this.district = key;
+            this.location = `${this.province}${this.city}${this.district}`;
         }
       },
-      //历史记录访问//////////////////////////////////////////
-      selectLocationOld(province,city,district){
+      //选择完成执行///////////////////////////////////////////////
+      selectedDo() {
+        let province = this.province;
+        let city = this.city === '全省' ? '' : this.city;
+        let district = this.district === '全市' ? '' : this.district;
         //将定位存入本地缓存
         localStorage.setItem(lsKey.locationProvince, province);
         localStorage.setItem(lsKey.locationCity, city);
         localStorage.setItem(lsKey.locationDistrict, district);
-        mui.back()
+        //历史查询存入缓存
+        if (this.oldSelects.length < 1) {
+          this.oldSelects.unshift({province: province, city: city, district: district})
+        }
+        let flag = false;
+        this.oldSelects.forEach((item) => {
+          if (!(item.district === this.district && item.city === this.city && item.province === this.province)) {
+            flag = true
+          }
+        });
+        if(flag){
+          if (this.oldSelects.length < 3) {
+            this.oldSelects.unshift({province: province, city: city, district: district});
+            console.log(this.oldSelects)
+          } else {
+            console.log(this.oldSelects)
+            this.oldSelects.unshift({province: province, city: city, district: district});
+            this.oldSelects.pop();
+            console.log(this.oldSelects)
+          }
+        }
+        localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
+        mui.plusReady(() => {
+          let view = plus.webview.getWebviewById('home');
+          mui.fire(view, 'changeLocation', {
+            province: province,
+            city: city,
+            district: district,
+          });
+          mui.back();
+        });
+      },
+      //历史记录访问//////////////////////////////////////////
+      selectLocationOld(province, city, district) {
+        //将定位存入本地缓存
+        localStorage.setItem(lsKey.locationProvince, province);
+        localStorage.setItem(lsKey.locationCity, city);
+        localStorage.setItem(lsKey.locationDistrict, district);
+        let view = plus.webview.getWebviewById('home');
+        mui.fire(view, 'changeLocation', {
+          province: province,
+          city: city,
+          district: district,
+        });
+        mui.back();
       }
     },
     mounted() {
       mui.init({});
       this.dataInit();
       this.getNation();
-      window.addEventListener('localStorageClear',()=>{
+      window.addEventListener('localStorageClear', () => {
         this.dataInit();
         this.getNation();
       })

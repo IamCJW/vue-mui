@@ -94,6 +94,7 @@
     },
     mounted() {
       let vueThis = this;
+      this.getData();
       window.addEventListener('getData', (e) => {
         this.getData();
       });

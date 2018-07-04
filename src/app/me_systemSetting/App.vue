@@ -93,7 +93,24 @@
         });
       },
       upStatus(data) {
-        this[data.key] = data.value;
+        let switchData = data;
+        http({
+          url:api.member_system_config,
+          dataType:true,
+          method:'post',
+          data:{
+            notify_im_message: this.notify_im_message ? 1 : 0,
+            notify_wx_message: this.notify_wx_message ? 1 : 0,
+            notify_busy: this.notify_busy ? 1 : 0,
+            is_wxbind: this.is_wxbind ? 1 : 0,
+          },
+          success:()=>{
+            this[switchData.key] = switchData.value;
+          },
+          error:(data)=>{
+            mui.toast(data.msg);
+          }
+        });
       },
       openWindow: myMethods.openWindow,
       //清除缓存
@@ -122,7 +139,7 @@
       verCheck() {
         let vueThis = this;
         if (this.isNew) {
-          mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`, '提醒', ['取消', '确定'], function () {
+          mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`, '提醒', ['取消', '确定'], function (e) {
             if (e.index === 1) {
               mui.openWindow(vueThis.verData.url);
             }
@@ -153,7 +170,11 @@
               console.log('获取授权列表失败~')
             });
             let view = plus.webview.getWebviewById('me');
+            let homeView = plus.webview.getWebviewById('home');
             mui.fire(view, 'loginOut', {
+              msg: '退出登录成功~'
+            });
+            mui.fire(homeView, 'loginOut', {
               msg: '退出登录成功~'
             });
             plus.webview.currentWebview().close();

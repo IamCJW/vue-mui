@@ -71,10 +71,12 @@
                 url: api.index_project_search,
                 data: {
                   province: vueThis.province,
-                  cur_page: vueThis.proData.pageNum
+                  city: vueThis.city,
+                  district: vueThis.district,
+                  search: vueThis.searchMsg
                 }, success: (data) => {
                   vueThis.proData.data = vueThis.proData.data.concat(data.result);
-                  if (data.total_page === vueThis.proData.pageNum) {
+                  if (data.total_page <= vueThis.proData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
@@ -92,6 +94,7 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
+        mui('#page1').pullRefresh().scrollTo(0, 0, 100);
         this.$refs.loading.show();
         http({
           url: api.index_project_search,
@@ -104,6 +107,10 @@
           success: (data) => {
             this.proData.pageNum = 1;
             this.proData.data = data.result;
+            this.dataLock = true;
+            this.$refs.loading.hide();
+          },
+          noFind:()=>{
             this.dataLock = true;
             this.$refs.loading.hide();
           }

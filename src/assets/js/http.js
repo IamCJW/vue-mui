@@ -19,27 +19,27 @@ axios.interceptors.response.use(function (response) {
   return Promise.reject(error);
 });
 const httpServer = (opts) => {
-  mui.plusReady(() => {
-    console.log('去请求');
-    if (plus.storage.getItem(plusKey.token) === null && plus.storage.getItem(plusKey.temporaryToken) === null) {
-      console.log('获取临时Token');
-      axios.get(api.system_token).then((res) => {
-        let data = res.data;
-        if (data.code === '00000') {
-          plus.storage.setItem(plusKey.temporaryToken, data.data);
-        } else {
-          mui.toast('服务器异常');
-          return;
-        }
-      }).catch(() => {
-        mui.toast('请求失败？？？');
-      })
-    }
+  // mui.plusReady(() => {
+  //   console.log('去请求');
+  //   if (plus.storage.getItem(plusKey.token) === null && plus.storage.getItem(plusKey.temporaryToken) === null) {
+  //     console.log('获取临时Token');
+  //     axios.get(api.system_token).then((res) => {
+  //       let data = res.data;
+  //       if (data.code === '00000') {
+  //         plus.storage.setItem(plusKey.temporaryToken, data.data);
+  //       } else {
+  //         mui.toast('服务器异常');
+  //         return;
+  //       }
+  //     }).catch(() => {
+  //       mui.toast('请求失败？？？');
+  //     })
+  //   }
     opts['method'] = opts.method || 'get';
     opts['dataType'] = opts.dataType || false;
     let publicHeaders = {
-      "token": plus.storage.getItem(plusKey.token) || plus.storage.getItem(plusKey.temporaryToken),
-      // "token": 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4Y2RkMmJjMWRkNzU2MGJlMWY1MjBhYzBkNzk3ZTljZiIsImlhdCI6MTUzMDE3OTY0OSwic3ViIjoiMjAxODA2MjgxNTE3Mjk1NTY1OCIsImlzcyI6ImtiYXBwYmFja2dyb3VkYXBpIiwiaXNHdWVzdCI6ZmFsc2V9.LyqcU1bnqm49lRJitsgTxJ8JP4XpsfIXtBc0IYhsB_E',
+      // "token": plus.storage.getItem(plusKey.token) || plus.storage.getItem(plusKey.temporaryToken),
+      "token": 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4Y2RkMmJjMWRkNzU2MGJlMWY1MjBhYzBkNzk3ZTljZiIsImlhdCI6MTUzMDE3OTY0OSwic3ViIjoiMjAxODA2MjgxNTE3Mjk1NTY1OCIsImlzcyI6ImtiYXBwYmFja2dyb3VkYXBpIiwiaXNHdWVzdCI6ZmFsc2V9.LyqcU1bnqm49lRJitsgTxJ8JP4XpsfIXtBc0IYhsB_E',
     };
     let httpDefaultOpts = { //http默认配置
       method: opts.method,
@@ -83,6 +83,6 @@ const httpServer = (opts) => {
         }
       }
     )
-  });
+  // });
 };
 export default httpServer

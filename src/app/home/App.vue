@@ -27,9 +27,10 @@
                   .filter(@tap="openNViewPreload('subscription')")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
-                .pro-group
+                warn(icon='icon-404', msg='未有订阅消息~', :show="!pageIndex0.data.length")
+                .pro-group(v-show="pageIndex0.data.length")
                   transition-group(name='domItem')
-                    .pro-item(v-for="item in pageIndex0.data", :key="item.rid" , @tap="openDetail('detail',{rid:item.rid,type:1})")
+                    .pro-item(v-for="(item,index) in pageIndex0.data", :key="index" , @tap="openDetail('detail',{rid:item.rid,type:1})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -42,10 +43,10 @@
                               span &nbsp;{{item.tender_type}}
                             span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
                         .pro-assist
-                          .pro-endTime {{item.end_datetime}}
+                          .pro-endTime {{item.end_datetime ? item.end_datetime : '未知'}}
                           .pro-price
                             span {{item.amount}}
-                            | 万
+                            | {{item.amount ? '万' : '未知' }}
           //公告
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .scroll-wrapper#page2
@@ -54,7 +55,8 @@
                   .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
-                .pro-group
+                warn(icon='icon-404', msg='该区域暂无招标公告~', :show="!pageIndex1.data.length")
+                .pro-group(v-show="pageIndex1.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="item in pageIndex1.data", :key="item.rid" ,@tap="openDetail('detail',{rid:item.rid,type:1})")
                       .pro-time
@@ -69,10 +71,10 @@
                               span &nbsp;{{item.tender_type}}
                             span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
                         .pro-assist
-                          .pro-endTime {{item.end_datetime}}
+                          .pro-endTime {{item.end_datetime ? item.end_datetime : '未知'}}
                           .pro-price
                             span {{item.amount}}
-                            | 万
+                            | {{item.amount ? '万' : '未知' }}
           //中标
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .scroll-wrapper#page3
@@ -81,9 +83,10 @@
                   .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
-                .pro-group
+                warn(icon='icon-404', msg='该区域暂无中标消息~', :show="!pageIndex2.data.length")
+                .pro-group(v-show="pageIndex2.data.length")
                   transition-group(name='domItem')
-                    .pro-item(v-for="item in pageIndex2.data", :key="item.rid"  , @tap="openDetail('detail',{rid:item.rid,type:2})")
+                    .pro-item(v-for="(item,index) in pageIndex2.data", :key="index"  , @tap="openDetail('detail',{rid:item.rid,type:2})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -98,7 +101,7 @@
                         .pro-assist
                           .pro-price
                             span {{item.tender_je}}
-                            | 万
+                            | {{item.tender_je ? '万' : '未知'}}
                           .pro-endTime {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
           //更多
           .content-page(@swiperight="contentSwiperight", @swipeleft="openTabNav('message',1)")
@@ -108,9 +111,10 @@
                   .filter(@tap="popoutFilter(true,true)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
-                .pro-group
+                warn(icon='icon-404', msg='该区域暂无更多资讯~', :show="!pageIndex3.data.length")
+                .pro-group(v-show="pageIndex3.data.length")
                   transition-group(name='domItem')
-                    .pro-item.more(v-for='item in pageIndex3.data', :key="item.rid", @tap="openDetail('detail',{rid:item.rid,type:3})")
+                    .pro-item.more(v-for='(item,index) in pageIndex3.data', :key="index", @tap="openDetail('detail',{rid:item.rid,type:3})")
                       .pro-time
                         i.iconfont.icon-time
                         span  &nbsp;{{item.info_date}}
@@ -141,11 +145,12 @@
                   .filter-type(v-else-if="key === 'tender_dict'") 行业类型
                   .filter-type(v-else-if="key === 'construction_dict'") 专业类型
                   .filter-keyGrouup
-                    span(v-for="item in value",:class="{active:filterSelect[key].value === item.value}", @tap="filterSelectPro(key,item)") {{item.name}}
+                    span(:class="{active:!filterSelect[key]}", @tap="filterSelectPro(key,'')") 全部
+                    span(v-for="item in value",:class="{active:filterSelect[key] === item.name}", @tap="filterSelectPro(key,item.name)") {{item.name}}
               .filter-typeGroup(v-else)
                 .filter-type 信息类型
                 .filter-keyGrouup
-                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_dict'].value === item.value}", @tap="filterSelectPro('info_dict',item)") {{item.name}}
+                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_dict'] === item.name}", @tap="filterSelectPro('info_dict',item.name)") {{item.name}}
             .popout-filter-btnGroup
               button(@tap="filterReset()") 重置
               button(@tap="filterSubmit()") 确定
@@ -169,12 +174,13 @@
   import api from '../../assets/js/api'
   import myMethods from '../../assets/js/methods.js'
   import loading from '../../components/loading'
+  import warn from '../../components/warn'
 
   export default {
     name: 'home',
     data() {
       return {
-        error:false,
+        error: false,
         dataLock: false,
         iconMsg: {
           "监理": {
@@ -230,7 +236,8 @@
       }
     },
     components: {
-      loading: loading
+      loading: loading,
+      warn: warn,
     },
     methods: {
       //获取初始数据
@@ -249,31 +256,28 @@
             district: this.district,
           },
           success: (data) => {
-            this.pageIndex0.data = data.subscribe_list;
-            this.pageIndex1.data = data.tender_list;
-            this.pageIndex2.data = data.success_tender_list;
-            this.pageIndex3.data = data.more_list;
+            if (data !== undefined) {
+              this.pageIndex0.data = data.subscribe_list;
+              this.pageIndex1.data = data.tender_list;
+              this.pageIndex2.data = data.success_tender_list;
+              this.pageIndex3.data = data.more_list;
+            }
             this.$refs.loading.hide();
             this.dataLock = true;
-            this.error = false;
             mui('#page1').pullRefresh().scrollTo(0, 0, 100);
             mui('#page2').pullRefresh().scrollTo(0, 0, 100);
             mui('#page3').pullRefresh().scrollTo(0, 0, 100);
             mui('#page4').pullRefresh().scrollTo(0, 0, 100);
           },
-          error:(data)=>{
+          error: (data) => {
             this.$refs.loading.hide();
             this.dataLock = true;
-            this.error = true;
           }
         });
         http({
           url: api.common_dict,
           success: (data) => {
             this.commonDict = data;
-            for (let item in data) {
-              this.filterSelect[item] = data[item][0];
-            }
           }
         });
         if (localStorage.getItem(lsKey.nationData) !== null) {
@@ -318,6 +322,7 @@
       },
       // 筛选选择
       filterSelectPro(key, value) {
+        console.log(value);
         switch (key) {
           case 0:
             this.filterSelect.location.province = value;
@@ -332,6 +337,7 @@
           case 1:
             this.filterSelect.location.city = value;
             this.filterLocation.index = 2;
+            if (value === '全省') return;
             for (let key in this.filterLocation.data) {
               if (this.filterLocation.data[key].name === value) {
                 this.filterLocation.data = this.filterLocation.data[key].district;
@@ -350,17 +356,19 @@
       filterBack() {
         switch (this.filterLocation.index) {
           case 1:
+            this.filterSelect.location.province = '';
             this.filterLocation.index = 0;
             this.filterLocation.data = this.nation;
             break;
           case 2:
-            this.filterLocation.index = 1;
-            for (let key in this.filterLocation.data) {
-              if (this.filterLocation.data[key].name === this.filterSelect.location.province) {
-                this.filterLocation.data = this.filterLocation.data[key].city;
-                return
+            this.filterSelect.location.district = '';
+            this.filterSelect.location.city = '';
+            this.nation.forEach((item) => {
+              if (item.name === this.filterSelect.location.province) {
+                this.filterLocation.index = 1;
+                this.filterLocation.data = item.city;
               }
-            }
+            });
             break;
         }
       },
@@ -369,10 +377,10 @@
         let filterSelect = this.filterSelect;
         let data = {
           amount_type: filterSelect.amount,
-          city: filterSelect.location.city,
+          city: filterSelect.location.city === '全省' ? '' : filterSelect.location.city,
           construction_type: filterSelect.construction_dict,
           cur_page: 1,
-          district: filterSelect.location.district,
+          district: filterSelect.location.district === '全市' ? '' : filterSelect.location.district,
           province: filterSelect.location.province,
           tender_type: filterSelect.tender_dict
         };
@@ -451,18 +459,44 @@
             let geoc = new BMap.Geocoder();
             geoc.getLocation(point, function (rs) {
               let address = rs.addressComponents;
+              address.province = address.province.replace('省', '');
+              address.province = address.province.replace('市', '');
+              switch (address.province) {
+                case "广西壮族自治区":
+                  address.province = '广西';
+                  break;
+                case "宁夏回族自治区":
+                  address.province = '广西';
+                  break;
+                case "新疆维吾尔自治区":
+                  address.province = '广西';
+                  break;
+                default:
+                  address.province = address.province.replace('自治区', '');
+                  break;
+              }
               _this.localLocation = `${address.city}-${address.district}`;
               //将定位存入本地缓存
               localStorage.setItem(lsKey.locationProvince, address.province);
               localStorage.setItem(lsKey.locationCity, address.city);
               localStorage.setItem(lsKey.locationDistrict, address.district);
+              _this.province = localStorage.getItem(lsKey.locationProvince);
+              _this.city = localStorage.getItem(lsKey.locationCity);
+              _this.district = localStorage.getItem(lsKey.locationDistrict);
+              _this.getData();
             });
           });
         } else {
           this.province = localStorage.getItem(lsKey.locationProvince);
           this.city = localStorage.getItem(lsKey.locationCity);
           this.district = localStorage.getItem(lsKey.locationDistrict);
-          this.localLocation = `${this.city} - ${this.district}`
+          if (this.district === '' && this.city === '') {
+            this.localLocation = `${this.province}`
+          } else if (this.district === '' && this.city !== '') {
+            this.localLocation = `${this.province} - ${this.city}`
+          } else {
+            this.localLocation = `${this.city} - ${this.district}`
+          }
         }
       },
       //筛选弹窗
@@ -492,17 +526,42 @@
     mounted() {
       this.location();
       this.getData();
+      this.jumpTo(this.pageKey);
+      window.addEventListener('changeLocation', (e) => {
+        this.location();
+        this.getData();
+      });
+      window.addEventListener('localStorageClear', () => {
+        this.location();
+        this.getData();
+      });
+      window.addEventListener('loginSuccess', () => {
+        this.location();
+        this.getData();
+      });
+      window.addEventListener('loginOut', () => {
+        this.location();
+        this.getData();
+      });
+      mui.plusReady(() => {
+        if (plus.storage.getItem(plusKey.firstOpen)) {
+          plus.navigator.setFullscreen(false);
+          plus.navigator.closeSplashscreen();
+        }
+      });
       let vueThis = this;
       let filterSelect = this.filterSelect;
       let httpData = {
-        cur_page: 1,
         amount_type: filterSelect.amount,
-        city: filterSelect.location.city || vueThis.city,
-        construction_type: filterSelect.construction_dict,
-        district: filterSelect.location.district || vueThis.district,
-        province: filterSelect.location.province || vueThis.province,
-        tender_type: filterSelect.tender_dict
+        city: filterSelect.location.city || vueThis.city || '',
+        construction_type: filterSelect.construction_dict.name,
+        district: filterSelect.location.district || vueThis.district || '',
+        province: filterSelect.location.province || vueThis.province || '',
+        tender_type: filterSelect.tender_dict.name
       };
+      if (httpData.province === '') {
+        return
+      }
       mui.init({
         preloadPages: [
           {
@@ -526,25 +585,33 @@
                 success: (data) => {
                   vueThis.pageIndex0.data = data.result;
                   mui('#page1').pullRefresh().endPulldownToRefresh();
+                },
+                noFind: () => {
+                  mui('#page1').pullRefresh().endPulldownToRefresh();
                 }
               });
             }
           },
           up: {
             contentrefresh: "正在加载...",
+            contentnomore: '再拉也没有数据~',
             callback: function () {
               vueThis.pageIndex0.pageNum += 1;
               http({
                 url: api.tender_subscribe,
                 data: {
                   cur_page: vueThis.pageIndex0.pageNum
-                }, success: (data) => {
+                },
+                success: (data) => {
                   vueThis.pageIndex0.data = vueThis.pageIndex0.data.concat(data.result);
-                  if (data.total_page === vueThis.pageIndex0.pageNum) {
+                  if (data.total_page <= vueThis.pageIndex0.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: (data) => {
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -556,9 +623,12 @@
               vueThis.pageIndex1.pageNum = 1;
               http({
                 url: api.tender_subscribe,
-                data: httpData,
+                data: Object.assign(httpData,{cur_page: 1}),
                 success: (data) => {
                   vueThis.pageIndex1.data = data.result;
+                  mui('#page2').pullRefresh().endPulldownToRefresh();
+                },
+                noFind: () => {
                   mui('#page2').pullRefresh().endPulldownToRefresh();
                 }
               });
@@ -566,25 +636,22 @@
           },
           up: {
             contentrefresh: "正在加载...",
+            contentnomore: '再拉也没有数据~',
             callback: function () {
               vueThis.pageIndex1.pageNum += 1;
               http({
                 url: api.tender,
-                data: {
-                  amount_type: filterSelect.amount,
-                  city: filterSelect.location.city || vueThis.city,
-                  construction_type: filterSelect.construction_dict,
-                  district: filterSelect.location.district || vueThis.district,
-                  province: filterSelect.location.province || vueThis.province,
-                  tender_type: filterSelect.tender_dict,
-                  cur_page: vueThis.pageIndex1.pageNum
-                }, success: (data) => {
+                data: Object.assign(httpData,{cur_page: vueThis.pageIndex1.pageNum}),
+                success: (data) => {
                   vueThis.pageIndex1.data = vueThis.pageIndex1.data.concat(data.result);
-                  if (data.total_page === vueThis.pageIndex1.pageNum) {
+                  if (data.total_page <= vueThis.pageIndex1.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: () => {
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -600,31 +667,31 @@
                 success: (data) => {
                   vueThis.pageIndex2.data = data.result;
                   mui('#page3').pullRefresh().endPulldownToRefresh();
+                },
+                noFind: () => {
+                  mui('#page3').pullRefresh().endPulldownToRefresh();
                 }
               });
             }
           },
           up: {
             contentrefresh: "正在加载...",
+            contentnomore: '再拉也没有数据~',
             callback: function () {
               vueThis.pageIndex2.pageNum += 1;
               http({
                 url: api.tender_success,
-                data: {
-                  amount_type: filterSelect.amount,
-                  city: filterSelect.location.city || vueThis.city,
-                  construction_type: filterSelect.construction_dict,
-                  district: filterSelect.location.district || vueThis.district,
-                  province: filterSelect.location.province || vueThis.province,
-                  tender_type: filterSelect.tender_dict,
-                  cur_page: vueThis.pageIndex2.pageNum
-                }, success: (data) => {
+                data: Object.assign(httpData,{cur_page: vueThis.pageIndex2.pageNum}),
+                success: (data) => {
                   vueThis.pageIndex2.data = vueThis.pageIndex2.data.concat(data.result);
-                  if (data.total_page === vueThis.pageIndex2.pageNum) {
+                  if (data.total_page <= vueThis.pageIndex2.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: () => {
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -640,56 +707,37 @@
                 success: (data) => {
                   vueThis.pageIndex3.data = data.result;
                   mui('#page4').pullRefresh().endPulldownToRefresh();
+                },
+                noFind: () => {
+                  mui('#page4').pullRefresh().endPulldownToRefresh();
                 }
               });
             }
           },
           up: {
             contentrefresh: "正在加载...",
+            contentnomore: '再拉也没有数据~',
             callback: function () {
               vueThis.pageIndex3.pageNum += 1;
               http({
                 url: api.tender_more,
-                data: {
-                  amount_type: filterSelect.amount,
-                  city: filterSelect.location.city || vueThis.city,
-                  construction_type: filterSelect.construction_dict,
-                  district: filterSelect.location.district || vueThis.district,
-                  province: filterSelect.location.province || vueThis.province,
-                  tender_type: filterSelect.tender_dict,
-                  cur_page: vueThis.pageIndex3.pageNum
-                },
+                data: Object.assign(httpData,{cur_page: vueThis.pageIndex3.pageNum}),
                 success: (data) => {
                   vueThis.pageIndex3.data = vueThis.pageIndex3.data.concat(data.result);
-                  if (data.total_page === vueThis.pageIndex3.pageNum) {
+                  if (data.total_page <= vueThis.pageIndex3.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: () => {
+                  this.endPullupToRefresh(true);
                 }
               });
             }
           }
         }]
       });
-      this.jumpTo(this.pageKey);
-      window.addEventListener('changeLocation', (e) => {
-        this.province = e.detail.province;
-        this.city = e.detail.city;
-        this.district = e.detail.district;
-        vueThis.getData();
-        this.localLocation = `${this.city}-${this.district}`
-      });
-      window.addEventListener('localStorageClear', () => {
-        this.location();
-        this.getData();
-      });
-      mui.plusReady(() => {
-        if (plus.storage.getItem(plusKey.firstOpen)) {
-          plus.navigator.setFullscreen(false);
-          plus.navigator.closeSplashscreen();
-        }
-      })
     },
     created() {
 

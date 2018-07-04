@@ -103,20 +103,24 @@
             flex-flex(1)
             border-right $border-default
             .pro-name
-              display-flex()
-              flex-align-item(center)
-              height .5rem
+              margin .08rem 0
               padding 0 .1rem
             .pro-main-sign
               padding 0 .1rem
-              width: 2.3rem
               .pro-style
+                display inline-block
+                overflow hidden
                 .iconfont
                   font-size .16rem
               .pro-location
                 color $text-color-light-x
                 font-size .12rem
                 margin-left .07rem
+                display inline-block
+                overflow hidden
+                width 1.6rem
+                white-space nowrap
+                text-overflow ellipsis
           .pro-assist
             display-flex()
             flex-direction(column)
@@ -165,8 +169,6 @@
               .pro-location
                 margin-left 0
 .mask
-  height 84.3vh
-  top auto
   .popout-wrapper
     position relative
     overflow auto
@@ -203,11 +205,14 @@
             overflow auto
             margin 0 auto
             span
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
               border-radius $border-radius-x
               background-color $bg-color-x
               display inline-block
               padding .09rem .1rem
-              width .93rem
+              width .97rem
               text-align center
               margin 0 .1rem .1rem 0
               float left

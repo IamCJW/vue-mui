@@ -12,8 +12,8 @@
         span.fr {{pushMsg.tender_info.province || pullMsg.tender_info.province || otherMsg.tender_info.province}}{{ ' / '+ pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city}}{{ ' / '+ pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district}}
       .detail-nav-bar
         span.detail-bar-item( :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,1)") 招标公告
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '中标公示'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,2)") {{item.name}}
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '中标公示'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,3)") {{item.name}}
+        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '中标'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,2)") {{item.name}}
+        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '中标'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,3)") {{item.name}}
     .mui-content(v-if="dataLock")
       //招标公示
       .content-table(v-show="navPage === '招标公告'")
@@ -40,9 +40,9 @@
             td.th(colspan="3") 原文内容
           tr
             td.td(colspan="3")
-              .orContent {{pushMsg.content}}
-      // 中标公示
-      .content-table(v-show="navPage === '中标公示'")
+              .orContent(v-html="pushMsg.content") {{pushMsg.content}}
+      // 中标
+      .content-table(v-show="navPage === '中标'")
         table
           tr
             td(colspan="4")
@@ -75,9 +75,9 @@
             td.th(colspan="4") 原文内容
           tr
             td.td(colspan="4")
-              .orContent {{pullMsg.content}}
+              .orContent(v-html="pullMsg.content") {{pullMsg.content}}
       // 其他
-      .content-table(v-show="navPage !== '中标公示' && navPage !== '招标公告'")
+      .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
         table
           tr
             td(colspan="4")
@@ -89,7 +89,7 @@
             td.th(colspan="4") 原文内容
           tr
             td.td(colspan="4")
-              .orContent {{otherMsg.content}}
+              .orContent(v-html="otherMsg.content") {{otherMsg.content}}
     footer
       .btn-group
         .btn-item(v-if="pushMsg.tender_info.tel !== '' ||  pullMsg.tender_info.tel !== '' || otherMsg.tender_info.tel !== ''")
@@ -164,9 +164,9 @@
         },
         pushMsg: {
           tender_info: {
-            name: '项目名称',
-            tender_type: '行业',
-            construction_type: '专业',
+            name: '',
+            tender_type: '',
+            construction_type: '',
             province: '',
             city: '',
             district: '',
@@ -176,9 +176,9 @@
         },
         pullMsg: {
           tender_info: {
-            name: '项目名称',
-            tender_type: '行业',
-            construction_type: '专业',
+            name: '',
+            tender_type: '',
+            construction_type: '',
             province: '',
             city: '',
             district: '',
@@ -188,9 +188,9 @@
         },
         otherMsg: {
           tender_info: {
-            name: '项目名称',
-            tender_type: '行业',
-            construction_type: '专业',
+            name: '',
+            tender_type: '',
+            construction_type: '',
             province: '',
             city: '',
             district: '',
@@ -209,9 +209,9 @@
         vueThis.dataLock = false;
         vueThis.pushMsg = {
           tender_info: {
-            name: '项目名称',
-            tender_type: '行业',
-            construction_type: '专业',
+            name: '',
+            tender_type: '',
+            construction_type: '',
             province: '',
             city: '',
             district: '',
@@ -221,9 +221,9 @@
         };
         vueThis.pullMsg = {
           tender_info: {
-            name: '项目名称',
-            tender_type: '行业',
-            construction_type: '专业',
+            name: '',
+            tender_type: '',
+            construction_type: '',
             province: '',
             city: '',
             district: '',
@@ -233,9 +233,9 @@
         };
         vueThis.otherMsg = {
           tender_info: {
-            name: '项目名称',
-            tender_type: '行业',
-            construction_type: '专业',
+            name: '',
+            tender_type: '',
+            construction_type: '',
             province: '',
             city: '',
             district: '',
@@ -280,9 +280,11 @@
               success: (data) => {
                 this.pullMsg = data;
                 this.navigate_list = data.navigate_list;
-                this.navPage = '中标公示';
+                this.navPage = '中标';
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
+                console.log(JSON.stringify(data));
+                console.log(JSON.stringify(data.tender_info));
               }
             });
             break;
