@@ -31,7 +31,7 @@
       return {
         qualificationData: [],
         qualificationSelected: {},
-        subscription: '',
+        subscription: {},
       }
     },
     components: {
@@ -44,7 +44,10 @@
       });
       window.addEventListener('chooseCategory',()=>{
         this.getData();
-      })
+      });
+      window.addEventListener('qualifysUpdata',()=>{
+        this.getData();
+      });
     },
     created() {
 
@@ -56,8 +59,14 @@
           url: api.member_qualify,
           success: (data) => {
             this.qualificationData = data;
+            if(this.subscription.id){
+              this.qualify_info.forEach((item) => {
+                this.$set(this.qualificationSelected, item.rid, item.status);
+              });
+              return
+            }
             data.forEach((item) => {
-              this.$set(this.qualificationSelected, item.rid, 0);
+              this.$set(this.qualificationSelected, item.rid, 1);
             });
           }
         });
@@ -85,7 +94,7 @@
               city: this.subscription.city,
               district: this.subscription.district,
               qualify_info: data,
-              rid: this.subscription.id
+              id: this.subscription.id
             },
             success() {
               let view = plus.webview.getWebviewById('subscription');

@@ -17,7 +17,7 @@
                       span 订阅{{index+1}}
                     .media-del
                       i.iconfont.icon-Rubbish(@tap="subscriptionDel(item.id)")
-                      switchBox(:status="switchData['status'+item.id]", :key-name="'status'+item.id", @changeStatus="upStatus")
+                      switchBox(:status="switchData[item.id]", :key-name="item.id", @changeStatus="upStatus")
                   .media-alert
                     ul.media-view
                       li.media(@tap="openNViewPreload('subscription_selectLocation',item)")
@@ -51,7 +51,8 @@
         subscriptionData: {
           pageNum: 1,
           data: []
-        }, switchData: {}
+        },
+        switchData: {}
       }
     },
     components: {
@@ -60,9 +61,9 @@
     },
     mounted() {
       this.getData();
-      window.addEventListener('getData',()=>{
+      window.addEventListener('getData', () => {
         this.getData();
-        myMethods.NVpreload(['subscription_add','subscription_selectLocation','subscription_selectQualification']);
+        myMethods.NVpreload(['subscription_add', 'subscription_selectLocation', 'subscription_selectQualification']);
       });
       window.addEventListener('chooseLocation', (e) => {
         mui.toast(e.detail.msg);
@@ -120,20 +121,34 @@
             };
             this.subscriptionData.data = data.result;
             data.result.forEach((item) => {
-              this.$set(this.switchData, `status${item.id}`, item.status);
+              this.$set(this.switchData, `${item.id}`, item.status);
             });
             this.$refs.loading.hide();
             this.dataLock = true;
-            mui('#page1').pullRefresh().scrollTo(0,0,100);
+            mui('#page1').pullRefresh().scrollTo(0, 0, 100);
           }
         });
       },
       //更新开关的值
-      upStatus(data) {
-        this.$set(this.switchData, data.key, data.value);
+      upStatus(switchData) {
+        console.log(switchData)
+        http({
+          url:api.member_subscribe_status,
+          method:'post',
+          data:{
+            id:switchData.key,
+            status:switchData.value ? 1 : 0
+          },
+          success:()=>{
+            this.$set(this.switchData, switchData.key, switchData.value);
+          },
+          error:(data)=>{
+            mui.toast(data.msg)
+          }
+        });
       },
       openWindow: myMethods.openWindow,
-      openNViewPreload:myMethods.openNViewPreload,
+      openNViewPreload: myMethods.openNViewPreload,
       //订阅删除
       subscriptionDel(id) {
         mui.confirm('确定删除该订阅？', ' ', ['取消', '确定'], (e) => {
@@ -141,14 +156,14 @@
             http({
               url: api.member_subscribe,
               method: 'delete',
-              data: {id:id},
+              data: {id: id},
               success: (data) => {
                 this.getData();
                 mui.toast('删除成功')
               }
             });
           }
-        },'div');
+        }, 'div');
       },
     }
   }

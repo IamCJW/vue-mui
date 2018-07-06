@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入要查询的项目", v-model='searchMsg')
+        input(placeholder="请输入要查询的项目", v-focus ,v-model='searchMsg')
       span.search(@tap="searchPro") 搜索
     .mui-content
       loading(ref="loading")
@@ -16,7 +16,7 @@
               span 暂无相关项目信息~
             .pro-group.cell-row
               transition-group(name="domItem")
-                .pro-item(v-for="item in proData.data",:key="item.rid",@tap="openWindow('detail',item)")
+                .pro-item(v-for="(item,index) in proData.data",:key="index",@tap="openWindow('detail',item)")
                   .pro-assist
                     div(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                       i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
@@ -70,17 +70,19 @@
               http({
                 url: api.index_project_search,
                 data: {
+                  cur_page:vueThis.proData.pageNum,
                   province: vueThis.province,
                   city: vueThis.city,
                   district: vueThis.district,
                   search: vueThis.searchMsg
                 }, success: (data) => {
-                  vueThis.proData.data = vueThis.proData.data.concat(data.result);
                   if (data.total_page <= vueThis.proData.pageNum) {
                     this.endPullupToRefresh(true);
+                    return;
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                  vueThis.proData.data = vueThis.proData.data.concat(data.result);
                 }
               });
             }
@@ -137,5 +139,10 @@
         myMethods.openWindow(url);
       },
     },
+    directives: {
+      focus:function (el) {
+        el.focus();
+      }
+    }
   }
 </script>

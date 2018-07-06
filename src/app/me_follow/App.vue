@@ -22,14 +22,14 @@
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加项目关注
-                  li.media(v-for="item in project_follows.data", @tap="openDetail('detail',{rid:item.rid})")
+                  li.media(v-for="item in project_follows.data", @tap="openDetail('detail',{rid:item.code})")
                     .media-content
                       .head
                         i.iconfont.icon-xiangmu
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap.stop="follow(item.rid,1)") 取消关注
+                      button(@tap.stop="follow(item.code,1)") 取消关注
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page2
               .scroll-box
@@ -43,14 +43,14 @@
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加业主关注
-                  li.media(v-for="item in company_follows.data", @tap="openDetail('companyDetail_own',{rid:item.rid})")
+                  li.media(v-for="item in tender_follows.data", @tap="openDetail('companyDetail_own',{rid:item.code})")
                     .media-content
                       .head
                         i.iconfont.icon-yezhu
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap.stop="follow(item.rid,2)") 取消关注
+                      button(@tap.stop="follow(item.code,2)") 取消关注
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
             .scroll-wrapper#page3
               .scroll-box
@@ -64,14 +64,14 @@
                     .media-content.add
                       i.iconfont.icon-jianzhuqiye &nbsp;
                       span 添加建筑企业关注
-                  li.media(v-for="item in company_follows.data", @tap="openDetail('companyDetail',{rid:item.rid})")
+                  li.media(v-for="item in company_follows.data", @tap="openDetail('companyDetail',{rid:item.code})")
                     .media-content
                       .head
                         i.iconfont.icon-jianzhuqiye
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap.stop="follow(item.rid,3)") 取消关注
+                      button(@tap.stop="follow(item.code,3)") 取消关注
           .content-page(@swiperight="contentSwiperight()")
             .scroll-wrapper#page4
               .scroll-box
@@ -85,14 +85,14 @@
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
                       span 添加建造师关注
-                  li.media(v-for="item in builder_follows.data", @tap="openDetail('builderDetail',{rid:item.rid})")
+                  li.media(v-for="item in builder_follows.data", @tap="openDetail('builderDetail',{rid:item.code})")
                     .media-content
                       .head
                         i.iconfont.icon-ren-copy
                       .content
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
-                      button(@tap.stop="follow(item.rid,4)") 取消关注
+                      button(@tap.stop="follow(item.code,4)") 取消关注
 </template>
 <style lang="stylus" scoped>
   @import "follow.styl"
@@ -132,6 +132,7 @@
     },
     mounted() {
       let vueThis = this;
+      this.getData();
       window.addEventListener('getData',()=>{
         this.getData();
         mui.plusReady(()=>{
@@ -173,10 +174,10 @@
                 data: {
                   cur_page: vueThis.project_follows.pageNum
                 }, success: (data) => {
-                  vueThis.project_follows.data = vueThis.project_follows.data.concat(data.result);
-                  if (data.total_page === vueThis.project_follows.pageNum) {
+                  if (data.total_page <= vueThis.project_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.project_follows.data = vueThis.project_follows.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -194,10 +195,10 @@
                 data: {
                   cur_page: vueThis.company_follows.pageNum
                 }, success: (data) => {
-                  vueThis.company_follows.data = vueThis.company_follows.data.concat(data.result);
-                  if (data.total_page === vueThis.company_follows.pageNum) {
+                  if (data.total_page <= vueThis.company_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.company_follows.data = vueThis.company_follows.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -215,10 +216,10 @@
                 data: {
                   cur_page: vueThis.tender_follows.pageNum
                 }, success: (data) => {
-                  vueThis.tender_follows.data = vueThis.tender_follows.data.concat(data.result);
-                  if (data.total_page === vueThis.tender_follows.pageNum) {
+                  if (data.total_page <= vueThis.tender_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.tender_follows.data = vueThis.tender_follows.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -236,10 +237,10 @@
                 data: {
                   cur_page: vueThis.builder_follows.pageNum
                 }, success: (data) => {
-                  vueThis.builder_follows.data = vueThis.builder_follows.data.concat(data.result);
-                  if (data.total_page === vueThis.builder_follows.pageNum) {
+                  if (data.total_page <= vueThis.builder_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.builder_follows.data = vueThis.builder_follows.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -256,22 +257,6 @@
       //数据请求
       getData() {
         this.$refs.loading.show();
-        this.builder_follows={
-          pageNum: 1,
-            data: []
-        };
-        this.company_follows={
-          pageNum: 1,
-            data: []
-        };
-        this.project_follows= {
-          pageNum: 1,
-            data: []
-        };
-        this.tender_follows= {
-          pageNum: 1,
-            data: []
-        };
         http({
           url: api.member_follow,
           success: (data) => {
@@ -285,6 +270,7 @@
             mui('#page4').pullRefresh().scrollTo(0,0,100);
             this.$refs.loading.hide();
             this.dataLock = true;
+            console.log(this.tender_follows.data)
           },
         });
       },
@@ -313,7 +299,7 @@
           if (e.index === 1) {
             http({
               url: api.member_follow,
-              method: 'post',
+              method: 'delete',
               data: {rid: id, type: type},
               success: (data) => {
                 this.getData()

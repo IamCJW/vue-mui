@@ -110,8 +110,6 @@
       },
       //选择器选择///////////////////////////////////////////////////
       selectLocation(key, type) {
-        console.log(key);
-        console.log(type);
         switch (type) {
           case 1:
             this.province = key;
@@ -175,21 +173,18 @@
         if (this.oldSelects.length < 1) {
           this.oldSelects.unshift({province: province, city: city, district: district})
         }
-        let flag = false;
+        let flag = true;
         this.oldSelects.forEach((item) => {
-          if (!(item.district === this.district && item.city === this.city && item.province === this.province)) {
-            flag = true
+          if (item.district === district && item.city === city && item.province === this.province) {
+            flag = false
           }
         });
         if(flag){
           if (this.oldSelects.length < 3) {
             this.oldSelects.unshift({province: province, city: city, district: district});
-            console.log(this.oldSelects)
           } else {
-            console.log(this.oldSelects)
             this.oldSelects.unshift({province: province, city: city, district: district});
             this.oldSelects.pop();
-            console.log(this.oldSelects)
           }
         }
         localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));

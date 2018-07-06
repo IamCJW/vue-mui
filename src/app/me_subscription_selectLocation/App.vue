@@ -53,7 +53,7 @@
         if (localStorage.getItem(lsKey.nationData) !== null) {
           this.nationData = JSON.parse(localStorage.getItem(lsKey.nationData));
           this.nationData.forEach((item) => {
-            if (this.letter.indexOf(item.prefix)) {
+            if (this.letter.indexOf(item.prefix) === -1) {
               this.letter.push(item.prefix)
             }
           });
@@ -73,7 +73,7 @@
             success: (data) => {
               this.nationData = data;
               data.forEach((item) => {
-                if (this.letter.indexOf(item.prefix)) {
+                if (this.letter.indexOf(item.prefix) === -1) {
                   this.letter.push(item.prefix)
                 }
               });
@@ -127,42 +127,48 @@
                 return
               }
             });
+            if (key === '全省'){
+              this.selectDo();
+            }
             break;
           case 3:
             this.district = key;
-            console.log(this.subscription.id);
-            if (this.subscription.id) {
-              http({
-                url: api.member_subscribe,
-                method: 'post',
-                dataType:true,
-                data: {
-                  province: this.province,
-                  city: this.city,
-                  district: this.district,
-                  qualify_info: this.subscription.qualify_info,
-                  rid: this.subscription.id
-                },
-                success() {
-                  let view = plus.webview.getWebviewById('subscription');
-                  mui.fire(view, 'chooseLocation', {
-                    msg: '修改成功'
-                  });
-                  mui.back();
-                }
-              })
-            } else {
-              let view = plus.webview.getWebviewById('subscription_add');
-              let vueThis = this;
+            this.selectDo();
+        }
+      },
+      ///选择完执行//////////
+      selectDo() {
+        if (this.subscription.id) {
+          http({
+            url: api.member_subscribe,
+            method: 'post',
+            dataType: true,
+            data: {
+              province: this.province,
+              city: this.city === '全省' ? '' : this.city,
+              district: this.district === '全市' ? '' : this.district,
+              qualify_info: this.subscription.qualify_info,
+              rid: this.subscription.id
+            },
+            success() {
+              let view = plus.webview.getWebviewById('subscription');
               mui.fire(view, 'chooseLocation', {
-                location: {
-                  province: vueThis.province,
-                  city: vueThis.city,
-                  district: vueThis.district
-                }, msg: ""
+                msg: '修改成功'
               });
               mui.back();
             }
+          })
+        } else {
+          let view = plus.webview.getWebviewById('subscription_add');
+          let vueThis = this;
+          mui.fire(view, 'chooseLocation', {
+            location: {
+              province: vueThis.province,
+              city: this.city === '全省' ? '' : this.city,
+              district: this.district === '全市' ? '' : this.district,
+            }, msg: ""
+          });
+          mui.back();
         }
       },
     },

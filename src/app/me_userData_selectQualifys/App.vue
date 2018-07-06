@@ -177,6 +177,10 @@
           success: () => {
             this.getData();
             mui.toast('资质添加成功');
+            let view = plus.webview.getWebviewById('subscription_selectQualification');
+            mui.fire(view,'qualifysUpdata',{
+              msg:'资质数据更新'
+            })
           },
           error: (data) => {
             mui.toast(data.msg);

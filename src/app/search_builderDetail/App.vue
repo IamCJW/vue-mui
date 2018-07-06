@@ -96,12 +96,15 @@
             callback: function () {
               vueThis.builderTenderData.pageNum = 1;
               http({
-                url: api.search_builder_tender_success,
+                url: api.search_builder_detail,
+                data: {code: vueThis.rid},
                 success: (data) => {
-                  vueThis.builderTenderData.data = data.result;
+                  vueThis.baseData = data;
+                  vueThis.builderTenderData.data = data.tender_success_list;
+                  vueThis.followed = data.followed;
                   mui('#builderTender').pullRefresh().endPulldownToRefresh();
                 }
-              });
+              })
             }
           },
           up: {
@@ -111,7 +114,8 @@
               http({
                 url: api.search_builder_tender_success,
                 data: {
-                  cur_page: vueThis.builderTenderData.pageNum
+                  cur_page: vueThis.builderTenderData.pageNum,
+                  code:vueThis.rid,
                 }, success: (data) => {
                   vueThis.builderTenderData.data = vueThis.builderTenderData.data.concat(data.result);
                   if (data.total_page === vueThis.builderTenderData.pageNum) {
@@ -145,7 +149,7 @@
         };
         http({
           url: api.search_builder_detail,
-          data: {rid: this.rid},
+          data: {code: this.rid},
           success: (data) => {
             this.baseData = data;
             this.builderTenderData.data = data.tender_success_list;
@@ -159,7 +163,7 @@
         if (this.followed) {
           http({
             url: api.member_follow,
-            method: 'post',
+            method: 'delete',
             data: {
               rid: this.rid,
               type: 3

@@ -1,6 +1,6 @@
 <template lang="pug">
   #app
-    header.detail-header
+    header.detail-header.fixed-header
       .header-title
         span.mui-action-back.iconfont.icon-return
         .detail-title {{pushMsg.tender_info.name || pullMsg.tender_info.name || otherMsg.tender_info.name}}
@@ -9,11 +9,19 @@
         .fl
           span 行业: {{pushMsg.tender_info.tender_type || pullMsg.tender_info.tender_type || otherMsg.tender_info.tender_type}}
           span 专业：{{pushMsg.tender_info.construction_type || pullMsg.tender_info.construction_type || otherMsg.tender_info.construction_type}}
-        span.fr {{pushMsg.tender_info.province || pullMsg.tender_info.province || otherMsg.tender_info.province}}{{ ' / '+ pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city}}{{ ' / '+ pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district}}
+        span.fr {{pushMsg.tender_info.province || pullMsg.tender_info.province || otherMsg.tender_info.province}}{{ (pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city) ? ' / '+ (pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city) : ''}}{{(pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district) ? ' / '+ (pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district):''}}
       .detail-nav-bar
-        span.detail-bar-item( :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,1)") 招标公告
+        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '招标公告'" , :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,1)") {{item.name}}
         span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '中标'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,2)") {{item.name}}
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '中标'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,3)") {{item.name}}
+        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '中标' && item.name !== '招标公告' " , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,3)") {{item.name}}
+    header.detail-header
+      .header-title
+        .detail-title {{pushMsg.tender_info.name || pullMsg.tender_info.name || otherMsg.tender_info.name}}
+      .header-sign
+        .fl
+          span 占位
+      .detail-nav-bar
+        span.detail-bar-item 占位
     .mui-content(v-if="dataLock")
       //招标公示
       .content-table(v-show="navPage === '招标公告'")
@@ -38,9 +46,7 @@
             td(colspan="2") {{pushMsg.resource}}
           tr
             td.th(colspan="3") 原文内容
-          tr
-            td.td(colspan="3")
-              .orContent(v-html="pushMsg.content") {{pushMsg.content}}
+        .orContent(v-html="pushMsg.content") {{pushMsg.content}}
       // 中标
       .content-table(v-show="navPage === '中标'")
         table
@@ -73,9 +79,7 @@
             td(colspan="3") {{pullMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
-          tr
-            td.td(colspan="4")
-              .orContent(v-html="pullMsg.content") {{pullMsg.content}}
+        .orContent(v-html="pullMsg.content") {{pullMsg.content}}
       // 其他
       .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
         table
@@ -87,16 +91,14 @@
             td(colspan="3") {{otherMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
-          tr
-            td.td(colspan="4")
-              .orContent(v-html="otherMsg.content") {{otherMsg.content}}
+        .orContent(v-html="otherMsg.content") {{otherMsg.content}}
     footer
       .btn-group
         .btn-item(v-if="pushMsg.tender_info.tel !== '' ||  pullMsg.tender_info.tel !== '' || otherMsg.tender_info.tel !== ''")
           a(:href="'tel:'+ pushMsg.tender_info.tel  ||  pullMsg.tender_info.tel  || otherMsg.tender_info.tel")
             i.iconfont.icon-CONTACT
             span 联系招标方
-        .btn-item
+        .btn-item(@tap="ysf")
           i.iconfont.icon-CUSTOMERSERVICE
           span 联系客服
         .btn-item(@tap="follow")
@@ -283,6 +285,7 @@
                 this.navPage = '中标';
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
+                this.zbRid = data.tender_info.tender_id;
                 console.log(JSON.stringify(data));
                 console.log(JSON.stringify(data.tender_info));
               }
@@ -300,8 +303,10 @@
                     this.navPage = item.name;
                   }
                 });
+                console.log(this.navPage);
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
+                this.zbRid = data.tender_info.tender_id;
               }
             });
             break;
@@ -336,11 +341,6 @@
               success: (data) => {
                 this.otherMsg = data;
                 this.navigate_list = data.navigate_list;
-                data.navigate_list.forEach((item) => {
-                  if (item.rid === rid) {
-                    this.navPage = item.name;
-                  }
-                });
               }
             });
             break;
@@ -427,6 +427,13 @@
       },//错误关闭
       warnClose() {
         this.warnStatus = false;
+      },
+      //客服////
+      ysf(){
+        let url = ysf.url();
+        myMethods.openNViewPreload('chat',{
+          chatUrl:url
+        })
       }
     }
   }

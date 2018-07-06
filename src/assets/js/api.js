@@ -59,6 +59,7 @@ export default (config => {
   common_sendcode: '/common/sendcode',//获取验证码
   common_verify_code: '/common/verify_code',//验证码验证
   member_subscribe: '/member/subscribe',//订阅管理
+  member_subscribe_status: '/member/subscribe/status',//订阅转台管理
   member_advice_wrong: '/member/advice/wrong',//信息报错
   member_advice: '/member/advice',//意见提交
   member_wallet: '/member/wallet',//我的钱包
@@ -66,5 +67,5 @@ export default (config => {
   member_address_default: '/member/address/default',//修改默认地址
   system_check_version: '/system/check_version',//版本检查
   system_token: '/system/token',//游客token
-  member_logout:'/member/logout',//退出登录
+  member_logout: '/member/logout',//退出登录
 })

@@ -97,7 +97,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .bui-group
-                  .bui-item(v-for="item in builderData.data")
+                  .bui-item(v-for="item in builderData.data" @tap="openNViewPreload('builderDetail',{rid:item.rid})")
                     .bui-top
                       .bui-name {{item.user_name}}
                       .bui-id 注册号:{{item.register_no}}
@@ -151,7 +151,7 @@
                     .media-content.iconfont(@tap="mediaAlert('commercialItem2')", :class="[commercialItem1 ? 'icon-Unfold' : 'icon-down']")
                       .media-lable 股东信息
                     .media-alert(v-show="commercialItem2")
-                      ul.media-view
+                      ul.media-view(v-if="commercialData.partner_list")
                         li.media(v-for="item in commercialData.partner_list")
                           .media-content
                             div 股东名称:{{item.name}}
@@ -253,12 +253,13 @@
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
   import loading from "../../components/loading";
+
   export default {
     name: 'companyDetail',
-    components: {loading:loading},
+    components: {loading: loading},
     data() {
       return {
-        dataLock:false,
+        dataLock: false,
         rid: '',
         followed: false,
         menuStatus: false,//菜单状态
@@ -274,7 +275,7 @@
           pageNum: 1,
           data: []
         },//建造师
-        commercialData: '',//工商信息
+        commercialData: {partner_list: []},//工商信息
         commercialItem1Data: {},//工商基本信息
         commercialItem1: true,
         commercialItem2: false,
@@ -292,7 +293,7 @@
     },
     mounted() {
       let vueThis = this;
-      window.addEventListener('getData',(e) => {
+      window.addEventListener('getData', (e) => {
         vueThis.dataLock = false;
         vueThis.rid = e.detail.rid;
         vueThis.getData();
@@ -311,10 +312,10 @@
                   code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.tenderSuccessData.pageNum
                 }, success: (data) => {
-                  vueThis.tenderSuccessData.data = vueThis.tenderSuccessData.data.concat(data.result);
-                  if (data.total_page === vueThis.tenderSuccessData.pageNum) {
+                  if (data.total_page <= vueThis.tenderSuccessData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.tenderSuccessData.data = vueThis.tenderSuccessData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -333,10 +334,10 @@
                   code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.legalData.pageNum
                 }, success: (data) => {
-                  vueThis.legalData.data = vueThis.legalData.data.concat(data.result);
-                  if (data.total_page === vueThis.legalData.pageNum) {
+                  if (data.total_page <= vueThis.legalData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.legalData.data = vueThis.legalData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -355,10 +356,10 @@
                   code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.builderData.pageNum
                 }, success: (data) => {
-                  vueThis.builderData.data = vueThis.builderData.data.concat(data.result);
-                  if (data.total_page === vueThis.builderData.pageNum) {
+                  if (data.total_page <= vueThis.builderData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.builderData.data = vueThis.builderData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 }
@@ -383,18 +384,21 @@
           data: {code: this.rid},
           success: (data) => {
             this.baseData = data;
-            this.commercialData = data.commercial_info;
-            this.commercialItem1Data = data.commercial_info.base_info;
-            this.commercialItem6Data = data.commercial_info.contact_info;
-            this.legalData.data = data.legal_list;
-            this.tenderSuccessData.data = data.tender_success_list;
-            this.builderData.data = data.builder_list;
+            if (data.commercial_info !== undefined) {
+              this.commercialData = data.commercial_info;
+              this.commercialItem1Data = data.commercial_info.base_info;
+              this.commercialItem6Data = data.commercial_info.contact_info;
+            }
+            this.legalData.data = data.legal_list || [];
+            this.tenderSuccessData.data = data.tender_success_list || [];
+            this.builderData.data = data.builder_list || [];
             this.followed = data.followed;
             this.$refs.loading.hide();
             this.dataLock = true;
           }
         })
       },
+      openNViewPreload:myMethods.openNViewPreload,
       //页面切换
       jumpTo(key) {
         this.filterFlag = false;
@@ -437,7 +441,7 @@
               mui.toast('取消成功')
             }
           })
-        }else {
+        } else {
           http({
             url: api.member_follow,
             method: 'post',
