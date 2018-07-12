@@ -11,8 +11,8 @@
         span.detail-bar-item(@tap="jumpTo(0)", :class="{active: pageKey===0}") 基本信息
         span.detail-bar-item(@tap="jumpTo(1)", :class="{active: pageKey===1}") 中标信息
         span.detail-bar-item(@tap="jumpTo(2)", :class="{active: pageKey===2}") 建造师
-        span.detail-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 工商信息
-        span.detail-bar-item(@tap="jumpTo(4)", :class="{active: pageKey===4}") 法律讼诉
+        <!--span.detail-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 工商信息-->
+        <!--span.detail-bar-item(@tap="jumpTo(4)", :class="{active: pageKey===4}") 法律讼诉-->
     .mui-content
       loading(ref="loading")
       .content-wrapper(v-show="dataLock")
@@ -65,11 +65,11 @@
                 .filter-wrapper
                   .filter.fl
                     span 共{{baseData.tender_sucess_num}}次中标
-                  .filter(@tap="popoutFilter(true,false)")
+                  .filter(v-if='false')
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in tenderSuccessData.data")
+                  .pro-item(v-for="item in tenderSuccessData.data", @tap="openDetail('detail',{rid:item.rid,type:2})") {{item.rid}}
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.tender_date}}
@@ -93,7 +93,7 @@
                 .filter-wrapper
                   .filter.fl
                     span 共{{baseData.builder_num}}名建造师
-                  .filter(@tap="popoutFilter(true,false)")
+                  .filter(v-if='false')
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .bui-group
@@ -113,7 +113,7 @@
                         i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
                         span {{sign.name}}
           //工商信息
-          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
+          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()", v-if='false')
             .scroll-wrapper
               .scroll-box
                 ul.media-view
@@ -221,7 +221,7 @@
                           .media-content
                             .media-lable {{commercialData.remark}}
           //法律讼诉
-          .content-page(@swiperight="contentSwiperight()")
+          .content-page(@swiperight="contentSwiperight()", v-if='false')
             .scroll-wrapper#legalPage
               .scroll-box
                 ul.media-view
@@ -236,7 +236,7 @@
     .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
       .popout
         .popout-arrow
-        .funitem
+        .funitem(@tap="share()")
           i.iconfont.icon-share
           span 分享项目
         .funitem.border-none(@tap="follow(followed)")
@@ -370,6 +370,9 @@
       });
       mui('.scroll-wrapper').scroll({
         indicators: false
+      });
+      mui.plusReady(() => {
+        this.updateSerivces();
       })
     },
     created() {
@@ -455,6 +458,13 @@
             }
           })
         }
+      },
+      openDetail(url, data) {
+        mui.plusReady(()=> {
+          let detailPage = plus.webview.getWebviewById(url);
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
       },
     }
   }

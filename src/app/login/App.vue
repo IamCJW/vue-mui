@@ -17,7 +17,6 @@
           .input-item(v-if="loginType")
             i.iconfont.icon-yanzhengma
             input(placeholder="请输入密码" type="password" v-model="pwd")
-            span.code.disabled 忘记密码？
           .input-item
             button(@tap="login") 登录
           .input-item.other
@@ -56,10 +55,12 @@
         codeText: '获取验证码',
         totalTime: '60',
         clientid: '',
+        os_type: '',
       }
     },
     mounted() {
-
+      mui.os.android ? this.os_type = 1 : '';
+      mui.os.ios ? this.os_type = 2 : '';
     },
     created() {
 
@@ -109,7 +110,6 @@
       },
       // 登录////////////////////////////////
       login() {
-        this.getClientid();
         if (this.phone === '') {
           mui.toast('手机号不能为空');
           return
@@ -126,37 +126,42 @@
           mui.toast('请输入4位验证码');
           return
         }
-        let data = {
-          flag: this.loginType ? 1 : 2,
-          mobile: this.phone,
-          pwd: this.loginType ? this.pwd : this.code,
-          getui_id: this.clientid,
-        };
-        console.log('我是个推ID'+this.clientid)
-        http({
-          url: api.user_login,
-          data: data,
-          method: 'post',
-          success: (data) => {
-            mui.plusReady(() => {
-              plus.storage.setItem(plusKey.token, data);
-              plus.storage.setItem(plusKey.state, "true");
-              let view = plus.webview.getWebviewById('me');
-              mui.fire(view, 'loginSuccess', {
-                msg: '登录成功'
+        let vueThis = this;
+        mui.plusReady(() => {
+          vueThis.getClientid();
+          let data = {
+            flag: vueThis.loginType ? 1 : 2,
+            mobile: vueThis.phone,
+            pwd: vueThis.loginType ? vueThis.pwd : vueThis.code,
+            getui_id: vueThis.clientid,
+            os_type: vueThis.os_type,
+          };
+          http({
+            url: api.user_login,
+            data: data,
+            method: 'post',
+            success: (data) => {
+              mui.plusReady(() => {
+                plus.storage.setItem(plusKey.token, data);
+                plus.storage.setItem(plusKey.state, "true");
+                let view = plus.webview.getWebviewById('me');
+                mui.fire(view, 'loginSuccess', {
+                  msg: '登录成功'
+                });
+                plus.webview.currentWebview().close();
               });
-              plus.webview.currentWebview().close();
-            });
-          },
-          error: (data) => {
-            mui.toast(data.msg);
-          }
-        })
+            },
+            error: (data) => {
+              mui.toast(data.msg);
+            }
+          })
+        });
+
       },
       otherLogin(type) {
         let vueThis = this;
-        this.getClientid();
         mui.plusReady(function () {
+          vueThis.getClientid();
           plus.oauth.getServices((services) => {
             let sever;
             for (let i = 0; i < services.length; i++) {
@@ -191,16 +196,16 @@
             vueThis.clientid = plus.push.getClientInfo().clientid;
             plus.storage.setItem(plusKey.clientid, vueThis.clientid);
           }
-        })
-      }
-      ,
+        });
+      },
       //第三方登录操作
       oauthDo(type, sever) {
         let opts = {
           flag: type === 'weixin' ? 1 : 2,
           icon: sever.userInfo.headimgurl,
           nick_name: sever.userInfo.nickname,
-          getui_id: this.getui_id,
+          getui_id: this.clientid,
+          os_type:this.os_type,
         };
         if (type === 'qq') {
           http({
@@ -213,35 +218,57 @@
               str = str.replace(');', '');
               str = str.trim();
               opts['openid'] = JSON.parse(str).openid;
+              http({
+                url: api.user_auth,
+                data: opts,
+                method: 'post',
+                success(data) {
+                  plus.storage.setItem(plusKey.token, data);
+                  plus.storage.setItem(plusKey.state, "true");
+                  let view = plus.webview.getWebviewById('me');
+                  mui.fire(view, 'loginSuccess', {
+                    msg: '登录成功'
+                  });
+                  plus.webview.currentWebview().close();
+                },
+                noFind(data) {
+                  mui.preload({
+                    url: './login_other.html',
+                    id: 'login_other'
+                  });
+                  let detailPage = plus.webview.getWebviewById('login_other');
+                  mui.fire(detailPage, 'getData', opts);
+                  mui.openWindow('login_other');
+                }
+              });
             }
           })
         } else {
-          opts['openid'] = sever.userInfo.openid
+          opts['openid'] = sever.userInfo.openid;
+          http({
+            url: api.user_auth,
+            data: opts,
+            method: 'post',
+            success(data) {
+              plus.storage.setItem(plusKey.token, data);
+              plus.storage.setItem(plusKey.state, "true");
+              let view = plus.webview.getWebviewById('me');
+              mui.fire(view, 'loginSuccess', {
+                msg: '登录成功'
+              });
+              plus.webview.currentWebview().close();
+            },
+            noFind(data) {
+              mui.preload({
+                url: './login_other.html',
+                id: 'login_other'
+              });
+              let detailPage = plus.webview.getWebviewById('login_other');
+              mui.fire(detailPage, 'getData', opts);
+              mui.openWindow('login_other');
+            }
+          });
         }
-        http({
-          url: api.user_auth,
-          type:true,
-          method:'post',
-          data: opts,
-          success(data) {
-            plus.storage.setItem(plusKey.token, data);
-            plus.storage.setItem(plusKey.state, "true");
-            let view = plus.webview.getWebviewById('me');
-            mui.fire(view, 'loginSuccess', {
-              msg: '登录成功'
-            });
-            plus.webview.currentWebview().close();
-          },
-          noFind(data) {
-            mui.preload({
-              url: './login_other.html',
-              id: 'login_other'
-            });
-            let detailPage = plus.webview.getWebviewById('login_other');
-            mui.fire(detailPage, 'getData', opts);
-            mui.openWindow('login_other');
-          }
-        });
       }
     }
   }

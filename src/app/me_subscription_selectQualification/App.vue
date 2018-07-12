@@ -96,7 +96,7 @@
               qualify_info: data,
               id: this.subscription.id
             },
-            success() {
+            success:()=> {
               let view = plus.webview.getWebviewById('subscription');
               mui.fire(view, 'chooseQualification', {
                 msg: '修改成功'

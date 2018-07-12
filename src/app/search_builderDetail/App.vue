@@ -9,7 +9,7 @@
             i.iconfont.icon-Avatar
           .user-sign {{baseData.level  || '建造师等级'}}
           .user-focus(@tap="follow", :class="[followed ? '':'bg-gary']") {{followed?'已关注':'关注'}}
-          .user-share 分享
+          .user-share(@tap="share()") 分享
     .mui-content
       loading(ref="loading")
       .scroll-wrapper#builderTender(v-show="dataLock")
@@ -134,6 +134,9 @@
         vueThis.dataLock = false;
         vueThis.getData();
       });
+      mui.plusReady(() => {
+        this.updateSerivces();
+      })
     },
     created() {
 
@@ -166,7 +169,7 @@
             method: 'delete',
             data: {
               rid: this.rid,
-              type: 3
+              type: 4
             },
             success: () => {
               this.followed = !this.followed;
@@ -179,7 +182,7 @@
             method: 'post',
             data: {
               rid: this.rid,
-              type: 3
+              type: 4
             },
             success: () => {
               this.followed = !this.followed;

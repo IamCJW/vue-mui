@@ -11,55 +11,59 @@
           span 您还没有登录，请登录>
         .user-loginStation(v-show="loginState")
           span 您的账户已上线~
-      .me-nav
-        .me-nav-item(@tap="openNViewPreload('wallet')")
-          i.iconfont.icon-wallet
-          span 钱包
-        .me-nav-item(@tap="openNViewPreload('coupon')")
-          i.iconfont.icon-coupon
-          span 优惠券
-        .me-nav-item(@tap="openNViewPreload('orderCompany')")
-          i.iconfont.icon-orders
-          span 订单公司
-        .me-nav-item(@tap="openNViewPreload('address')")
-          i.iconfont.icon-Shippingaddress
-          span 收货地址
+      <!--.me-nav-->
+        <!--.me-nav-item(@tap="openNViewPreload('wallet')")-->
+          <!--i.iconfont.icon-wallet-->
+          <!--span 钱包-->
+        <!--.me-nav-item(@tap="openNViewPreload('coupon')")-->
+          <!--i.iconfont.icon-coupon-->
+          <!--span 优惠券-->
+        <!--.me-nav-item(@tap="openNViewPreload('orderCompany')")-->
+          <!--i.iconfont.icon-orders-->
+          <!--span 订单公司-->
+        <!--.me-nav-item(@tap="openNViewPreload('address')")-->
+          <!--i.iconfont.icon-Shippingaddress-->
+          <!--span 收货地址-->
     .mui-content(@swiperight="openTabNav('search',2)")
-      .order-box
-        .order-title 我的订单
-        .order-type-group
-          .type-item(@tap="openNViewPreload('order',{type:1})")
-            i.iconfont.icon-allorders
-            span 全部
-          .type-item(@tap="openNViewPreload('order',{type:2})")
-            i.iconfont.icon-Pendingpayment
-            span 待付款
-          .type-item(@tap="openNViewPreload('order',{type:3})")
-            i.iconfont.icon-Alreadypaid
-            span 已付款
-          .type-item(@tap="openNViewPreload('order',{type:4})")
-            i.iconfont.icon-completeds
-            span 已完成
-          .type-item(@tap="openNViewPreload('order',{type:5})")
-            i.iconfont.icon-Cancelled
-            span 已取消
+      <!--.order-box-->
+        <!--.order-title 我的订单-->
+        <!--.order-type-group-->
+          <!--.type-item(@tap="openNViewPreload('order',{type:1})")-->
+            <!--i.iconfont.icon-allorders-->
+            <!--span 全部-->
+          <!--.type-item(@tap="openNViewPreload('order',{type:2})")-->
+            <!--i.iconfont.icon-Pendingpayment-->
+            <!--span 待付款-->
+          <!--.type-item(@tap="openNViewPreload('order',{type:3})")-->
+            <!--i.iconfont.icon-Alreadypaid-->
+            <!--span 已付款-->
+          <!--.type-item(@tap="openNViewPreload('order',{type:4})")-->
+            <!--i.iconfont.icon-completeds-->
+            <!--span 已完成-->
+          <!--.type-item(@tap="openNViewPreload('order',{type:5})")-->
+            <!--i.iconfont.icon-Cancelled-->
+            <!--span 已取消-->
       ul.media-view.funList
-        li.media(@tap="openNViewPreload('systemSetting')")
-          .media-content.iconfont.icon-right
-            .media-lable.text-color-black 系统设置
         li.media(@tap="openNViewPreload('subscription')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 订阅管理
         li.media(@tap="openNViewPreload('follow')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 我的关注
+        li.media(@tap="openNViewPreload('safety')")
+          .media-content.iconfont.icon-right
+            .media-lable.text-color-black 安全设置
+        li.media(@tap="openNViewPreload('systemSetting')")
+          .media-content.iconfont.icon-right
+            .media-lable.text-color-black 系统设置
+      ul.media-view.funList
         li.media(@tap="openNViewPreload('advice')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 反馈意见
         li.media(@tap="openNViewPreload('aboutUS')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 关于我们
-        li.media
+        li.media(@tap="ysf")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 联系客服
 </template>
@@ -96,7 +100,6 @@
       });
       window.addEventListener('changeUserData', (e) => {
         this.getData();
-        mui.toast(e.detail.msg);
       });
     },
     created() {
@@ -112,6 +115,9 @@
               url: api.member_info,
               success: (data) => {
                 vueThis.userData = data;
+                vueThis.loginState = true;
+              },
+              noFind:()=>{
                 vueThis.loginState = true;
               },
               error: (data) => {
@@ -133,6 +139,13 @@
         }
       },
       openTabNav: myMethods.openTabNav,
+      //客服////
+      ysf() {
+        let url = ysf.url();
+        myMethods.openNViewPreload('chat', {
+          chatUrl: url
+        })
+      },
     }
   }
 </script>

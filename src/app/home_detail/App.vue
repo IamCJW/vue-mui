@@ -43,10 +43,11 @@
             td {{item.amount}}万
           tr
             td.th 信息来源
-            td(colspan="2") {{pushMsg.resource}}
+            td(colspan="2", @tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url})") {{pushMsg.resource}}
           tr
             td.th(colspan="3") 原文内容
-        .orContent(v-html="pushMsg.content") {{pushMsg.content}}
+        .orContent(v-html="pushMsg.content") {{'<div class="orContent">'+pushMsg.content+'</div>'}}
+
       // 中标
       .content-table(v-show="navPage === '中标'")
         table
@@ -79,7 +80,7 @@
             td(colspan="3") {{pullMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
-        .orContent(v-html="pullMsg.content") {{pullMsg.content}}
+        .orContent(v-html="pullMsg.content", @tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url})") {{pullMsg.content}}
       // 其他
       .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
         table
@@ -88,7 +89,7 @@
               .time 发布时间: {{otherMsg.info_date}}
           tr
             td.th 信息来源
-            td(colspan="3") {{otherMsg.resource}}
+            td(colspan="3", @tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url})") {{otherMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="otherMsg.content") {{otherMsg.content}}
@@ -101,10 +102,10 @@
         .btn-item(@tap="ysf")
           i.iconfont.icon-CUSTOMERSERVICE
           span 联系客服
-        .btn-item(@tap="follow")
+        .btn-item.buy(@tap="follow")
           i.iconfont.icon-attention(:class="{active: followStatus}")
           span {{followStatus ? '已关注' : '关注项目' }}
-        .btn-item.buy(@tap="buy") {{!buyType.show ? '购买投标保函':''}}{{buyType.show&&buyType.type === 0 ? '选择投标保函':''}}{{buyType.show&&buyType.type !== 0 ? '购买':''}}
+        .btn-item.buy(@tap="buy",v-if="false") {{!buyType.show ? '购买投标保函':''}}{{buyType.show&&buyType.type === 0 ? '选择投标保函':''}}{{buyType.show&&buyType.type !== 0 ? '购买':''}}
     .mask.buyType(v-show="buyType.show",@tap="closeMask")
       .popout
         button(@tap.stop="changeType(1)" , :class="{active : buyType.type === 1}") 购买投标基本户保函
@@ -112,7 +113,7 @@
     .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
       .popout
         .popout-arrow
-        .funitem
+        .funitem(@tap="share()" )
           i.iconfont.icon-share
           span 分享项目
         .funitem.border-none(@tap.stop="warnShow")
@@ -245,13 +246,16 @@
             followed: ''
           }
         };
-        vueThis.navigate_list= [];
+        vueThis.navigate_list = [];
         let muiData = e.detail;
         if (muiData.type === 1) {
           this.zbRid = muiData.rid;
         }
         this.getData(muiData);
       });
+      mui.plusReady(() => {
+        this.updateSerivces();
+      })
     },
     created() {
 
@@ -259,6 +263,7 @@
     methods: {
       //数据请求
       getData(data) {
+        console.log('我动了')
         let rid = data.rid;
         let type = data.type || 1;
         switch (type) {
@@ -312,6 +317,7 @@
             break;
         }
       },
+      openNViewPreload:myMethods.openNViewPreload,
       //内容选择
       navSelect(key, rid, type) {
         this.navPage = key;
@@ -345,7 +351,8 @@
             });
             break;
         }
-      },//购买按钮
+      },
+      //购买按钮
       buy() {
         if (this.buyType.type === 0 && this.buyType.show === true) {
           mui.toast('请选择购买类型')
@@ -355,16 +362,20 @@
         } else {
           this.buyType.show = true;
         }
-      },//更改购买类型
+      },
+      //更改购买类型
       changeType(key) {
         this.buyType.type = key;
-      },//关闭购买
+      },
+      //关闭购买
       closeMask() {
         this.buyType.show = false;
-      },//更多
+      },
+      //更多
       menuShow(key) {
         this.menuStatus = key;
-      },//关注按钮功能
+      },
+      //关注按钮功能
       follow() {
         if (this.followStatus) {
           http({
@@ -393,10 +404,12 @@
             }
           })
         }
-      },//选择错误
+      },
+      //选择错误
       chooseWarn(key) {
         this.$set(this.warnList, key, !this.warnList[key])
-      },//提交错误
+      },
+      //提交错误
       submitWarn() {
         let data = '';
         for (let item in this.warnList) {
@@ -420,21 +433,23 @@
             this.warnStatus = false;
           }
         })
-      },//错误展示
+      },
+      //错误展示
       warnShow() {
         this.warnStatus = true;
         this.menuStatus = false;
-      },//错误关闭
+      },
+      //错误关闭
       warnClose() {
         this.warnStatus = false;
       },
       //客服////
-      ysf(){
+      ysf() {
         let url = ysf.url();
-        myMethods.openNViewPreload('chat',{
-          chatUrl:url
+        myMethods.openNViewPreload('chat', {
+          chatUrl: url
         })
-      }
+      },
     }
   }
 </script>

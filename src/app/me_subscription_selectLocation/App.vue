@@ -148,9 +148,9 @@
               city: this.city === '全省' ? '' : this.city,
               district: this.district === '全市' ? '' : this.district,
               qualify_info: this.subscription.qualify_info,
-              rid: this.subscription.id
+              id: this.subscription.id
             },
-            success() {
+            success:()=> {
               let view = plus.webview.getWebviewById('subscription');
               mui.fire(view, 'chooseLocation', {
                 msg: '修改成功'

@@ -4,7 +4,7 @@
     .header-full
     .home-header
       .home-search-wrapper
-        .home-location( @tap="openWindow('selectLocation')")
+        .home-location( @tap="openNViewPreload('selectLocation')")
           i.iconfont.icon-site
           span {{localLocation}}
           i.iconfont.icon-TRIANGLE
@@ -150,7 +150,7 @@
               .filter-typeGroup(v-else)
                 .filter-type 信息类型
                 .filter-keyGrouup
-                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_dict'] === item.name}", @tap="filterSelectPro('info_dict',item.name)") {{item.name}}
+                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_type'] === item.name}", @tap="filterSelectPro('info_type',item.name)") {{item.name}}
             .popout-filter-btnGroup
               button(@tap="filterReset()") 重置
               button(@tap="filterSubmit()") 确定
@@ -229,7 +229,7 @@
           location: {province: '', city: '', district: ''},
           amount_dict: '',
           construction_dict: '',
-          info_dict: '',
+          info_type: '',
           tender_dict: ''
         },
         nation: '',//地址数据
@@ -242,6 +242,7 @@
     methods: {
       //获取初始数据
       getData() {
+        this.muiInit();
         this.$refs.loading.show();
         this.pageIndex0 = {data: [], pageNum: 1};//招标订阅信息
         this.pageIndex1 = {data: [], pageNum: 1};//招标公示信息
@@ -297,6 +298,9 @@
       },
       //筛选地址初始化
       initFilterLocation() {
+        this.filterSelect.location.province = this.province;
+        this.filterSelect.location.city = this.city || '';
+        this.filterSelect.location.district = this.district || '';
         this.filterLocation.data = this.nation;
         if (this.city !== '') {
           let flag = true;
@@ -327,6 +331,7 @@
         switch (key) {
           case 0:
             this.filterSelect.location.province = value;
+            this.filterSelect.location.city = '';
             this.filterLocation.index = 1;
             for (let key in this.filterLocation.data) {
               if (this.filterLocation.data[key].name === value) {
@@ -338,7 +343,11 @@
           case 1:
             this.filterSelect.location.city = value;
             this.filterLocation.index = 2;
-            if (value === '全省') return;
+            this.filterSelect.location.district = '';
+            if (value === '全省') {
+              this.filterLocation.index = 1;
+              return
+            };
             for (let key in this.filterLocation.data) {
               if (this.filterLocation.data[key].name === value) {
                 this.filterLocation.data = this.filterLocation.data[key].district;
@@ -352,6 +361,7 @@
           default:
             this.filterSelect[key] = value;
         }
+        console.log(JSON.stringify(this.filterSelect));
       },
       //地址返回
       filterBack() {
@@ -376,15 +386,22 @@
       //条件提交
       filterSubmit() {
         let filterSelect = this.filterSelect;
+        console.log(this.filterSelect)
+        if (filterSelect.location.province === '') {
+          mui.toast('城市不能为空');
+          return
+        }
         let data = {
-          amount_type: filterSelect.amount,
+          amount_type: filterSelect.amount_dict,
           city: filterSelect.location.city === '全省' ? '' : filterSelect.location.city,
           construction_type: filterSelect.construction_dict,
           cur_page: 1,
           district: filterSelect.location.district === '全市' ? '' : filterSelect.location.district,
           province: filterSelect.location.province,
-          tender_type: filterSelect.tender_dict
+          tender_type: filterSelect.tender_dict,
+          info_type: filterSelect.info_type,
         };
+        console.log(data);
         switch (this.pageKey) {
           case 1:
             http({
@@ -392,6 +409,10 @@
               data: data,
               success: (data) => {
                 this.pageIndex1.data = data.result;
+                this.filterFlag = false;
+              },
+              noFind: (data) => {
+                this.pageIndex1.data = [];
                 this.filterFlag = false;
               }
             });
@@ -403,6 +424,10 @@
               success: (data) => {
                 this.pageIndex2.data = data.result;
                 this.filterFlag = false;
+              },
+              noFind: (data) => {
+                this.pageIndex2.data = [];
+                this.filterFlag = false;
               }
             });
             break;
@@ -412,6 +437,10 @@
               data: data,
               success: (data) => {
                 this.pageIndex3.data = data.result;
+                this.filterFlag = false;
+              },
+              noFind: (data) => {
+                this.pageIndex3.data = [];
                 this.filterFlag = false;
               }
             });
@@ -424,19 +453,21 @@
           location: {province: '', city: '', district: ''},
           amount_dict: '',
           construction_dict: '',
-          info_dict: '',
+          info_type: '',
           tender_dict: ''
-        }
+        };
+        this.initFilterLocation();
       },
       // 跳转页面
       openWindow: myMethods.openWindow,
       openNViewPreload: myMethods.openNViewPreload,
       openDetail(url, data) {
         mui.plusReady(function () {
+          mui.preload({
+            url:`./${url}.html`,
+            id:url
+          });
           let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
           mui.fire(detailPage, 'getData', data);
           myMethods.openWindow(url);
         });
@@ -523,6 +554,208 @@
       //跳转主页内容
       openTabNav: myMethods.openTabNav,
       changeRem: myMethods.changeRem,
+      //muiInit
+      muiInit() {
+        let vueThis = this;
+        if ((vueThis.filterSelect.location.province || vueThis.province || '') === '') {
+          return
+        }
+        mui.init({
+          preloadPages: [{
+            url: './searchProject.html',
+            id: 'searchProject',
+          }],
+          pullRefresh: [{
+            container: '#page1',
+            down: {
+              callback: function () {
+                vueThis.pageIndex0.pageNum = 1;
+                http({
+                  url: api.tender_subscribe,
+                  success: (data) => {
+                    vueThis.pageIndex0.data = data.result;
+                    mui('#page1').pullRefresh().endPulldownToRefresh();
+                  },
+                  noFind: () => {
+                    mui('#page1').pullRefresh().endPulldownToRefresh();
+                  }
+                });
+              }
+            },
+            up: {
+              contentrefresh: "正在加载...",
+              contentnomore: '再拉也没有数据~',
+              callback: function () {
+                vueThis.pageIndex0.pageNum += 1;
+                http({
+                  url: api.tender_subscribe,
+                  data: {
+                    cur_page: vueThis.pageIndex0.pageNum
+                  },
+                  success: (data) => {
+                    vueThis.pageIndex0.data = vueThis.pageIndex0.data.concat(data.result);
+                    if (data.total_page <= vueThis.pageIndex0.pageNum) {
+                      this.endPullupToRefresh(true);
+                    } else {
+                      this.endPullupToRefresh(false);
+                    }
+                  },
+                  noFind: (data) => {
+                    this.endPullupToRefresh(true);
+                  }
+                });
+              }
+            }
+          }, {
+            container: '#page2',
+            down: {
+              callback: function () {
+                vueThis.pageIndex1.pageNum = 1;
+                http({
+                  url: api.tender,
+                  data: {
+                    city: vueThis.city || '',
+                    district: vueThis.district || '',
+                    province: vueThis.province || '',
+                  },
+                  success: (data) => {
+                    vueThis.pageIndex1.data = data.result;
+                    mui('#page2').pullRefresh().endPulldownToRefresh();
+                  },
+                  noFind: () => {
+                    vueThis.pageIndex1.data = [];
+                    mui('#page2').pullRefresh().endPulldownToRefresh();
+                  }
+                });
+              }
+            },
+            up: {
+              contentrefresh: "正在加载...",
+              contentnomore: '再拉也没有数据~',
+              callback: function () {
+                vueThis.pageIndex1.pageNum += 1;
+                http({
+                  url: api.tender,
+                  data: Object.assign({
+                    city:vueThis.city || '',
+                    district:vueThis.district || '',
+                    province: vueThis.province || '',
+                  }, {cur_page: vueThis.pageIndex1.pageNum}),
+                  success: (data) => {
+                    vueThis.pageIndex1.data = vueThis.pageIndex1.data.concat(data.result);
+                    if (data.total_page <= vueThis.pageIndex1.pageNum) {
+                      this.endPullupToRefresh(true);
+                    } else {
+                      this.endPullupToRefresh(false);
+                    }
+                  },
+                  noFind: () => {
+                    this.endPullupToRefresh(true);
+                  }
+                });
+              }
+            }
+          }, {
+            container: '#page3',
+            down: {
+              callback: function () {
+                vueThis.pageIndex2.pageNum = 1;
+                http({
+                  url: api.tender_success,
+                  data: {
+                    city:vueThis.city || '',
+                    district:vueThis.district || '',
+                    province: vueThis.province || '',
+                  },
+                  success: (data) => {
+                    vueThis.pageIndex2.data = data.result;
+                    mui('#page3').pullRefresh().endPulldownToRefresh();
+                  },
+                  noFind: () => {
+                    vueThis.pageIndex2.data = [];
+                    mui('#page3').pullRefresh().endPulldownToRefresh();
+                  }
+                });
+              }
+            },
+            up: {
+              contentrefresh: "正在加载...",
+              contentnomore: '再拉也没有数据~',
+              callback: function () {
+                vueThis.pageIndex2.pageNum += 1;
+                http({
+                  url: api.tender_success,
+                  data: Object.assign({
+                    city:vueThis.city || '',
+                    district:vueThis.district || '',
+                    province: vueThis.province || '',
+                  }, {cur_page: vueThis.pageIndex2.pageNum}),
+                  success: (data) => {
+                    vueThis.pageIndex2.data = vueThis.pageIndex2.data.concat(data.result);
+                    if (data.total_page <= vueThis.pageIndex2.pageNum) {
+                      this.endPullupToRefresh(true);
+                    } else {
+                      this.endPullupToRefresh(false);
+                    }
+                  },
+                  noFind: () => {
+                    this.endPullupToRefresh(true);
+                  }
+                });
+              }
+            }
+          }, {
+            container: '#page4',
+            down: {
+              callback: function () {
+                vueThis.pageIndex3.pageNum = 1;
+                http({
+                  url: api.tender_more,
+                  data: {
+                    city:vueThis.city || '',
+                    district:vueThis.district || '',
+                    province: vueThis.province || '',
+                  },
+                  success: (data) => {
+                    vueThis.pageIndex3.data = data.result;
+                    mui('#page4').pullRefresh().endPulldownToRefresh();
+                  },
+                  noFind: () => {
+                    vueThis.pageIndex3.data = [];
+                    mui('#page4').pullRefresh().endPulldownToRefresh();
+                  }
+                });
+              }
+            },
+            up: {
+              contentrefresh: "正在加载...",
+              contentnomore: '再拉也没有数据~',
+              callback: function () {
+                vueThis.pageIndex3.pageNum += 1;
+                http({
+                  url: api.tender_more,
+                  data: Object.assign({
+                    city:vueThis.city || '',
+                    district:vueThis.district || '',
+                    province: vueThis.province || '',
+                  }, {cur_page: vueThis.pageIndex3.pageNum}),
+                  success: (data) => {
+                    vueThis.pageIndex3.data = vueThis.pageIndex3.data.concat(data.result);
+                    if (data.total_page <= vueThis.pageIndex3.pageNum) {
+                      this.endPullupToRefresh(true);
+                    } else {
+                      this.endPullupToRefresh(false);
+                    }
+                  },
+                  noFind: () => {
+                    this.endPullupToRefresh(true);
+                  }
+                });
+              }
+            }
+          }]
+        });
+      }
     },
     mounted() {
       this.location();
@@ -549,196 +782,13 @@
           plus.navigator.setFullscreen(false);
           plus.navigator.closeSplashscreen();
         }
+        plus.push.createMessage('尼玛炸了');
+        plus.push.addEventListener("click",(msg)=>{
+          alert(msg.content)
+        })
+
       });
-      let vueThis = this;
-      let filterSelect = this.filterSelect;
-      let httpData = {
-        amount_type: filterSelect.amount,
-        city: filterSelect.location.city || vueThis.city || '',
-        construction_type: filterSelect.construction_dict.name,
-        district: filterSelect.location.district || vueThis.district || '',
-        province: filterSelect.location.province || vueThis.province || '',
-        tender_type: filterSelect.tender_dict.name
-      };
-      if (httpData.province === '') {
-        return
-      }
-      mui.init({
-        preloadPages: [
-          {
-            url: './selectLocation.html',
-            id: 'selectLocation',
-          }, {
-            url: './searchProject.html',
-            id: 'searchProject',
-          }, {
-            url: './detail.html',
-            id: 'detail'
-          },
-        ],
-        pullRefresh: [{
-          container: '#page1',
-          down: {
-            callback: function () {
-              vueThis.pageIndex0.pageNum = 1;
-              http({
-                url: api.tender_subscribe,
-                success: (data) => {
-                  vueThis.pageIndex0.data = data.result;
-                  mui('#page1').pullRefresh().endPulldownToRefresh();
-                },
-                noFind: () => {
-                  mui('#page1').pullRefresh().endPulldownToRefresh();
-                }
-              });
-            }
-          },
-          up: {
-            contentrefresh: "正在加载...",
-            contentnomore: '再拉也没有数据~',
-            callback: function () {
-              vueThis.pageIndex0.pageNum += 1;
-              http({
-                url: api.tender_subscribe,
-                data: {
-                  cur_page: vueThis.pageIndex0.pageNum
-                },
-                success: (data) => {
-                  vueThis.pageIndex0.data = vueThis.pageIndex0.data.concat(data.result);
-                  if (data.total_page <= vueThis.pageIndex0.pageNum) {
-                    this.endPullupToRefresh(true);
-                  } else {
-                    this.endPullupToRefresh(false);
-                  }
-                },
-                noFind: (data) => {
-                  this.endPullupToRefresh(true);
-                }
-              });
-            }
-          }
-        }, {
-          container: '#page2',
-          down: {
-            callback: function () {
-              vueThis.pageIndex1.pageNum = 1;
-              http({
-                url: api.tender,
-                data: httpData,
-                success: (data) => {
-                  vueThis.pageIndex1.data = data.result;
-                  mui('#page2').pullRefresh().endPulldownToRefresh();
-                },
-                noFind: () => {
-                  mui('#page2').pullRefresh().endPulldownToRefresh();
-                }
-              });
-            }
-          },
-          up: {
-            contentrefresh: "正在加载...",
-            contentnomore: '再拉也没有数据~',
-            callback: function () {
-              vueThis.pageIndex1.pageNum += 1;
-              http({
-                url: api.tender,
-                data: Object.assign(httpData, {cur_page: vueThis.pageIndex1.pageNum}),
-                success: (data) => {
-                  vueThis.pageIndex1.data = vueThis.pageIndex1.data.concat(data.result);
-                  if (data.total_page <= vueThis.pageIndex1.pageNum) {
-                    this.endPullupToRefresh(true);
-                  } else {
-                    this.endPullupToRefresh(false);
-                  }
-                },
-                noFind: () => {
-                  this.endPullupToRefresh(true);
-                }
-              });
-            }
-          }
-        }, {
-          container: '#page3',
-          down: {
-            callback: function () {
-              vueThis.pageIndex2.pageNum = 1;
-              http({
-                url: api.tender_success,
-                data: httpData,
-                success: (data) => {
-                  vueThis.pageIndex2.data = data.result;
-                  mui('#page3').pullRefresh().endPulldownToRefresh();
-                },
-                noFind: () => {
-                  mui('#page3').pullRefresh().endPulldownToRefresh();
-                }
-              });
-            }
-          },
-          up: {
-            contentrefresh: "正在加载...",
-            contentnomore: '再拉也没有数据~',
-            callback: function () {
-              vueThis.pageIndex2.pageNum += 1;
-              http({
-                url: api.tender_success,
-                data: Object.assign(httpData, {cur_page: vueThis.pageIndex2.pageNum}),
-                success: (data) => {
-                  vueThis.pageIndex2.data = vueThis.pageIndex2.data.concat(data.result);
-                  if (data.total_page <= vueThis.pageIndex2.pageNum) {
-                    this.endPullupToRefresh(true);
-                  } else {
-                    this.endPullupToRefresh(false);
-                  }
-                },
-                noFind: () => {
-                  this.endPullupToRefresh(true);
-                }
-              });
-            }
-          }
-        }, {
-          container: '#page4',
-          down: {
-            callback: function () {
-              vueThis.pageIndex3.pageNum = 1;
-              http({
-                url: api.tender_more,
-                data: httpData,
-                success: (data) => {
-                  vueThis.pageIndex3.data = data.result;
-                  mui('#page4').pullRefresh().endPulldownToRefresh();
-                },
-                noFind: () => {
-                  mui('#page4').pullRefresh().endPulldownToRefresh();
-                }
-              });
-            }
-          },
-          up: {
-            contentrefresh: "正在加载...",
-            contentnomore: '再拉也没有数据~',
-            callback: function () {
-              vueThis.pageIndex3.pageNum += 1;
-              http({
-                url: api.tender_more,
-                data: Object.assign(httpData, {cur_page: vueThis.pageIndex3.pageNum}),
-                success: (data) => {
-                  vueThis.pageIndex3.data = vueThis.pageIndex3.data.concat(data.result);
-                  if (data.total_page <= vueThis.pageIndex3.pageNum) {
-                    this.endPullupToRefresh(true);
-                  } else {
-                    this.endPullupToRefresh(false);
-                  }
-                },
-                noFind: () => {
-                  this.endPullupToRefresh(true);
-                }
-              });
-            }
-          }
-        }]
-      });
+      this.muiInit()
     },
     created() {
 
@@ -746,10 +796,10 @@
     filters: {
       //倒计时过滤器
       dateCountDown: (data) => {
-        if (data === '未知')return data;
+        if (data === '未知') return data;
         let dateArr = data.split('-');
         let now = new Date();
-        let endTime = new Date(dateArr[0], dateArr[1]-1, dateArr[2]);
+        let endTime = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
         let leftTime = endTime.getTime() - now.getTime();
         let day = parseInt(leftTime / 1000 / 60 / 60 / 24, 10);
         let countDown;
@@ -757,7 +807,7 @@
           countDown = `${day}天招标截止`
         } else if (day === 0) {
           countDown = '今天'
-        } else if(day < 0) {
+        } else if (day < 0) {
           countDown = '已过期'
         }
         return countDown;

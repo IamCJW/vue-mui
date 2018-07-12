@@ -93,13 +93,12 @@
       vueCropper: Cropper
     },
     mounted() {
-      let vueThis = this;
       this.getData();
       window.addEventListener('getData', (e) => {
         this.getData();
       });
       window.addEventListener('chooseCompany', (e) => {
-        vueThis.company_info.name = e.detail.data.name;
+        this.$set(this.company_info,'name',e.detail.data.name)
       })
     },
     created() {

@@ -182,21 +182,25 @@
     .pro-main
       flex-flex(1)
       border-right $border-default
+      overflow hidden
       .pro-name
-        display-flex()
-        flex-align-item(center)
-        height .5rem
+        margin .08rem 0
         padding 0 .1rem
       .pro-main-sign
         padding 0 .1rem
-        width: 2.3rem
         .pro-style
+          display inline-block
+          overflow hidden
           .iconfont
             font-size .16rem
         .pro-location
           color $text-color-light-x
           font-size .12rem
           margin-left .07rem
+          display inline-block
+          overflow hidden
+          white-space nowrap
+          text-overflow ellipsis
     .pro-assist
       display-flex()
       flex-direction(column)

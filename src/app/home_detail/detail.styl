@@ -16,7 +16,9 @@
     padding .12rem $cell-left-right-space
     font-size .16rem
     .iconfont
-      font-size .18rem
+      font-size: 0.18rem;
+      padding: .12rem;
+      margin: -.12rem;
     .detail-title
       flex-flex(0,0,2.5rem)
   .header-sign
@@ -86,9 +88,19 @@
 .orContent
   width 100%
   overflow auto
+  padding .12rem
+  font-size .14rem!important
+  line-height .22rem!important
   table
     width 100%!important
     overflow auto!important
+  p
+    color #666666!important
+.orContent h1
+    font-size .16rem!important
+    color #333333!important
+    line-height .22rem!important
+
 footer
   position fixed
   bottom 0
@@ -143,7 +155,7 @@ footer
     position fixed
     right .12rem
     top .48rem
-    width 1rem
+    width 1.2rem
     border-radius $border-radius-default
     background-color #fff
     padding .02rem 0
@@ -165,7 +177,7 @@ footer
       border-bottom $border-default
       padding .05rem
       i
-        margin-right .05rem
+        margin-right .1rem
         font-size .14rem
 .warn
   .popout

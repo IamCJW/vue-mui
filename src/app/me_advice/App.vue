@@ -45,6 +45,7 @@
             context: this.advice,
           },
           success: () => {
+            mui.toast('感谢您对建设帮的宝贵意见~');
             mui.back();
           }
         })

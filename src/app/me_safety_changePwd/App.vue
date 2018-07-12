@@ -1,8 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 新用户注册
     .mui-content
       .box
         .input-group
@@ -24,10 +21,10 @@
           .input-item
             i.iconfont.icon-yanzhengma
             input(placeholder="请再次输入", type="password" , minlength="6", v-model="passwordTwo")
-        button.mid-btn(@tap="next" :disabled="btnDisable" :class="{disabled:btnDisable}") 下一步
+        button.mid-btn(@tap="next" :disabled="btnDisable" :class="{disabled:btnDisable}") 确认修改
 </template>
 <style lang="stylus" scoped>
-  @import "regist.styl"
+  @import "changePwd.styl"
 </style>
 <script>
   /* global mui */
@@ -35,9 +32,10 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
-    name: 'login',
+    name: 'changePwd',
     data() {
       return {
         code: '',
@@ -49,7 +47,8 @@
         totalTime: '60',
         codeFlag: true,
         passwordOne:'',
-        passwordTwo:''
+        passwordTwo:'',
+        clientid:'',
       }
     },
     mounted() {
@@ -103,7 +102,7 @@
       // 获取验证码
       getCode() {
         if (!this.codeFlag) {
-          this.totalTime = 10;
+          this.totalTime = 60;
           this.codeFlag = true;
           this.timeClock();
           http({
@@ -128,7 +127,7 @@
           return
         }
         http({
-          url: api.user_register,
+          url: api.member_security_modify_pwd,
           data: {
             code: this.code,
             mobile: this.phone,
@@ -136,21 +135,13 @@
           },
           method: 'post',
           success:()=>{
-            mui.toast('注册成功，正在为您登录');
-            http({
-              url: api.user_register,
-              data: {
-                flag: 1,
-                mobile: this.phone,
-                pwd:this.passwordOne
-              },
-              success(){
-                myMethods.openWindow('index');
-              }
-            });
+            mui.toast('修改密码成功~');
+          },
+          error:(data)=>{
+            mui.toast(data.msg)
           }
         })
-      }
+      },
     }
   }
 </script>

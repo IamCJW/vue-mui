@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入要查询的项目", v-focus ,v-model='searchMsg')
+        input(placeholder="请输入要查询的项目",v-model='searchMsg', v-focus)
       span.search(@tap="searchPro") 搜索
     .mui-content
       loading(ref="loading")
@@ -90,6 +90,14 @@
         }]
       })
     },
+    directives: {
+      focus: {
+        // 指令的定义
+        function (el) {
+          el.focus()
+        }
+      }
+    },
     methods: {
       searchPro() {
         if (this.searchMsg === '') {
@@ -139,10 +147,5 @@
         myMethods.openWindow(url);
       },
     },
-    directives: {
-      focus:function (el) {
-        el.focus();
-      }
-    }
   }
 </script>

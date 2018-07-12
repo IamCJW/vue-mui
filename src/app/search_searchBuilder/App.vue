@@ -99,6 +99,12 @@
             this.builderData = data;
             this.$refs.loading.hide();
             this.dataLock = true;
+          },
+          noFind:(data)=>{
+            this.total = true;
+            this.builderData.result = [];
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         })
       },

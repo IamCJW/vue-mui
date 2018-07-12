@@ -1,4 +1,4 @@
-<template lang="pug">
+0<template lang="pug">
   #app
     header.header-nav-search
       span.mui-action-back.iconfont.icon-return
@@ -17,7 +17,7 @@
             .search-result(v-if="total !== 0") 某招标共收录业主企业{{total}}家
             .pro-group
               transition-group(name='domItem')
-                .pro-item(v-for="item in companyData.result", :key="item.rid"  , @tap="openDetail('companyDetail_own')")
+                .pro-item(v-for="item in companyData.result", :key="item.rid"  , @tap="openDetail('companyDetail_own',{rid:item.rid})")
                   .pro-content
                     .pro-main
                       .pro-name.mui-ellipsis-2 {{item.company_name}}

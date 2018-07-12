@@ -6,17 +6,17 @@
           .media-content.flex
             span 新消息通知
             switchBox.fr(:status='notify_im_message', :keyName="'notify_im_message'", @changeStatus="upStatus")
-        li.media
-          .media-content.flex
-            span 微信接收消息提醒
-            switchBox.fr(:status='notify_wx_message', :keyName="'notify_wx_message'", @changeStatus="upStatus")
+        li.media(v-if="notify_im_message", @tap="chooseNotify_type")
+          .media-content.iconfont.icon-right
+            .media-lable 消息提醒频率
+            .media-value {{notify_type === 0 ? '实时提醒' : notify_type+'分钟'}}
         li.media
           .media-content.flex
             span 消息免打扰
             switchBox.fr(:status='notify_busy', :keyName="'notify_busy'", @changeStatus="upStatus")
         li.tip 23:00 - 8:00 将不接收任何通知
         li.media
-          .media-content.iconfont.icon-right
+          .media-content.iconfont.icon-right(@tap="wx_bind")
             .media-lable 微信公众号
             .media-value {{is_wxbind ? '已绑定' : '去绑定'}}
         li.media
@@ -28,9 +28,16 @@
             .media-lable 清理本地缓存
             .media-value {{localStorageLength || '正在计算'}}
       button.fixed-bottom-btn(@tap="loginOut") 退出登录
+    .mask(v-if='wxCode')
+      .popout
+        .codeBox
+          img(v-show="codeUrl",:src="codeUrl")
+        .description 截图扫描图中二维码，绑定建设帮公众号，获取更多最新消息，该码有效期两小时
+        button.mid-btn(@tap="codeShow") 关闭
 </template>
 <style lang="stylus" scoped>
   @import "systemSetting.styl"
+
 </style>
 <script>
   /* global mui */
@@ -46,13 +53,15 @@
     data() {
       return {
         notify_im_message: 0,
-        notify_wx_message: 0,
+        notify_type: 0,
         notify_busy: 0,
         is_wxbind: 0,
         localStorageLength: '',
         version: '',
-        isNew: true,
+        isNew: false,
         verData: {},
+        wxCode: false,
+        codeUrl: '',
       }
     },
     components: {
@@ -68,7 +77,7 @@
           success: (data) => {
             vueThis.verData = data;
             vueThis.isNew = true;
-          }
+          },
         })
       });
       window.addEventListener('getData', () => {
@@ -95,19 +104,19 @@
       upStatus(data) {
         let switchData = data;
         http({
-          url:api.member_system_config,
-          dataType:true,
-          method:'post',
-          data:{
-            notify_im_message: this.notify_im_message ? 1 : 0,
-            notify_wx_message: this.notify_wx_message ? 1 : 0,
-            notify_busy: this.notify_busy ? 1 : 0,
+          url: api.member_system_config,
+          dataType: true,
+          method: 'post',
+          data: {
+            notify_im_message: (switchData.key === 'notify_im_message' ? switchData.value : this.notify_im_message) ? 1 : 0,
+            notify_busy: (switchData.key === 'notify_busy' ? switchData.value : this.notify_busy) ? 1 : 0,
+            notify_type: this.notify_type,
             is_wxbind: this.is_wxbind ? 1 : 0,
           },
-          success:()=>{
+          success: () => {
             this[switchData.key] = switchData.value;
           },
-          error:(data)=>{
+          error: (data) => {
             mui.toast(data.msg);
           }
         });
@@ -183,6 +192,67 @@
             mui.toast(data.msg);
           }
         })
+      },
+      //频率选择
+      chooseNotify_type() {
+        let vueThis = this;
+        //普通示例
+        let userPicker = new mui.PopPicker();
+        userPicker.setData([{
+          value: '0',
+          text: '实时提醒'
+        }, {
+          value: '30',
+          text: '半小时'
+        }, {
+          value: '60',
+          text: '一小时'
+        }, {
+          value: '120',
+          text: '两小时'
+        }]);
+        userPicker.show(function (items) {
+          http({
+            url: api.member_system_config,
+            dataType: true,
+            method: 'post',
+            data: {
+              notify_im_message: vueThis.notify_im_message ? 1 : 0,
+              notify_busy: vueThis.notify_busy ? 1 : 0,
+              notify_type: Number(items[0].value),
+              is_wxbind: vueThis.is_wxbind ? 1 : 0,
+            },
+            success: () => {
+              vueThis.notify_type = Number(items[0].value);
+              mui.toast('修改频率成功~')
+            },
+            error: (data) => {
+              mui.toast(data.msg);
+            }
+          });
+        });
+      },
+      //微信绑定///////
+      wx_bind() {
+        if (this.is_wxbind) {
+          return
+        } else {
+          http({
+            url: api.common_wx_qrcode,
+            success: (data) => {
+
+              this.codeUrl = data.url;
+              this.codeShow();
+            },
+            error: (data) => {
+              mui.toast(data.msg)
+            }
+          })
+        }
+      },
+      //绑定川口////
+      codeShow(){
+        this.wxCode = !this.wxCode;
       }
     }
   }

@@ -70,7 +70,8 @@
                 data: {
                   cur_page: vueThis.companyData.cur_page,
                   search: vueThis.message
-                }, success: (data) => {
+                },
+                success: (data) => {
                   vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
                   if (data.total_page === vueThis.companyData.cur_page) {
                     this.endPullupToRefresh(true);
@@ -96,6 +97,12 @@
           success: (data) => {
             this.total = true;
             this.companyData = data;
+            this.$refs.loading.hide();
+            this.dataLock = true;
+          },
+          noFind:(data)=>{
+            this.total = true;
+            this.companyData.result = [];
             this.$refs.loading.hide();
             this.dataLock = true;
           }

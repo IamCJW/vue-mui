@@ -286,11 +286,10 @@
           qualify_filter: [],
         };
         let categoryData = this.categoryData;
+        console.log(JSON.stringify(categoryData))
         categoryData.forEach((item, index) => {
           data.qualify_filter[index] = {
-            category: item.two,
-            level: item.three,
-            name: item.four,
+            rid:item.id
           }
         });
         let detailPage = plus.webview.getWebviewById('searchFilterCompany');

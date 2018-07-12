@@ -1,8 +1,4 @@
 <template lang="pug">
-  #app
-    header.header-nav
-      span.mui-action-back.iconfont.icon-return
-      .header-title 查询结果
     .mui-content
       loading(ref="loading")
       .pro-group(v-show="dataLock")
@@ -57,7 +53,8 @@
       let vueThis = this;
       window.addEventListener('getData', (e) => {
         vueThis.muiData = e.detail;
-        vueThis.getData();
+        vueThis.getData(e.detail);
+        console.log(JSON.stringify(e.detail));
         mui.init({
           pullRefresh: [{
             container: '#companyGroup',
@@ -67,19 +64,28 @@
                 vueThis.companyData.cur_page += 1;
                 http({
                   url: api.search_company_qualify_search,
+                  method:'post',
+                  dataType:true,
                   data: {
                     cur_page: vueThis.companyData.cur_page,
                     filter_type: vueThis.muiData.filter_type,
                     province: vueThis.muiData.province,
                     company_type: vueThis.muiData.company_type,
                     qualify_filter: vueThis.muiData.qualify_filter,
-                  }, success: (data) => {
-                    vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
-                    if (data.total_page === vueThis.companyData.cur_page) {
+                  },
+                  success: (data) => {
+                    if (data.total_page <= vueThis.companyData.cur_page) {
                       this.endPullupToRefresh(true);
                     } else {
+                      vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
                       this.endPullupToRefresh(false);
                     }
+                  },
+                  noFind:()=>{
+                    this.endPullupToRefresh(true);
+                  },
+                  error:()=>{
+                    this.endPullupToRefresh(true);
                   }
                 });
               }
@@ -93,13 +99,21 @@
       getData(data) {
         this.$refs.loading.show();
         this.dataLock = false;
+        this.companyData.cur_page = 1;
         http({
           url: api.search_company_qualify_search,
-          // data: data,
+          data: data,
+          dataType:true,
           method: 'post',
           success: (data) => {
             this.total = true;
             this.companyData = data;
+            this.dataLock = true;
+            this.$refs.loading.hide();
+            mui('#companyGroup').pullRefresh().scrollTo(0,0,100);
+          },
+          noFind:(data)=>{
+            this.companyData.result = [];
             this.dataLock = true;
             this.$refs.loading.hide();
             mui('#companyGroup').pullRefresh().scrollTo(0,0,100);

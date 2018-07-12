@@ -53,16 +53,23 @@
         flag: '',
         openid: '',
         clientid:'',
+        os_type:'',
+        nick_name:'',
+        icon:'',
       }
     },
     mounted() {
       let vueThis = this;
       mui.plusReady(()=>{
         vueThis.clientid = plus.storage.getItem(plusKey.clientid);
+        mui.os.android ? this.os_type = 1 : '';
+        mui.os.ios ? this.os_type = 2 : '';
       });
       window.addEventListener('getData', (e) => {
         this.flag = e.detail.flag;
         this.openid = e.detail.openid;
+        this.icon=e.detail.icon;
+        this.nick_name=e.detail.nick_name;
       })
     },
     created() {
@@ -134,10 +141,13 @@
             code:this.code,
             openid:this.openid,
             getui_id:this.clientid,
+            os_type:this.os_type,
+            nick_name:this.nick_name,
+            icon:this.icon,
           },
           type:true,
           method: 'post',
-          success(data) {
+          success:(data)=> {
             this.successDo(data);
           }
         })
@@ -151,10 +161,11 @@
             code:this.code,
             openid:this.openid,
             getui_id:this.clientid,
+            os_type:this.os_type
           },
           method: 'post',
           type:true,
-          success(data) {
+          success:(data)=> {
             this.successDo(data);
           }
         })
@@ -167,8 +178,10 @@
         mui.fire(view, 'loginSuccess', {
           msg: '登录成功'
         });
-        plus.webview.currentWebview().opener().close();
-        plus.webview.currentWebview().close();
+        let loginView = plus.webview.getWebviewById('login');
+        let login_otherView = plus.webview.getWebviewById('login_other');
+        loginView.close();
+        login_otherView.close();
       }
     }
   }

@@ -33,7 +33,7 @@
       .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
         .popout
           .popout-arrow
-          .funitem
+          .funitem(@tap="share()")
             i.iconfont.icon-share
             span 分享项目
           .funitem.border-none(@tap="follow(followed)")
@@ -96,6 +96,9 @@
           }
         }]
       });
+      mui.plusReady(() => {
+        this.updateSerivces();
+      })
     },
     created() {
 

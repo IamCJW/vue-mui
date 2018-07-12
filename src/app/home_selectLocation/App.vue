@@ -1,11 +1,5 @@
 <template lang="pug">
   #app
-    header.header-nav-search
-      span.mui-action-back.iconfont.icon-return
-      .search-input
-        i.iconfont.icon-SEARCH
-        input(placeholder="地区搜索")
-      span.search 搜索
     .mui-content.bg-gary
       .selected-box
         span 当前选择
@@ -67,10 +61,24 @@
           url: api.nation,
           success: (data) => {
             this.nationData = data;
-            data.forEach((item) => {
+            let initProvince = data[0].name;
+            let initCity = data[0].city[0].name;
+            data.forEach((item,index) => {
               if (this.letter.indexOf(item.prefix) === (-1)) {
                 this.letter.push(item.prefix)
               }
+              if (localStorage.getItem(lsKey.locationProvince) === item.name){
+                initProvince = localStorage.getItem(lsKey.locationProvince);
+              }
+              let pIndex = index;
+              item.city.forEach((item,index)=>{
+                if (localStorage.getItem(lsKey.locationCity) === item.name){
+                  initCity = localStorage.getItem(lsKey.locationCity);
+                }
+                if(item.name === '全省'){
+                  this.$set(this.nationData[pIndex].city[index],'district',[{name:'全省'}]);
+                }
+              })
             });
             this.letter = this.letter.sort();
             this.letter.forEach((item) => {
@@ -83,9 +91,9 @@
               });
               this.$set(this.nation, _item, cityArr);
             });
-            this.selectLocation(localStorage.getItem(lsKey.locationProvince), 1);
-            this.selectLocation(localStorage.getItem(lsKey.locationCity), 2);
-            this.selectLocation(localStorage.getItem(lsKey.locationDistrict), 4);
+            this.selectLocation(initProvince, 1);
+            this.selectLocation(initCity, 2);
+            this.location = `${initProvince}${initCity}`;
           }
         });
       },
@@ -102,38 +110,30 @@
       },
       //数据初始化////////////////////////////////////////////////////
       dataInit() {
-        let province = localStorage.getItem(lsKey.locationProvince);
-        let city = localStorage.getItem(lsKey.locationCity);
-        let district = localStorage.getItem(lsKey.locationDistrict);
-        this.location = `${province}${city}${district}`;
         this.oldSelects = localStorage.getItem(lsKey.locationOldSelect) ? JSON.parse(localStorage.getItem(lsKey.locationOldSelect)) : [];
       },
       //选择器选择///////////////////////////////////////////////////
       selectLocation(key, type) {
         switch (type) {
           case 1:
+            let provinceIn = true;
             this.province = key;
             this.city = '';
             this.district = '';
             this.citySel = '';
+            //循环给城市赋值
             this.nationData.map((item) => {
               if (item.name === this.province) {
                 this.provinceSel = item;
+                this.citySel = this.provinceSel.city;
+                this.city = this.provinceSel.name;
+                provinceIn = false;
                 return
               }
             });
             this.location = `${this.province}`;
             break;
           case 2:
-            if (key === '全省') {
-              this.city = key;
-              this.citySel = [];
-              if( this.district !== '全市'){
-                this.district = '';
-              }
-              this.selectedDo();
-              return
-            }
             this.city = key;
             this.district = '';
             let cityArr = this.provinceSel.city;
@@ -146,7 +146,7 @@
             this.location = `${this.province}${this.city}`;
             break;
           case 3:
-            if (key === '全市') {
+            if (key === '全市' || key === '全省') {
               this.district = key;
               this.selectedDo();
               return
@@ -164,7 +164,7 @@
       selectedDo() {
         let province = this.province;
         let city = this.city === '全省' ? '' : this.city;
-        let district = this.district === '全市' ? '' : this.district;
+        let district = (this.district === '全市' || this.district === '全省') ? '' : this.district;
         //将定位存入本地缓存
         localStorage.setItem(lsKey.locationProvince, province);
         localStorage.setItem(lsKey.locationCity, city);

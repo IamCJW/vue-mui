@@ -23,14 +23,14 @@
           {index: 0, id: 'home', name: '首页', icon: 'icon-ai-home', url: './home.html'},
           {index: 1, id: 'message', name: '消息', icon: 'icon-news', url: './message.html'},
           {index: 2, id: 'search', name: '查询', icon: 'icon-INQUIRE', url: './search.html'},
-          {
-            index: 3,
-            id: 'tab4',
-            name: '服务',
-            icon: 'icon-SERVICE',
-            url: 'http://www.dcloud.io/hellomui/examples/icons.html'
-          },
-          {index: 4, id: 'me', name: '我的', icon: 'icon-ME-copy', url: './me.html'},
+          // {
+          //   index: 3,
+          //   id: 'tab4',
+          //   name: '服务',
+          //   icon: 'icon-SERVICE',
+          //   url: 'http://www.dcloud.io/hellomui/examples/icons.html'
+          // },
+          {index: 3, id: 'me', name: '我的', icon: 'icon-ME-copy', url: './me.html'},
         ],
         thisWebView: {},
         styles: {},
@@ -97,7 +97,7 @@
           // 显示要打开的子 webview
           plus.webview.show(this.tabs[index].id, 'fade-in', 300);
           // 设置当前 tab index
-          this.activeIndex = index
+          this.activeIndex = index;
         });
       },
       changeRem: myMethods.changeRem,

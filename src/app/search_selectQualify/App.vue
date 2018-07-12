@@ -14,7 +14,7 @@
           li.media(v-for="(item,index) in selectedArr")
             .media-content
               span {{item.one === '建筑业施工企业资质'? '施工资质' : item.one}}-{{item.two}}-{{item.three}}-{{item.four}}
-              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(index,item.id)")
+              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(index)")
       .button-group
         button.add(@tap="add") 添加
     .typeGroup(v-if="selectFlag")
@@ -69,15 +69,6 @@
     mounted() {
       let vueThis = this;
       mui.init({});
-      this.old_back = mui.back;
-      mui.back = function () {
-        let btn = ["确定", "取消"];
-        mui.confirm('确定放弃保存所选资质？', ' ', btn, function (e) {
-          if (e.index === 0) {
-            vueThis.old_back();
-          }
-        },'div');
-      };
       this.getNation();
       mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
@@ -100,13 +91,21 @@
         });
         if (localStorage.getItem(lsKey.qualify) !== null) {
           this.qualifyData = JSON.parse(localStorage.getItem(lsKey.qualify));
-          this.picker.setData(this.qualifyData[0].children);
+          this.qualifyData.forEach((item)=>{
+            if(item.text === '建筑业施工企业资质'){
+              this.picker.setData(item.children);
+            }
+          });
         } else {
           http({
             url: api.common_base_qualify,
             success: (data) => {
               this.qualifyData = data;
-              this.picker.setData(this.qualifyData[0].children);
+              data.forEach((item)=>{
+                if(item.text === '建筑业施工企业资质'){
+                  this.picker.setData(item.children);
+                }
+              });
               localStorage.setItem(lsKey.qualify,JSON.stringify(data));
             }
           });
@@ -164,15 +163,14 @@
         } else {
           mui.toast('请勿重复添加')
         }
-      }
-      ,
+      },
       submitBack() {
         let categoryData = this.selectedArr;
         let view = plus.webview.currentWebview().opener();
         mui.fire(view, 'chooseCategory', {
           categoryData: categoryData
         });
-        this.old_back()
+        mui.back();
       }
     }
   }

@@ -65,7 +65,10 @@ export default (config => {
   member_wallet: '/member/wallet',//我的钱包
   member_wallet_list: '/member/wallet/list',//消费明细分页
   member_address_default: '/member/address/default',//修改默认地址
+  member_security_modify_pwd:'/member/security/modify_pwd',//修改密码
+  member_security_modify_mobile:' /member/security/modify_mobile',//修改绑定手机
   system_check_version: '/system/check_version',//版本检查
   system_token: '/system/token',//游客token
   member_logout: '/member/logout',//退出登录
+  common_wx_qrcode:'/common/wx_qrcode',//获取带参公众号二维码
 })

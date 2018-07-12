@@ -63,9 +63,10 @@
       chooseCompany(value) {
         this.searchMsg = value;
         let view = plus.webview.currentWebview().opener();
+        let vueThis = this;
         mui.fire(view, 'chooseCompany', {
           data: {
-            name:this.searchMsg
+            name:vueThis.searchMsg
           }
         });
         mui.back()
