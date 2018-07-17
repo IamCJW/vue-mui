@@ -44,6 +44,7 @@
   import api from '../../assets/js/api'
   import myMethods from '../../assets/js/methods'
   import loading from "../../components/loading";
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'searchCompany',
@@ -86,18 +87,28 @@
               });
             }
           }
-        }]
+        }],
+        beforeback: () => {
+          vueThis.dataLock = false;
+          vueThis.message = '';
+          vueThis.builderData = {
+            cur_page:1,
+              result:[]
+          };
+          return true;
+        }
       });
     },
     methods: {
       // 搜索事件
       search() {
+        let province = localStorage.getItem(lsKey.locationProvince);
         mui('#companyGroup').pullRefresh().refresh(true);
         this.$refs.loading.show();
         this.dataLock = false;
         http({
           url: api.search_builder_search,
-          data: {search: this.message},
+          data: {search: this.message,province:province},
           success: (data) => {
             this.total = true;
             this.builderData = data;

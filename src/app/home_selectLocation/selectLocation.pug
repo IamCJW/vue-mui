@@ -1,5 +1,7 @@
 extends ../common
 block head
-  +head('地址选择')
+  +head('地址选择','./static/mui.picker.css','./static/mui.poppicker.css','./static/mui.poppicker.css')
 block content
+  block js
+    +js(['./static/mui.picker.js', './static/mui.poppicker.js'])
   #app

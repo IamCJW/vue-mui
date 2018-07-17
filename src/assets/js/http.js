@@ -20,26 +20,26 @@ axios.interceptors.response.use(function (response) {
   return Promise.reject(error);
 });
 const httpServer = (opts) => {
-  // mui.plusReady(() => {
-  //   if (plus.storage.getItem(plusKey.token) === null && plus.storage.getItem(plusKey.temporaryToken) === null) {
-  //     axios.get(api.system_token).then((res) => {
-  //       let data = res.data;
-  //       if (data.code === '00000') {
-  //         plus.storage.setItem(plusKey.temporaryToken, data.data);
-  //         httpServer(opts);
-  //       } else {
-  //         mui.toast('服务器异常');
-  //         return;
-  //       }
-  //     }).catch(() => {
-  //       mui.toast('请求失败？？？');
-  //     })
-  //   } else {
+  mui.plusReady(() => {
+    if (plus.storage.getItem(plusKey.token) === null && plus.storage.getItem(plusKey.temporaryToken) === null) {
+      axios.get(api.system_token).then((res) => {
+        let data = res.data;
+        if (data.code === '00000') {
+          plus.storage.setItem(plusKey.temporaryToken, data.data);
+          httpServer(opts);
+        } else {
+          mui.toast('服务器异常');
+          return;
+        }
+      }).catch(() => {
+        mui.toast('请求失败？？？');
+      })
+    } else {
       opts['method'] = opts.method || 'get';
       opts['dataType'] = opts.dataType || false;
       let publicHeaders = {
-        // "token": plus.storage.getItem(plusKey.token) || plus.storage.getItem(plusKey.temporaryToken),
-        "token": 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4Y2RkMmJjMWRkNzU2MGJlMWY1MjBhYzBkNzk3ZTljZiIsImlhdCI6MTUzMTM4MTYwMywic3ViIjoiMjAxODA3MTIxMTU4NTM1NTY1OCIsImlzcyI6ImtiYXBwYmFja2dyb3VkYXBpIiwiaXNHdWVzdCI6ZmFsc2V9.-a_uXcg2VJ2vz9hji2JPtWxkZ18sVza-NfAb80V9vYw',
+        "token": plus.storage.getItem(plusKey.token) || plus.storage.getItem(plusKey.temporaryToken),
+        // "token": 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4Y2RkMmJjMWRkNzU2MGJlMWY1MjBhYzBkNzk3ZTljZiIsImlhdCI6MTUzMTM4MTYwMywic3ViIjoiMjAxODA3MTIxMTU4NTM1NTY1OCIsImlzcyI6ImtiYXBwYmFja2dyb3VkYXBpIiwiaXNHdWVzdCI6ZmFsc2V9.-a_uXcg2VJ2vz9hji2JPtWxkZ18sVza-NfAb80V9vYw',
       };
       let httpDefaultOpts = { //http默认配置
         method: opts.method,
@@ -70,7 +70,7 @@ const httpServer = (opts) => {
             mui.toast('该功能需要登录才能访问~');
             setTimeout(()=>{myMethods.openWindow('login')},500);
           }else {
-            mui.toast(data.msg+opts.url);
+            mui.toast(data.msg);
             opts.error(data);
           }
         }
@@ -82,7 +82,7 @@ const httpServer = (opts) => {
           }
         }
       )
-  //   }
-  // });
+    }
+  });
 };
 export default httpServer

@@ -110,10 +110,14 @@
         http({
           url: api.member_info,
           success: (data) => {
-            this.name = data.name;
-            this.userHeadSrc = data.icon;
-            this.gender = data.gender;
-            this.company_info = data.company_info;
+            this.name = data.name || '';
+            this.userHeadSrc = data.icon || '';
+            this.gender = data.gender || '';
+            this.company_info = data.company_info || {
+              name: '',
+              tel: '',
+              title: ''
+            };
           }
         })
       },//打开页面

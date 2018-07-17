@@ -1,4 +1,5 @@
-0<template lang="pug">
+0
+<template lang="pug">
   #app
     header.header-nav-search
       span.mui-action-back.iconfont.icon-return
@@ -77,13 +78,22 @@
                     this.endPullupToRefresh(false);
                   }
                 },
-                noFind:()=>{
+                noFind: () => {
                   this.endPullupToRefresh(true);
                 }
               });
             }
           }
-        }]
+        }],
+        beforeback: () => {
+          vueThis.dataLock = false;
+          vueThis.message = '';
+          vueThis.companyData = {
+            cur_page: 1,
+            result: []
+          };
+          return true;
+        }
       });
     },
     methods: {
@@ -115,7 +125,7 @@
         });
       },
       //清除输入内容
-      clearMessage(){
+      clearMessage() {
         this.message = '';
       },
     }

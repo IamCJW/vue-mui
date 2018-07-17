@@ -32,11 +32,13 @@ header>i,header>span
   .iconfont
     font-size .18rem
   .search-input
+    position relative
     width 2.6rem
     height .36rem
     background #fff
     border-radius .06rem
     overflow hidden
+    padding-right .45rem
     display-flex()
     flex-align-item(center)
     .iconfont
@@ -46,7 +48,11 @@ header>i,header>span
     input
       border none
       color $text-color-light-x
-      flex-flex(1)
+    .icon-shutdown
+      position absolute
+      right 0
+      top 0
+      line-height .35rem
   .search
     font-size .12rem
 .header-nav-search~.mui-content

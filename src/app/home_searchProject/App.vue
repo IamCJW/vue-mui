@@ -44,7 +44,7 @@
     name: 'searchProject',
     data() {
       return {
-        dataLock:false,
+        dataLock: false,
         searchMsg: '',
         province: '',
         city: '',
@@ -71,28 +71,40 @@
               http({
                 url: api.index_project_search,
                 data: {
-                  cur_page:vueThis.proData.pageNum,
+                  cur_page: vueThis.proData.pageNum,
                   province: vueThis.province,
                   city: vueThis.city,
                   district: vueThis.district,
                   search: vueThis.searchMsg
-                }, success: (data) => {
+                },
+                success: (data) => {
                   if (data.total_page <= vueThis.proData.pageNum) {
                     this.endPullupToRefresh(true);
-                    return;
                   } else {
                     vueThis.proData.data = vueThis.proData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 },
-                noFind:()=>{
+                noFind: () => {
                   this.endPullupToRefresh(true);
+                },
+                error:()=>{
+                  this.endPullupToRefresh(false);
                 }
               });
             }
           }
-        }]
-      })
+        }],
+        beforeback: () => {
+          vueThis.dataLock = false;
+          vueThis.searchMsg = '';
+          vueThis.proData = {
+            pageNum: 1,
+            data: []
+          };
+          return true;
+        }
+      },)
     },
     directives: {
       focus: {
@@ -124,13 +136,17 @@
             this.dataLock = true;
             this.$refs.loading.hide();
           },
-          noFind:()=>{
+          noFind: () => {
+            this.proData = {
+              pageNum: 1,
+              data: []
+            }
             this.dataLock = true;
             this.$refs.loading.hide();
           }
         })
       },
-      openWindow: (url,item) => {
+      openWindow: (url, item) => {
         let data = {};
         data['rid'] = item.rid;
         switch (item.tender_type) {
@@ -151,7 +167,7 @@
         myMethods.openWindow(url);
       },
       //清除输入内容
-      clearMessage(){
+      clearMessage() {
         this.searchMsg = '';
       },
     },

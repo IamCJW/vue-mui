@@ -86,7 +86,16 @@
               });
             }
           }
-        }]
+        }],
+        beforeback: () => {
+          vueThis.dataLock = false;
+          vueThis.message = '';
+          vueThis.companyData = {
+            cur_page:1,
+            result:[]
+          };
+          return true;
+        }
       });
     },
     methods: {

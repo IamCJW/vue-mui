@@ -20,7 +20,7 @@
                       switchBox(:status="switchData[item.id]", :key-name="item.id", @changeStatus="upStatus")
                   .media-alert
                     ul.media-view
-                      li.media(@tap="openNViewPreload('subscription_selectLocation',item)")
+                      li.media(@tap="chooseLocation(item)")
                         .media-content.iconfont.icon-right {{item.province+item.city+item.district}}
                       li.media.border-none(@tap="openNViewPreload('subscription_selectQualification',item)")
                         .media-content.iconfont.icon-right
@@ -42,6 +42,7 @@
   import api from '../../assets/js/api.js'
   import switchBox from '../../components/switch.vue'
   import loading from '../../components/loading'
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'subscription',
@@ -52,7 +53,8 @@
           pageNum: 1,
           data: []
         },
-        switchData: {}
+        switchData: {},
+        nationData:[],
       }
     },
     components: {
@@ -63,10 +65,6 @@
       window.addEventListener('getData', () => {
         this.getData();
         myMethods.NVpreload(['subscription_add', 'subscription_selectLocation', 'subscription_selectQualification']);
-      });
-      window.addEventListener('chooseLocation', (e) => {
-        mui.toast(e.detail.msg);
-        this.getData();
       });
       window.addEventListener('chooseQualification', (e) => {
         this.getData();
@@ -161,6 +159,95 @@
             });
           }
         }, 'div');
+      },
+      //订阅地址修改//////////////////
+      chooseLocation(item){
+        this.getNation();
+        if (this.nationData.length === 0){
+          mui.toast('正在初始化数据，请稍候~');
+          return
+        } else {
+          let nationData = this.nationData;
+          this.pickerInit(nationData,item);
+        }
+      },
+      //////////////////////////////
+      //获取地址信息/////////////////////////////////////////////////////////////////
+      getNation() {
+        if (localStorage.getItem(lsKey.nationData) !== null) {
+          this.nationData = JSON.parse(localStorage.getItem(lsKey.nationData));
+        }else {
+          http({
+            url: api.nation,
+            success: (data) => {
+              this.nationData = data;
+              localStorage.setItem(lsKey.nationData,JSON.stringify(data));
+            }
+          });
+        }
+      },
+      //选择器初始化/////////////////////////////////////////////////////////
+      pickerInit(data,itemData){
+        this.picker = new mui.PopPicker({
+          layer: 3
+        });
+        let setData = [];
+        let provinceData = {};
+        let cityData = {};
+        let districtData = {};
+        data.forEach((item) => {
+          provinceData = {
+            text: item.name,
+            value: item.code,
+            children: [],
+          };
+          item.city.forEach((item) => {
+            cityData = {
+              text: item.name,
+              value: item.code,
+              children: [],
+            };
+            item.district.forEach((item) => {
+              districtData = {
+                text: item.name,
+              };
+              cityData.children.push(districtData);
+            });
+            provinceData.children.push(cityData);
+          });
+          setData.push(provinceData);
+        });
+        let vueThis = this;
+        this.picker.setData(setData);
+        this.picker.show((res)=>{
+          let province = res[0].text;
+          let city = res[1].text;
+          let district = res[2].text;
+          if(res[1].text === '全省'){
+            city = '';
+            district = '';
+          }
+          if(res[2].text==='全市'){
+            district = ''
+          }
+          http({
+            url: api.member_subscribe,
+            method: 'post',
+            dataType: true,
+            data: {
+              province: province,
+              city: city,
+              district: district,
+              qualify_info: itemData.qualify_info,
+              id: itemData.id
+            },
+            success:()=> {
+              mui.toast('修改成功');
+              this.getData();
+            }
+          });
+          vueThis.picker.dispose();
+        });
       },
     }
   }

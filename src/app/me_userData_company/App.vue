@@ -34,7 +34,14 @@
     },
     components: {},
     mounted() {
-
+      let vueThis = this;
+      mui.init({
+        beforeback: () => {
+          vueThis.searchMsg = '';
+          vueThis.companyList = [];
+          return true;
+        }
+      })
     },
     created() {
     },
@@ -59,6 +66,7 @@
       },
       clearSearchMsg() {
         this.searchMsg = '';
+        this.companyList = [];
       },
       chooseCompany(value) {
         this.searchMsg = value;

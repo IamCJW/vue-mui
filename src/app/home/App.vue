@@ -529,10 +529,11 @@
                   address.province = address.province.replace('自治区', '');
                   break;
               }
-              if (address.province !== '广西') {
-                address.province = '广西';
+              if (address.province !== '江西') {
+                address.province = '江西';
                 address.city = '';
                 address.district = '';
+                mui.toast('您所在位置暂未开通服务，为您跳转江西省~')
               }
               if(address.city === ''){
                 _this.localLocation = `${address.province}`;
