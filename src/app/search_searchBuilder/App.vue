@@ -5,6 +5,7 @@
       .search-input
         i.iconfont.icon-SEARCH
         input(placeholder="请输入建造职师或证书号" v-model="message")
+        i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
       loading(ref="loading")
@@ -14,7 +15,7 @@
           span 暂无该词条信息~
         .scroll-wrapper#companyGroup(v-show="builderData.result.length !== 0")
           .scroll-box
-            .search-result(v-if="total") 某招标共收录建筑企业{{builderData.total}}家
+            .search-result(v-if="total") 共收录该词条建造师{{builderData.total}}名
             .bui-group
               .bui-item(v-for="item in builderData.result", @tap="openDetail('builderDetail',{rid:item.rid})")
                 .bui-top
@@ -78,6 +79,9 @@
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind:()=>{
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -119,6 +123,10 @@
           mui.fire(detailPage, 'getData', data);
           myMethods.openWindow(url);
         });
+      },
+      //清除输入内容
+      clearMessage(){
+        this.message = '';
       },
     },
   }

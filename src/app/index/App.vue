@@ -41,7 +41,6 @@
         wipeBack: true,
       });
       window.addEventListener('changeTabNav', (e) => {
-        console.log(e.detail.index);
         this.activeIndex = e.detail.index;
       });
       let preload = ()=>{

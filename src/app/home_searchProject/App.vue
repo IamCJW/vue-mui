@@ -5,6 +5,7 @@
       .search-input
         i.iconfont.icon-SEARCH
         input(placeholder="请输入要查询的项目",v-model='searchMsg', v-focus)
+        i(v-show="searchMsg.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="searchPro") 搜索
     .mui-content
       loading(ref="loading")
@@ -80,9 +81,12 @@
                     this.endPullupToRefresh(true);
                     return;
                   } else {
+                    vueThis.proData.data = vueThis.proData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
-                  vueThis.proData.data = vueThis.proData.data.concat(data.result);
+                },
+                noFind:()=>{
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -145,6 +149,10 @@
         }
         mui.fire(detailPage, 'getData', data);
         myMethods.openWindow(url);
+      },
+      //清除输入内容
+      clearMessage(){
+        this.searchMsg = '';
       },
     },
   }

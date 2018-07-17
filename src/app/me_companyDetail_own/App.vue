@@ -33,12 +33,12 @@
       .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
         .popout
           .popout-arrow
-          .funitem(@tap="share()")
+          .funitem(@tap="share(shareData)")
             i.iconfont.icon-share
-            span 分享项目
+            span 分享业主
           .funitem.border-none(@tap="follow(followed)")
             i.iconfont.icon-attention-copy(:class="[followed ? 'text-color-third' : '']")
-            span {{followed ? '已关注' : '关注项目'}}
+            span {{followed ? '已关注' : '关注业主'}}
 </template>
 <style lang="stylus" scoped>
   @import "companyDetail_own.styl"
@@ -61,7 +61,8 @@
           pageNum: 1,
           data: []
         },
-        rid: ''
+        rid: '',
+        shareData:{}
       }
     },
     components: {loading},
@@ -115,7 +116,12 @@
             this.proData.data = data.result;
             this.followed = data.followed;
             this.$refs.loading.hide();
-            mui('#page1').pullRefresh().scrollTo(0,0,100)
+            mui('#page1').pullRefresh().scrollTo(0,0,100);
+            this.shareData = {
+              title:this.baseData.company_name,
+              type:4,
+              id:this.rid
+            };
           }
         })
       },//更多

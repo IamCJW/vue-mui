@@ -52,10 +52,11 @@
         passwordOne:'',
         passwordTwo:'',
         clientid:'',
+        os_type:'',
       }
     },
     mounted() {
-
+      mui.os.ios ? this.os_type = 1 : this.os_type = 2;
     },
     created() {
       this.getData();
@@ -147,9 +148,12 @@
                 mobile: this.phone,
                 pwd: this.passwordOne,
                 getui_id: this.clientid,
+                os_type: this.os_type,
               },
               method:'post',
-              success:()=>{
+              success:(data)=>{
+                plus.storage.setItem(plusKey.token, data);
+                plus.storage.setItem(plusKey.state, "true");
                 let view = plus.webview.getWebviewById('me');
                 mui.fire(view, 'loginSuccess', {
                   msg: '登录成功'
@@ -161,9 +165,7 @@
               },
               error:()=>{
                 mui.toast('登录出错，请自行登录~');
-                let loginView = plus.webview.getWebviewById('login');
                 let registView = plus.webview.getWebviewById('regist');
-                loginView.close();
                 registView.close();
               }
             });

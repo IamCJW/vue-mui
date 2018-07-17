@@ -35,15 +35,14 @@
           tr
             td.th 标段数量
             td(colspan="2") {{pushMsg.section_num}}
-            td
           tr(v-for="(item,index) in pushMsg.section_info")
             td.th
               span(v-if="index === 0") 标段金额
             td {{item.name}}
-            td {{item.amount}}万
+            td {{item.amount ? item.amount+'万': '未知' }}
           tr
             td.th 信息来源
-            td(colspan="2", @tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url})") {{pushMsg.resource}}
+            td(colspan="2", @tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource}}
           tr
             td.th(colspan="3") 原文内容
         .orContent(v-html="pushMsg.content") {{'<div class="orContent">'+pushMsg.content+'</div>'}}
@@ -80,7 +79,7 @@
             td(colspan="3") {{pullMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
-        .orContent(v-html="pullMsg.content", @tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url})") {{pullMsg.content}}
+        .orContent(v-html="pullMsg.content", @tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.content}}
       // 其他
       .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
         table
@@ -89,7 +88,7 @@
               .time 发布时间: {{otherMsg.info_date}}
           tr
             td.th 信息来源
-            td(colspan="3", @tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url})") {{otherMsg.resource}}
+            td(colspan="3", @tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource}}
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="otherMsg.content") {{otherMsg.content}}
@@ -99,9 +98,9 @@
           a(:href="'tel:'+ pushMsg.tender_info.tel  ||  pullMsg.tender_info.tel  || otherMsg.tender_info.tel")
             i.iconfont.icon-CONTACT
             span 联系招标方
-        .btn-item(@tap="ysf")
-          i.iconfont.icon-CUSTOMERSERVICE
-          span 联系客服
+        <!--.btn-item(@tap="ysf")-->
+        <!--i.iconfont.icon-CUSTOMERSERVICE-->
+        <!--span 联系客服-->
         .btn-item.buy(@tap="follow")
           i.iconfont.icon-attention(:class="{active: followStatus}")
           span {{followStatus ? '已关注' : '关注项目' }}
@@ -113,7 +112,7 @@
     .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
       .popout
         .popout-arrow
-        .funitem(@tap="share()" )
+        .funitem(@tap="share(shareData)" )
           i.iconfont.icon-share
           span 分享项目
         .funitem.border-none(@tap.stop="warnShow")
@@ -202,8 +201,9 @@
           }
         },
         navPage: '',
-        zbRid: '',
+        zbRid: 'b8045cc7b411800d1e66ab661d35343a',
         navigate_list: [],
+        shareData: {},
       }
     },
     mounted() {
@@ -263,7 +263,6 @@
     methods: {
       //数据请求
       getData(data) {
-        console.log('我动了')
         let rid = data.rid;
         let type = data.type || 1;
         switch (type) {
@@ -277,6 +276,11 @@
                 this.navPage = '招标公告';
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
+                this.shareData = {
+                  title: this.pushMsg.tender_info.name || this.pullMsg.tender_info.name || this.otherMsg.tender_info.name,
+                  type: 1,
+                  id: this.zbRid
+                };
               }
             });
             break;
@@ -291,8 +295,11 @@
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
                 this.zbRid = data.tender_info.tender_id;
-                console.log(JSON.stringify(data));
-                console.log(JSON.stringify(data.tender_info));
+                this.shareData = {
+                  title: this.pushMsg.tender_info.name || this.pullMsg.tender_info.name || this.otherMsg.tender_info.name,
+                  type: 1,
+                  id: this.zbRid
+                };
               }
             });
             break;
@@ -308,16 +315,48 @@
                     this.navPage = item.name;
                   }
                 });
-                console.log(this.navPage);
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
                 this.zbRid = data.tender_info.tender_id;
+                this.shareData = {
+                  title: this.pushMsg.tender_info.name || this.pullMsg.tender_info.name || this.otherMsg.tender_info.name,
+                  type: 1,
+                  id: this.zbRid
+                };
               }
             });
             break;
         }
       },
-      openNViewPreload:myMethods.openNViewPreload,
+      openNViewPreload(url, data, title) {
+        mui.preload({
+          url: `./${url}.html`,
+          id: url,
+          styles: {
+            titleNView: {
+              titleText: title,
+              titleColor: "#ffffff",
+              titleSize: "16px",
+              backgroundColor: "#04a3ee",
+              progress: {
+                color: "#f4d10d",
+                height: "2px"
+              },
+              buttons: [{text: '\ue643', color: '#ffffff', fontSize: "16px",fontSrc:'./static/iconfont.ttf',float: 'right', onclick:()=>{
+                mui.plusReady(()=>{
+                  plus.runtime.openURL( data.otherUrl);
+                })
+                }}],
+              autoBackButton: true,
+            }
+          }
+        });
+        mui.plusReady(function () {
+          let detailPage = plus.webview.getWebviewById(url);
+          mui.fire(detailPage, 'getData', data);
+          mui.openWindow(url);
+        });
+      },
       //内容选择
       navSelect(key, rid, type) {
         this.navPage = key;

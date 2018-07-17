@@ -63,9 +63,9 @@
         li.media(@tap="openNViewPreload('aboutUS')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 关于我们
-        li.media(@tap="ysf")
-          .media-content.iconfont.icon-right
-            .media-lable.text-color-black 联系客服
+        <!--li.media(@tap="ysf")-->
+          <!--.media-content.iconfont.icon-right-->
+            <!--.media-lable.text-color-black 联系客服-->
 </template>
 <style lang="stylus" scoped>
   @import "me.styl"

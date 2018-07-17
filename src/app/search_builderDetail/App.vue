@@ -9,7 +9,8 @@
             i.iconfont.icon-Avatar
           .user-sign {{baseData.level  || '建造师等级'}}
           .user-focus(@tap="follow", :class="[followed ? '':'bg-gary']") {{followed?'已关注':'关注'}}
-          .user-share(@tap="share()") 分享
+          .user-share(@tap="share(shareData)") 分享
+
     .mui-content
       loading(ref="loading")
       .scroll-wrapper#builderTender(v-show="dataLock")
@@ -82,6 +83,7 @@
           data: {}
         },
         followed: false,
+        shareData:{},
       }
     },
     components: {
@@ -159,6 +161,11 @@
             this.followed = data.followed;
             this.$refs.loading.hide();
             this.dataLock = true;
+            this.shareData = {
+              title:this.baseData.user_name,
+              type:2,
+              id:this.rid
+            };
           }
         })
       },//关注按钮

@@ -28,9 +28,9 @@
             i.iconfont.icon-WECHAT(@tap="otherLogin('weixin')")
             i.iconfont.icon-QQFRIENDS(@tap="otherLogin('qq')")
         .tip 登录代表您已经同意
-          a 《用户协议》
+          a(@tap="openNViewPreload('legal_user_agreement')") 《用户协议》
           | 和
-          a 《隐私政策》
+          a(@tap="openNViewPreload('legal_privacy_policy')") 《隐私政策》
 </template>
 <style lang="stylus" scoped>
   @import "login.styl"
@@ -59,8 +59,7 @@
       }
     },
     mounted() {
-      mui.os.android ? this.os_type = 1 : '';
-      mui.os.ios ? this.os_type = 2 : '';
+      mui.os.ios ? this.os_type = 1 : this.os_type = 2;
     },
     created() {
 
@@ -104,6 +103,7 @@
       }
       ,//打开页面
       openWindow: myMethods.openWindow,
+      openNViewPreload:myMethods.openNViewPreload,
       //改变登录方式
       changType() {
         this.loginType = !this.loginType;
@@ -151,6 +151,9 @@
                 plus.webview.currentWebview().close();
               });
             },
+            noFind:()=>{
+              mui.toast('账号不存在~')
+            },
             error: (data) => {
               mui.toast(data.msg);
             }
@@ -188,15 +191,12 @@
       },
       //获取应用唯一标识
       getClientid() {
-        let vueThis = this;
-        mui.plusReady(() => {
-          if (plus.storage.getItem(plusKey.clientid)) {
-            vueThis.clientid = plus.storage.getItem(plusKey.clientid);
-          } else {
-            vueThis.clientid = plus.push.getClientInfo().clientid;
-            plus.storage.setItem(plusKey.clientid, vueThis.clientid);
-          }
-        });
+        if (plus.storage.getItem(plusKey.clientid)) {
+          this.clientid = plus.storage.getItem(plusKey.clientid);
+        } else {
+          this.clientid = plus.push.getClientInfo().clientid;
+          plus.storage.setItem(plusKey.clientid, this.clientid);
+        }
       },
       //第三方登录操作
       oauthDo(type, sever) {
@@ -205,7 +205,7 @@
           icon: sever.userInfo.headimgurl,
           nick_name: sever.userInfo.nickname,
           getui_id: this.clientid,
-          os_type:this.os_type,
+          os_type: this.os_type,
         };
         if (type === 'qq') {
           http({

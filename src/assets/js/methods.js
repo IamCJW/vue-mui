@@ -10,6 +10,14 @@ const myMethods = {
       return false
     }
   },
+  regexPhoneAndMobile(phone){
+    let regex = /^(0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8})|(400|800)([0-9\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$/;
+    if (regex.test(phone)) {
+      return true
+    } else {
+      return false
+    }
+  },
   // 验证码定时器
   timeClock(text, time, flag) {
     text = `${time}s后获取`;

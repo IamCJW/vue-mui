@@ -236,12 +236,12 @@
     .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
       .popout
         .popout-arrow
-        .funitem(@tap="share()")
+        .funitem(@tap="share(shareData)")
           i.iconfont.icon-share
-          span 分享项目
+          span 分享企业
         .funitem.border-none(@tap="follow(followed)")
           i.iconfont.icon-attention-copy(:class="[followed ? 'text-color-third' : '']")
-          span {{followed ? '已关注' : '关注项目'}}
+          span {{followed ? '已关注' : '关注企业'}}
 </template>
 <style lang="stylus" scoped>
   @import "companyDetail.styl"
@@ -289,6 +289,7 @@
           pageNum: 1,
           data: []
         },//法律讼诉
+        shareData:{},
       }
     },
     mounted() {
@@ -398,6 +399,11 @@
             this.followed = data.followed;
             this.$refs.loading.hide();
             this.dataLock = true;
+            this.shareData = {
+              title:this.baseData.company_name,
+              type:3,
+              id:this.rid
+            };
           }
         })
       },

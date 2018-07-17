@@ -54,7 +54,6 @@
       window.addEventListener('getData', (e) => {
         vueThis.muiData = e.detail;
         vueThis.getData(e.detail);
-        console.log(JSON.stringify(e.detail));
         mui.init({
           pullRefresh: [{
             container: '#companyGroup',
@@ -66,13 +65,9 @@
                   url: api.search_company_qualify_search,
                   method:'post',
                   dataType:true,
-                  data: {
-                    cur_page: vueThis.companyData.cur_page,
-                    filter_type: vueThis.muiData.filter_type,
-                    province: vueThis.muiData.province,
-                    company_type: vueThis.muiData.company_type,
-                    qualify_filter: vueThis.muiData.qualify_filter,
-                  },
+                  data: Object.assign(e.detail,{
+                    cur_page:vueThis.companyData.cur_page,
+                  }),
                   success: (data) => {
                     if (data.total_page <= vueThis.companyData.cur_page) {
                       this.endPullupToRefresh(true);

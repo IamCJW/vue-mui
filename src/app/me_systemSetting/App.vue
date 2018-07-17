@@ -68,6 +68,7 @@
       switchBox: switchBox
     },
     mounted() {
+      this.getData();
       let vueThis = this;
       mui.plusReady(() => {
         vueThis.version = plus.runtime.version;
@@ -240,7 +241,6 @@
           http({
             url: api.common_wx_qrcode,
             success: (data) => {
-
               this.codeUrl = data.url;
               this.codeShow();
             },
@@ -250,9 +250,34 @@
           })
         }
       },
-      //绑定川口////
-      codeShow(){
-        this.wxCode = !this.wxCode;
+      //绑定窗口////
+      codeShow() {
+        let vueThis = this;
+        if (this.wxCode) {
+          let wc = plus.webview.currentWebview();
+          let bitmap = new plus.nativeObj.Bitmap("test");
+          // 将webview内容绘制到Bitmap对象中
+          wc.draw(bitmap, function () {
+            console.log('绘制图片成功');
+            bitmap.save("_doc/a.jpg"
+              , {}
+              , function (i) {
+                console.log('保存图片成功：' + JSON.stringify(i));
+                plus.gallery.save("_doc/a.jpg", function () {
+                  mui.toast("保存图片到相册成功");
+                  vueThis.wxCode = !vueThis.wxCode;
+                });
+              }
+              , function (e) {
+                console.log('保存图片失败：' + JSON.stringify(e));
+              });
+          }, function (e) {
+            console.log('绘制图片失败：' + JSON.stringify(e));
+          });
+        }else {
+          this.wxCode = !this.wxCode;
+        }
+
       }
     }
   }

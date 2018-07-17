@@ -15,9 +15,12 @@
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('home',0)")
             .scroll-wrapper#page1
               .scroll-box
-                ul.media-view
+                .none(v-show="!subscribeData.data.length")
+                  i.iconfont.icon-news-copy
+                  span 暂无关注消息~
+                ul.media-view(v-show="subscribeData.data.length")
                   transition-group(name="domItem")
-                    li.media(v-for="(item,index) in subscribeData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)", @tap="goToDetail(item.msg_type,item.rid)")
+                    li.media(v-for="(item,index) in subscribeData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)", @tap="goToDetail(item.msg_type,{rid:item.ref_id,type:item.info_type})")
                       .media-content
                         .module-top.overflow-auto
                           .fl {{item.msg_type_text}} / {{item.info_type}}
@@ -28,7 +31,10 @@
           .content-page(@swiperight="contentSwiperight()", @swipeleft="openTabNav('search',2)")
             .scroll-wrapper#page2
               .scroll-box
-                ul.media-view
+                .none(v-show="!systemData.data.length")
+                  i.iconfont.icon-news-copy
+                  span 暂无系统消息~
+                ul.media-view(v-show="systemData.data.length")
                   transition-group(name="domItem")
                     li.media(v-for="(item,index) in systemData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,0)")
                       .media-content
@@ -56,11 +62,12 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
+
   export default {
     name: 'message',
     data() {
       return {
-        dataLock:false,
+        dataLock: false,
         pageFlag: 0,
         filterMsg: {
           flag: false,
@@ -71,7 +78,7 @@
               key: '建造师动态',
               value: 3
             }, {key: '业主动态', value: 4}],
-            systemData: [{key: '全部', value: 0}, {key: '系统通知', value: 5}, {key: '订单通知', value: 6}]
+            systemData: [{key: '全部', value: 0}, {key: '系统通知', value: 6}, {key: '订单通知', value: 7}]
           }
         },
         subscribeData: {
@@ -84,15 +91,15 @@
         }
       }
     },
-    components:{
-      loading:loading
+    components: {
+      loading: loading
     },
     mounted() {
       let vueThis = this;
-      mui.plusReady(()=>{
+      mui.plusReady(() => {
         mui.preload({
-          url:"companyDetail_own.html",
-          id:"companyDetail_own"
+          url: "companyDetail_own.html",
+          id: "companyDetail_own"
         })
       });
       mui.init({
@@ -111,12 +118,15 @@
                   cur_page: vueThis.subscribeData.pageNum,
                   msg_type: vueThis.filterMsg.subscribeFlag,
                 }, success: (data) => {
-                  vueThis.subscribeData.data = vueThis.subscribeData.data.concat(data.result);
-                  if (data.total_page === vueThis.subscribeData.pageNum) {
+                  if (data.total_page <= vueThis.subscribeData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.subscribeData.data = vueThis.subscribeData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: () => {
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -132,20 +142,25 @@
                 data: {
                   cur_page: vueThis.systemData.pageNum,
                   msg_type: vueThis.filterMsg.systemFlag,
-                }, success: (data) => {
-                  vueThis.systemData.data = vueThis.systemData.data.concat(data.result);
-                  if (data.total_page === vueThis.systemData.pageNum) {
+                },
+                success: (data) => {
+                  if (data.total_page <= vueThis.systemData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.systemData.data = vueThis.systemData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: () => {
+
+                  this.endPullupToRefresh(true);
                 }
               });
             }
           }
         }]
       });
-      window.addEventListener('getData',()=>{
+      window.addEventListener('getData', () => {
         this.getData();
       });
     },
@@ -162,12 +177,20 @@
             this.subscribeData.data = data.result;
             this.$refs.loading.hide();
             this.dataLock = true;
+          },
+          noFind: () => {
+            this.subscribeData.data = [];
+            this.$refs.loading.hide();
+            this.dataLock = true;
           }
         });
         http({
           url: api.message_system_notify,
           success: (data) => {
             this.systemData.data = data.result;
+          },
+          noFind: () => {
+            this.systemData.data = [];
           }
         })
       }
@@ -198,7 +221,8 @@
           if (e.index === 1) {
             http({
               url: api.message_del,
-              data: {rid: id},
+              data: {code: id},
+              method:'post',
               success: (data) => {
                 if (type === 1) {
                   vueThis.subscribeData.data.splice(index, 1)
@@ -208,7 +232,7 @@
               }
             })
           }
-        },'div')
+        }, 'div')
       },
       showFilter() {
         this.filterMsg.flag = !this.filterMsg.flag;
@@ -222,11 +246,19 @@
             url: api.message_subscribe_notify,
             data: {msg_type: key},
             success: (data) => {
-              this.subscribeData={
+              this.subscribeData = {
                 pageNum: 1,
-                  data: {}
+                data: {}
               };
               this.subscribeData.data = data.result;
+              this.$refs.loading.hide();
+            },
+            noFind: () => {
+              this.subscribeData = {
+                pageNum: 1,
+                data: {}
+              };
+              this.subscribeData.data = [];
               this.$refs.loading.hide();
             }
           });
@@ -236,23 +268,39 @@
             url: api.message_system_notify,
             data: {msg_type: key},
             success: (data) => {
-              this.systemData={
+              this.systemData = {
                 pageNum: 1,
                 data: {}
               };
               this.systemData.data = data.result;
+              this.$refs.loading.hide();
+            },
+            noFind: () => {
+              this.systemData.data = [];
               this.$refs.loading.hide();
             }
           });
         }
       },
       openWindow: myMethods.openWindow,//消息跳转详情
-      openTabNav :myMethods.openTabNav,
-      goToDetail(type, data) {
-        let detailPage ={};
+      openTabNav: myMethods.openTabNav,
+      goToDetail(type, baseData) {
+        let data = baseData;
+        if (data.type){
+          if (data.type === '中标' ){
+            data.type = 2;
+          } else {
+            data.type = 3;
+          }
+        }
+        let detailPage = {};
         switch (type) {
           case 1:
-            detailPage  = plus.webview.getWebviewById('detail');
+            mui.preload({
+              url: `./detail.html`,
+              id: 'detail'
+            });
+            detailPage = plus.webview.getWebviewById('detail');
             mui.fire(detailPage, 'getData', data);
             this.openWindow('detail');
             break;
@@ -273,7 +321,7 @@
             break;
         }
       },
-      openTabNav:myMethods.openTabNav,
+      openTabNav: myMethods.openTabNav,
     }
   }
 </script>

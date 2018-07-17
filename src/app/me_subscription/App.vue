@@ -60,7 +60,6 @@
       loading: loading,
     },
     mounted() {
-      this.getData();
       window.addEventListener('getData', () => {
         this.getData();
         myMethods.NVpreload(['subscription_add', 'subscription_selectLocation', 'subscription_selectQualification']);
@@ -88,7 +87,6 @@
               http({
                 url: api.member_subscribe,
                 data: {
-                  province: vueThis.province,
                   cur_page: vueThis.subscriptionData.pageNum
                 }, success: (data) => {
                   if (data.total_page <= vueThis.subscriptionData.pageNum) {
@@ -131,7 +129,6 @@
       },
       //更新开关的值
       upStatus(switchData) {
-        console.log(switchData)
         http({
           url:api.member_subscribe_status,
           method:'post',

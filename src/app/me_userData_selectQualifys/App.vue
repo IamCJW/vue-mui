@@ -105,7 +105,6 @@
           http({
             url: api.common_base_qualify,
             success: (data) => {
-              console.log(data);
               this.qualifyData = data;
               for (let i in this.qualifyData) {
                 if (this.qualifyData[i].text === this.qualifyList[1]) {

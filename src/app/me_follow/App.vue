@@ -270,7 +270,6 @@
             mui('#page4').pullRefresh().scrollTo(0,0,100);
             this.$refs.loading.hide();
             this.dataLock = true;
-            console.log(this.tender_follows.data)
           },
         });
       },

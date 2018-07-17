@@ -5,6 +5,7 @@
       .search-input
         i.iconfont.icon-SEARCH
         input(placeholder="请输入企业名称" v-model="message")
+        i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
       loading(ref="loading")
@@ -14,7 +15,7 @@
           span 暂无该词条信息~
         .scroll-wrapper#companyGroup(v-show="total !== 0 !== 0")
           .scroll-box
-            .search-result(v-if="total !== 0") 某招标共收录业主企业{{total}}家
+            .search-result(v-if="total !== 0") 共收录该词条业主企业{{total}}家
             .pro-group
               transition-group(name='domItem')
                 .pro-item(v-for="item in companyData.result", :key="item.rid"  , @tap="openDetail('companyDetail_own',{rid:item.rid})")
@@ -69,12 +70,15 @@
                   cur_page: vueThis.companyData.cur_page,
                   search: vueThis.message
                 }, success: (data) => {
-                  vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
                   if (data.total_page === vueThis.companyData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind:()=>{
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -109,6 +113,10 @@
           mui.fire(detailPage, 'getData', data);
           myMethods.openWindow(url);
         });
+      },
+      //清除输入内容
+      clearMessage(){
+        this.message = '';
       },
     }
   }

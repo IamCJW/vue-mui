@@ -9,7 +9,7 @@
             .media-lable 头像
             .media-value
               .user-head
-                img(:src="userHeadSrc")
+                img(:src="userHeadSrc" v-show="userHeadSrc")
                 input(type='file', accept='image/png,image/jpeg,image/jpg', ref='imgFile' , @change="headChange($event)" )
         li.media
           .media-content
@@ -67,7 +67,7 @@
     data() {
       return {
         imgFile: {},
-        userHeadSrc: 'https://gss0.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/a2cc7cd98d1001e92c517af6b30e7bec55e797dd.jpg',
+        userHeadSrc: '',
         name: '',
         gender: '',
         company_info: {
@@ -114,11 +114,6 @@
             this.userHeadSrc = data.icon;
             this.gender = data.gender;
             this.company_info = data.company_info;
-            console.log(data.gender);
-            console.log(data.icon);
-            console.log(data.company_info.name);
-            console.log(data.company_info.tel);
-            console.log(data.company_info.title);
           }
         })
       },//打开页面
@@ -181,6 +176,11 @@
           title: this.company_info.title,
           user_name: this.name
         };
+
+        if (myMethods.regexPhoneAndMobile(data.tel)){
+          mui.toast('请输入正确的固定电话或者手机号码~');
+          return
+        }
         http({
           url: api.member_info,
           method: 'post',

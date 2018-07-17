@@ -16,7 +16,7 @@
                   .search-box(@tap="openWindow('searchCompany')")
                     span 请输入企业名称和统一信用代码
                     i.iconfont.icon-SEARCH
-                .search-result 某招标共收录建筑企业{{companyData.total}}家
+                .search-result 建设帮招标共收录建筑企业{{companyData.total}}家
                 .com-group
                   transition-group(name="domItem")
                     .com-item(v-for="item in companyData.result", :key="item.rid" ,@tap="openDetail('companyDetail',{rid:item.rid})")
@@ -37,7 +37,7 @@
                   .search-box(@tap="openWindow('searchBuilder')")
                     span 请输入建造职师或证件号
                     i.iconfont.icon-SEARCH
-                .search-result 某招标共收录建造师{{builderData.total}}名
+                .search-result 建设帮招标共收录建造师{{builderData.total}}名
                 .bui-group
                   transition-group(name="domItem")
                     .bui-item(v-for="item in builderData.result", :key="item.rid" , @tap="openDetail('builderDetail',{rid:item.rid})")
@@ -77,7 +77,7 @@
               li.media
                 .media-content.iconfont.icon-right
                   div.media-lable 设置资历条件
-                  div.media-value(@tap="openDetail('selectQualify')") 请设置
+                  div.media-value(@tap="openDetail('selectQualify')") {{categoryData.length !== 0 ? '已设置':'请设置'}}
             template(v-if="categoryData.length !== 0")
               ul.media-view.categoryData
                 li.media(v-for="item in categoryData")
@@ -127,6 +127,7 @@
         conditionCategory: 1,//资质设置
         categoryData: [],
         errorData:false,
+        firstIn:true,
       }
     },
     components: {
@@ -135,7 +136,10 @@
     mounted() {
       this.getData();
       window.addEventListener('getData',()=>{
-        this.getData();
+        this.firstIn = false;
+        if(this.firstIn){
+          this.getData();
+        }
       });
       let vueThis = this;
       mui.plusReady(() => {
@@ -286,7 +290,6 @@
           qualify_filter: [],
         };
         let categoryData = this.categoryData;
-        console.log(JSON.stringify(categoryData))
         categoryData.forEach((item, index) => {
           data.qualify_filter[index] = {
             rid:item.id
