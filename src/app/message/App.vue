@@ -10,6 +10,10 @@
           i.iconfont(@tap="showFilter()", :class="[filterMsg.flag &&  pageFlag === 1 ? 'icon-TRIANGLE-copy':'icon-TRIANGLE']")
     .mui-content
       loading(ref="loading")
+      .none(v-show="unToken")
+        i.iconfont.icon-news-copy
+        span 该功能需登录才能使用~
+        button.mid-btn(@tap="openWindow('login')") 前往登录
       .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('home',0)")
@@ -67,6 +71,7 @@
     name: 'message',
     data() {
       return {
+        unToken:'',
         dataLock: false,
         pageFlag: 0,
         filterMsg: {
@@ -152,7 +157,6 @@
                   }
                 },
                 noFind: () => {
-
                   this.endPullupToRefresh(true);
                 }
               });
@@ -161,6 +165,9 @@
         }]
       });
       window.addEventListener('getData', () => {
+        this.getData();
+      });
+      window.addEventListener('loginSuccess', () => {
         this.getData();
       });
     },
@@ -177,11 +184,17 @@
             this.subscribeData.data = data.result;
             this.$refs.loading.hide();
             this.dataLock = true;
+            this.unToken = false;
           },
           noFind: () => {
             this.subscribeData.data = [];
             this.$refs.loading.hide();
             this.dataLock = true;
+            this.unToken = false;
+          },
+          unToken:()=>{
+            this.$refs.loading.hide();
+            this.unToken = true;
           }
         });
         http({

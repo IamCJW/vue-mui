@@ -69,7 +69,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .pro-group
-                  .pro-item(v-for="item in tenderSuccessData.data", @tap="openDetail('detail',{rid:item.rid,type:2})") {{item.rid}}
+                  .pro-item(v-for="item in tenderSuccessData.data", @tap="openDetail('detail',{rid:item.rid,type:2})")
                     .pro-time
                       i.iconfont.icon-time
                       span  &nbsp;{{item.tender_date}}

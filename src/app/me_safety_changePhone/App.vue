@@ -62,7 +62,8 @@
             url: api.common_sendcode,
             method: 'post',
             data: {
-              mobile_no: this.phone
+              mobile_no: this.phone,
+              type:4,
             },
             success() {
               mui.toast('获取成功')
@@ -99,7 +100,8 @@
             url: api.common_sendcode,
             method: 'post',
             data: {
-              mobile_no: this.phone
+              mobile_no: this.phone,
+              type:4,
             },
             success() {
               mui.toast('获取成功')

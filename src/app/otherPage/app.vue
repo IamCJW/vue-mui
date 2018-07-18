@@ -25,6 +25,12 @@
       }
     },
     mounted() {
+      mui.back = ()=>{
+        mui.plusReady(()=>{
+          let view = plus.webview.currentWebview();
+          view.close();
+        })
+      };
       window.addEventListener('getData',(e)=>{
         this.otherUrl = e.detail.otherUrl
       })

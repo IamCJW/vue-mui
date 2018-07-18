@@ -8,6 +8,7 @@
         li.media(@tap="openNViewPreload('changePhone')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 修改手机号
+            .media-value {{mobile}}
         li.media
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 微信绑定
@@ -30,7 +31,7 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-  import {plusKey} from "../../assets/js/locationStorage";
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'safety',
@@ -39,9 +40,11 @@
         dataLock: false,
         wx: false,
         qq: false,
+        mobile:'',
       }
     },
     mounted() {
+      this.mobile = localStorage.getItem(lsKey.userMobile);
       window.addEventListener('getData', () => {
         this.getData();
       })

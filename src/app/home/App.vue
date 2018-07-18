@@ -9,7 +9,7 @@
           span {{localLocation}}
           i.iconfont.icon-TRIANGLE
         .home-search( @tap="openWindow('searchProject')")
-          div 请输入要查询的项目名称
+          div 请输入需要查询的项目名称
           i.iconfont.icon-SEARCH
       .home-bar-nav
         button.home-bar-item(@tap="jumpTo(0)", :class="{active: pageKey===0}") 招标订阅
@@ -26,7 +26,7 @@
             .scroll-wrapper#page1
               .scroll-box
                 .filter-wrapper
-                  .filter(@tap="openNViewPreload('subscription')")
+                  .filter(@tap="openNViewPreloadToken('subscription')")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 warn(icon='icon-404', msg='未有订阅消息~', :show="!pageIndex0.data.length")
@@ -218,6 +218,7 @@
             iconClass: "icon-THESCRAP"
           },
         },
+        loginState:false,//登录状态
         pageKey: 0,//页面状态
         localLocation: '正在定位',//定位信息
         province: '',//选择的省份
@@ -275,6 +276,11 @@
               this.pageIndex1.data = data.tender_list || [];
               this.pageIndex2.data = data.success_tender_list || [];
               this.pageIndex3.data = data.more_list || [];
+            }
+            if (this.pageIndex0.data.length !== 0) {
+              this.jumpTo(0);
+            } else {
+              this.jumpTo(1);
             }
             this.$refs.loading.hide();
             this.dataLock = true;
@@ -472,6 +478,17 @@
       // 跳转页面
       openWindow: myMethods.openWindow,
       openNViewPreload: myMethods.openNViewPreload,
+      openNViewPreloadToken(url){
+        let vueThis = this;
+        mui.plusReady(()=>{
+          if(plus.storage.getItem(plusKey.state) === null){
+            mui.toast('该功能需要登录才能访问~');
+            vueThis.openWindow('login');
+            return
+          }
+          vueThis.openNViewPreload(url);
+        })
+      },
       openDetail(url, data) {
         mui.plusReady(function () {
           mui.preload({
@@ -484,8 +501,8 @@
         });
       },
       //置顶
-      jumpToTop(key){
-        mui(`#${key}`).pullRefresh().scrollTo(0,0,100);
+      jumpToTop(key) {
+        mui(`#${key}`).pullRefresh().scrollTo(0, 0, 100);
       },
       //页面切换
       jumpTo(key) {
@@ -535,9 +552,9 @@
                 address.district = '';
                 mui.toast('您所在位置暂未开通服务，为您跳转江西省~')
               }
-              if(address.city === ''){
+              if (address.city === '') {
                 _this.localLocation = `${address.province}`;
-              }else {
+              } else {
                 _this.localLocation = `${address.city}-${address.district}`;
               }
               //将定位存入本地缓存
@@ -839,7 +856,6 @@
     mounted() {
       this.location();
       this.getData();
-      this.jumpTo(this.pageKey);
       window.addEventListener('changeLocation', (e) => {
         this.location();
         this.getData();
@@ -856,11 +872,15 @@
         this.location();
         this.getData();
       });
+      let vueThis = this;
       mui.plusReady(() => {
         if (plus.storage.getItem(plusKey.firstOpen)) {
           plus.navigator.setFullscreen(false);
           plus.navigator.closeSplashscreen();
         }
+
+        vueThis.loginState = plus.storage.getItem(plusKey.token);
+
       });
       this.muiInit()
     },

@@ -23,14 +23,18 @@
       ul.media-view
         li.media
           .media-content 公司信息
-        li.media
-          .media-content.iconfont.icon-right(@tap="openNViewPreload('userData_company')")
+        li.media(v-show="company_info.name")
+          .media-content.iconfont
             .media-lable 公司名称
-            .media-value {{company_info.name || '公司名称设置'}}
+            .media-value {{company_info.name}}
+        li.media(v-show="!company_info.name")
+          .media-content.iconfont.icon-right(@tap="openNViewPreload('userData_company',{gender: gender,name: company_info.name,tel: company_info.tel,title: company_info.title,user_name:name})")
+            .media-lable 公司名称
+            .media-value 公司名称设置
         li.media
-          .media-content.iconfont.icon-right(@tap="openNViewPreload('selectQualifys')")
+          .media-content.iconfont.icon-right(@tap="openNViewPreload('selectQualifys',{company:company_info.name})")
             .media-lable 资质条件
-            .media-value 条件设置
+            .media-value {{qualifyData.length === 0 ? '前往设置' : '已设置'+qualifyData.length+'项资质'}}
         li.media
           .media-content
             .media-lable 担任职位
@@ -73,8 +77,9 @@
         company_info: {
           name: '',
           tel: '',
-          title: ''
+          title: ' '
         },
+        qualifyData:[],
         headEdit: false,//头像列表
         option: {
           img: '',
@@ -93,13 +98,20 @@
       vueCropper: Cropper
     },
     mounted() {
+      let vueThis = this;
       this.getData();
       window.addEventListener('getData', (e) => {
         this.getData();
       });
-      window.addEventListener('chooseCompany', (e) => {
-        this.$set(this.company_info,'name',e.detail.data.name)
-      })
+      window.addEventListener('changeCompanyData', (e) => {
+        this.getData();
+      });
+      mui.plusReady(() => {
+        plus.key.addEventListener('backbutton', function () {
+            vueThis.headEdit = false;
+          }
+        );
+      });
     },
     created() {
 
@@ -118,6 +130,12 @@
               tel: '',
               title: ''
             };
+          }
+        });
+        http({
+          url: api.member_qualify,
+          success: (data) => {
+            this.qualifyData = data;
           }
         })
       },//打开页面
@@ -149,7 +167,8 @@
             }
           })
         })
-      },//更换头像
+      },
+      //更换头像
       headChange(e) {
         let vueThis = this;
         let uploadFile = e.target.files[0];
@@ -160,7 +179,8 @@
           vueThis.headEdit = true;
           vueThis.$refs.imgFile.value = '';
         };
-      }, saveHeadBack() {
+      },
+      saveHeadBack() {
         this.headEdit = false;
       },
       //修改性别

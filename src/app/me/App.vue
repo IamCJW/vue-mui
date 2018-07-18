@@ -76,7 +76,7 @@
   import myMethods from '../../assets/js/methods'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
-  import {plusKey} from "../../assets/js/locationStorage";
+  import {plusKey,lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'me',
@@ -116,12 +116,13 @@
               success: (data) => {
                 vueThis.userData = data;
                 vueThis.loginState = true;
+                localStorage.setItem(lsKey.userMobile,data.mobile);
               },
               noFind:()=>{
                 vueThis.loginState = true;
               },
               error: (data) => {
-                mui.toast(data.msg)
+
               }
             })
           }else {

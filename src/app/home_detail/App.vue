@@ -11,9 +11,8 @@
           span 专业：{{pushMsg.tender_info.construction_type || pullMsg.tender_info.construction_type || otherMsg.tender_info.construction_type}}
         span.fr {{pushMsg.tender_info.province || pullMsg.tender_info.province || otherMsg.tender_info.province}}{{ (pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city) ? ' / '+ (pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city) : ''}}{{(pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district) ? ' / '+ (pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district):''}}
       .detail-nav-bar
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '招标公告'" , :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,1)") {{item.name}}
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '中标'" , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,2)") {{item.name}}
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '中标' && item.name !== '招标公告' " , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,3)") {{item.name}}
+        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '招标公告'" , :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,0)") {{item.name}}
+        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '招标公告' " , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,item.info_type)") {{item.name}}
     header.detail-header
       .header-title
         .detail-title {{pushMsg.tender_info.name || pullMsg.tender_info.name || otherMsg.tender_info.name}}
@@ -25,13 +24,16 @@
     .mui-content(v-if="dataLock")
       //招标公示
       .content-table(v-show="navPage === '招标公告'")
-        table
+        table.main
           tr
             td(colspan="3")
               .time 发布时间: {{pushMsg.info_date}}
           tr
             td.th 招标人
             td(colspan="2") {{pushMsg.tender_info.tender_name}}
+          tr
+            td.th 资质要求
+            td(colspan="2") {{pushMsg.tender_info.enterprise_requirement}}
           tr
             td.th 标段数量
             td(colspan="2") {{pushMsg.section_num}}
@@ -42,14 +44,15 @@
             td {{item.amount ? item.amount+'万': '未知' }}
           tr
             td.th 信息来源
-            td(colspan="2", @tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource}}
+            td(colspan="2")
+              a(@tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource+'[跳转]'}}
           tr
             td.th(colspan="3") 原文内容
         .orContent(v-html="pushMsg.content") {{'<div class="orContent">'+pushMsg.content+'</div>'}}
 
       // 中标
       .content-table(v-show="navPage === '中标'")
-        table
+        table.main
           tr
             td(colspan="4")
               .time 发布时间: {{pullMsg.info_date}}
@@ -68,7 +71,7 @@
               td(colspan="3") {{item.company_name}}
             tr
               td.th 中标金额
-              td(colspan="3") {{item.tender_je}}
+              td(colspan="3") {{item.tender_je}}万
             tr(v-if="item.builder_name === ''")
               td.th 建造师名称
               td.th {{item.builder_name}}
@@ -76,25 +79,27 @@
               td {{item.certificate_no}}
           tr
             td.th 信息来源
-            td(colspan="3") {{pullMsg.resource}}
+            td(colspan="3")
+              a(@tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.resource+'[跳转]'}}
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="pullMsg.content", @tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.content}}
       // 其他
       .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
-        table
+        table.main
           tr
             td(colspan="4")
               .time 发布时间: {{otherMsg.info_date}}
           tr
             td.th 信息来源
-            td(colspan="3", @tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource}}
+            td(colspan="3")
+              a(@tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource+'[跳转]'}}
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="otherMsg.content") {{otherMsg.content}}
     footer
       .btn-group
-        .btn-item(v-if="pushMsg.tender_info.tel !== '' ||  pullMsg.tender_info.tel !== '' || otherMsg.tender_info.tel !== ''")
+        .btn-item(v-if="pushMsg.tender_info.tel ||  pullMsg.tender_info.tel || otherMsg.tender_info.tel")
           a(:href="'tel:'+ pushMsg.tender_info.tel  ||  pullMsg.tender_info.tel  || otherMsg.tender_info.tel")
             i.iconfont.icon-CONTACT
             span 联系招标方
@@ -131,7 +136,7 @@
                   span {{key}}
         .fixed-bottom-btn(@tap="submitWarn") 提交错误
 </template>
-<style lang="stylus" scoped>
+<style lang="stylus">
   @import "detail.styl"
 </style>
 <script>
@@ -342,7 +347,7 @@
                 color: "#f4d10d",
                 height: "2px"
               },
-              buttons: [{text: '\ue643', color: '#ffffff', fontSize: "16px",fontSrc:'./static/iconfont.ttf',float: 'right', onclick:()=>{
+              buttons: [{text: '\ue643', color: '#ffffff', fontSize: "18px",fontSrc:'_www/static/iconfont.ttf',float: 'right', onclick:()=>{
                 mui.plusReady(()=>{
                   plus.runtime.openURL( data.otherUrl);
                 })
@@ -359,9 +364,10 @@
       },
       //内容选择
       navSelect(key, rid, type) {
+        console.log(type);
         this.navPage = key;
         switch (type) {
-          case 1:
+          case 0:
             http({
               url: api.tender_id,
               data: {rid: rid},
@@ -370,7 +376,7 @@
               }
             });
             break;
-          case 2:
+          case 1:
             http({
               url: api.tender_success_detail,
               data: {rid: rid},
@@ -379,7 +385,7 @@
               }
             });
             break;
-          case 3:
+          default:
             http({
               url: api.project_relation_info_detail,
               data: {rid: rid},

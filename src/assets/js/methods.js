@@ -1,4 +1,4 @@
-import axios from 'axios'
+import {plusKey} from "./locationStorage";
 
 const myMethods = {
   // 电话验证正则表达式，
@@ -106,6 +106,11 @@ const myMethods = {
   },
   //主页跳转
   openTabNav(id,index) {
+    if (plus.storage.getItem(plusKey.state) === null && index === 1) {
+      mui.toast('该功能需要登录才能访问~');
+      myMethods.openWindow('login');
+      return
+    }
     mui.plusReady(() => {
       let main = plus.webview.currentWebview().opener();
       plus.webview.show(id,'fade-in',300);

@@ -4,14 +4,13 @@
       .selected-content
         .selected-title
           span 已选资质
+          span.fr 手动最多添加5条资质
         ul.media-view
           li.media(v-for="item in selectedArr")
             .media-content
               span {{item.name}}—{{item.level}}
-              i.iconfont.icon-Rubbish.fr(@tap="deleteArr(item.rid)")
-      .button-group(v-if="selectedArr.length < 5")
-        button.add(@tap="add") 添加
-        .tip 手动最多添加5条资质
+              i.iconfont.icon-Rubbish.fr(v-if="item.type === 1",@tap="deleteArr(item.rid)")
+    button.fixed-bottom-btn(@tap="add") 添加
     .typeGroup(v-if="selectFlag")
       .typeItem(v-for="(item,key) in qualifyList", :class="{active:qualifyFlag === key}", @tap="changeQualify(key)") {{item === '建筑业施工企业资质'? '施工资质' : item}}
 </template>

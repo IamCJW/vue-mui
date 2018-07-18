@@ -80,7 +80,8 @@
           http({
             url: api.common_sendcode,
             data: {
-              mobile_no: this.phone
+              mobile_no: this.phone,
+              type:2,
             },
             method: 'post',
             success: () => {
@@ -145,6 +146,10 @@
                 plus.storage.setItem(plusKey.token, data);
                 plus.storage.setItem(plusKey.state, "true");
                 let view = plus.webview.getWebviewById('me');
+                let viewMes = plus.webview.getWebviewById('message');
+                mui.fire(viewMes, 'loginSuccess', {
+                  msg: '登录成功'
+                });
                 mui.fire(view, 'loginSuccess', {
                   msg: '登录成功'
                 });
@@ -226,6 +231,10 @@
                   plus.storage.setItem(plusKey.token, data);
                   plus.storage.setItem(plusKey.state, "true");
                   let view = plus.webview.getWebviewById('me');
+                  let viewMes = plus.webview.getWebviewById('message');
+                  mui.fire(viewMes, 'loginSuccess', {
+                    msg: '登录成功'
+                  });
                   mui.fire(view, 'loginSuccess', {
                     msg: '登录成功'
                   });
@@ -253,6 +262,10 @@
               plus.storage.setItem(plusKey.token, data);
               plus.storage.setItem(plusKey.state, "true");
               let view = plus.webview.getWebviewById('me');
+              let viewMes = plus.webview.getWebviewById('message');
+              mui.fire(viewMes, 'loginSuccess', {
+                msg: '登录成功'
+              });
               mui.fire(view, 'loginSuccess', {
                 msg: '登录成功'
               });

@@ -10,6 +10,7 @@ let lsKey = {
   filterDistrict: 'localStorage_filter_district',//筛选的省
   nationData:'localStorage_naiton_data',//城市数据
   qualify:'localStorage_qualify',//资质数据
+  userMobile:'localStorage_user_mobile',//用户绑定手机
 };
 let ssKey = {
   locationProvince: 'localStorage_location_province',//定位的省

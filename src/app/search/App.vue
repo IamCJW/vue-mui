@@ -14,7 +14,7 @@
                 loading(ref="loading")
                 .search-wrapper
                   .search-box(@tap="openWindow('searchCompany')")
-                    span 请输入企业名称和统一信用代码
+                    span 请输入企业名称或统一信用代码
                     i.iconfont.icon-SEARCH
                 .search-result 建设帮招标共收录建筑企业{{companyData.total}}家
                 .com-group
@@ -35,7 +35,7 @@
               .scroll-box
                 .search-wrapper
                   .search-box(@tap="openWindow('searchBuilder')")
-                    span 请输入建造职师或证件号
+                    span 请输入建造师姓名或证书号
                     i.iconfont.icon-SEARCH
                 .search-result 建设帮招标共收录建造师{{builderData.total}}名
                 .bui-group
@@ -46,7 +46,7 @@
                         .bui-id 注册号:{{item.register_no}}
                         div 中标数量:{{item.tender_sucess_num}}
                       .bui-mid
-                        span.bui-sign 二级注册建造师
+                        span.bui-sign {{item.level || 未知}}
                         span.fr
                           span 专业数:{{item.professional_num}}
                           span 最近中标:{{item.tender_last_date}}

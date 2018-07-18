@@ -8,7 +8,7 @@
           i.iconfont.icon-shutdown(v-show="clearSearchMsgFlag", @tap="clearSearchMsg")
       .none(v-if="!companyList[0]")
         i.iconfont.icon-enterprise
-        span 请搜索企业名称
+        span 暂无符合企业，请输入正确企业名称~
       ul.media-view(v-if="companyList[0]")
         li.media(v-for="item in companyList", @tap="chooseCompany(item.company_name)")
           .media-content {{item.company_name}}
@@ -29,18 +29,14 @@
       return {
         searchMsg: '',
         clearSearchMsgFlag: false,
-        companyList: []
+        companyList: [],
+        baseData:{},
       }
     },
     components: {},
     mounted() {
-      let vueThis = this;
-      mui.init({
-        beforeback: () => {
-          vueThis.searchMsg = '';
-          vueThis.companyList = [];
-          return true;
-        }
+      window.addEventListener('getData',(e)=>{
+        this.baseData = e.detail;
       })
     },
     created() {
@@ -66,18 +62,30 @@
       },
       clearSearchMsg() {
         this.searchMsg = '';
+        this.clearSearchMsgFlag = false;
         this.companyList = [];
       },
       chooseCompany(value) {
-        this.searchMsg = value;
-        let view = plus.webview.currentWebview().opener();
         let vueThis = this;
-        mui.fire(view, 'chooseCompany', {
-          data: {
-            name:vueThis.searchMsg
+        this.searchMsg = value;
+        this.baseData.name = value;
+        let message = `您将绑定的企业名字为[${value}],一旦确认将无法更改,请谨慎操作`;
+        mui.confirm(message, '重要提醒', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
+            http({
+              url: api.member_info,
+              method: 'post',
+              data: vueThis.baseData,
+              success: () => {
+                mui.toast('企业绑定成功，已为您匹配企业资质~');
+                let viewData = plus.webview.getWebviewById('userData');
+                let viewThis = plus.webview.getWebviewById('userData_company');
+                mui.fire(viewData,'changeCompanyData',{});
+                viewThis.close();
+              }
+            })
           }
-        });
-        mui.back()
+        },'div');
       },
     }
   }

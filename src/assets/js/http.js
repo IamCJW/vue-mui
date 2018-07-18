@@ -69,6 +69,7 @@ const httpServer = (opts) => {
           }else if(data.code === '401'){
             mui.toast('该功能需要登录才能访问~');
             setTimeout(()=>{myMethods.openWindow('login')},500);
+            opts.unToken();
           }else {
             mui.toast(data.msg);
             opts.error(data);
