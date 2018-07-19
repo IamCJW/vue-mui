@@ -5,6 +5,7 @@
         li.media
           .media-content.flex
             span 新消息通知
+            .warn-tip(v-if="notify_im_message") 此功能需开启消息权限，可在设置中开启~
             switchBox.fr(:status='notify_im_message', :keyName="'notify_im_message'", @changeStatus="upStatus")
         li.media(v-if="notify_im_message", @tap="chooseNotify_type")
           .media-content.iconfont.icon-right
@@ -62,6 +63,7 @@
         verData: {},
         wxCode: false,
         codeUrl: '',
+        pushP:false,
       }
     },
     components: {
@@ -72,14 +74,8 @@
       let vueThis = this;
       mui.plusReady(() => {
         vueThis.version = plus.runtime.version;
-        http({
-          url: api.system_check_version,
-          data: {ver: vueThis.version},
-          success: (data) => {
-            vueThis.verData = data;
-            vueThis.isNew = true;
-          },
-        })
+        let pp = plus.navigator.checkPermission('NOTIFITION');
+        if(pp !== 'authorized') vueThis.pushP = true;
       });
       window.addEventListener('getData', () => {
         this.getData();
@@ -148,15 +144,23 @@
       //版本检查
       verCheck() {
         let vueThis = this;
-        if (this.isNew) {
-          mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`, '提醒', ['取消', '确定'], function (e) {
-            if (e.index === 1) {
-              mui.openWindow(vueThis.verData.url);
+        http({
+          url: api.system_check_version,
+          data: {ver: vueThis.version},
+          success: (data) => {
+            vueThis.verData = data;
+            vueThis.isNew = true;
+            if (this.isNew) {
+              mui.confirm(`您有新的版本${vueThis.verData.ver}可以更新,是否前往下载更新？`, '提醒', ['取消', '确定'], function (e) {
+                if (e.index === 1) {
+                  mui.openWindow(vueThis.verData.url);
+                }
+              }, 'div')
+            } else {
+              mui.toast('暂未检测到新版本~')
             }
-          }, 'div')
-        } else {
-          mui.toast('暂未检测到新版本~')
-        }
+          },
+        });
       },
       //退出登录
       loginOut() {
@@ -274,7 +278,7 @@
           }, function (e) {
             console.log('绘制图片失败：' + JSON.stringify(e));
           });
-        }else {
+        } else {
           this.wxCode = !this.wxCode;
         }
 

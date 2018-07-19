@@ -1,17 +1,9 @@
 <template lang="pug">
   #app
-    iframe(:src="otherUrl")
 
 </template>
 <style lang="stylus" scoped>
   @import "otherPage.styl"
-  iframe
-    display block
-    width 100vw
-    height 100vh
-    padding 0
-    margin 0
-    border none
 </style>
 <script>
   /* global mui */
@@ -21,7 +13,7 @@
     name: 'otherPage',
     data() {
       return {
-        otherUrl:""
+
       }
     },
     mounted() {
@@ -32,7 +24,15 @@
         })
       };
       window.addEventListener('getData',(e)=>{
-        this.otherUrl = e.detail.otherUrl
+        mui.init({
+          subpages:[{
+            url:e.detail.otherUrl,
+            id:'otherContent',
+            styles:{
+              top:'45px',
+            }
+          }]
+        });
       })
     },
     created() {

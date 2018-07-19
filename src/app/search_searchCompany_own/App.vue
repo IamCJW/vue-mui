@@ -5,7 +5,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入企业名称" v-model="message")
+        input(placeholder="请输入企业名称" v-model="message" v-focus)
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -50,6 +50,17 @@
         companyData: {
           cur_page: 1,
           result: []
+        }
+      }
+    },
+    directives: {
+      focus: {
+        // 指令的定义
+        inserted: function (el) {
+          el.focus();
+          mui.plusReady(()=>{
+            plus.key.showSoftKeybord();
+          });
         }
       }
     },

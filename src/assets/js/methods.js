@@ -113,12 +113,31 @@ const myMethods = {
     }
     mui.plusReady(() => {
       let main = plus.webview.currentWebview().opener();
+      let openView = plus.webview.getWebviewById(id);
       plus.webview.show(id,'fade-in',300);
+      mui.fire(openView,'changeTabNav',{
+        index:index
+      });
       mui.fire(main,'changeTabNav',{
         index:index
       });
     })
   },
+  openDetail(url, data) {
+    mui.plusReady(function () {
+      mui.preload({
+        url: `./${url}.html`,
+        id: url
+      });
+      let detailPage = plus.webview.getWebviewById(url);
+      mui.fire(detailPage, 'getData', data);
+      myMethods.openWindow(url);
+    });
+  },
+  //返回/////////////////////////////
+  muiOldBack(){
+    mui.back();
+  }
 };
 
 export default myMethods

@@ -7,7 +7,7 @@
           img(:src="userData.icon || './static/me-default.png'")
         .user-name(v-show="!loginState") 用户昵称
         .user-name(v-show="loginState") {{userData.name || '匿名'}}
-        .user-loginStation(@tap="openWindow('login')", v-show="!loginState")
+        .user-loginStation(@tap="openDetail('login')", v-show="!loginState")
           span 您还没有登录，请登录>
         .user-loginStation(v-show="loginState")
           span 您的账户已上线~
@@ -132,11 +132,12 @@
         });
       },//打开页面
       openWindow: myMethods.openWindow,//打开详情
+      openDetail:myMethods.openDetail,
       openNViewPreload(url, data) {
         if(this.loginState){
           myMethods.openNViewPreload(url, data)
         }else{
-         this.openWindow('login');
+         this.openDetail('login');
         }
       },
       openTabNav: myMethods.openTabNav,

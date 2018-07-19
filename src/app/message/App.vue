@@ -107,6 +107,12 @@
           id: "companyDetail_own"
         })
       });
+      window.addEventListener('changeTabNav',()=>{
+        this.getData();
+      });
+      window.addEventListener('readed',()=>{
+        this.getData();
+      });
       mui.init({
         gestureConfig: {
           longtap: true, //默认为false

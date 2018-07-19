@@ -13,7 +13,7 @@
               .scroll-box
                 loading(ref="loading")
                 .search-wrapper
-                  .search-box(@tap="openWindow('searchCompany')")
+                  .search-box(@tap="openDetail('searchCompany')")
                     span 请输入企业名称或统一信用代码
                     i.iconfont.icon-SEARCH
                 .search-result 建设帮招标共收录建筑企业{{companyData.total}}家
@@ -34,7 +34,7 @@
             .scroll-wrapper#page2
               .scroll-box
                 .search-wrapper
-                  .search-box(@tap="openWindow('searchBuilder')")
+                  .search-box(@tap="openDetail('searchBuilder')")
                     span 请输入建造师姓名或证书号
                     i.iconfont.icon-SEARCH
                 .search-result 建设帮招标共收录建造师{{builderData.total}}名
@@ -143,26 +143,6 @@
       });
       let vueThis = this;
       mui.plusReady(() => {
-        mui.preload({
-          url: './searchCompany.html',
-          id: 'searchCompany'
-        });
-        mui.preload({
-          url: './searchBuilder.html',
-          id: 'searchBuilder'
-        });
-        mui.preload({
-          url: './builderDetail.html',
-          id: 'builderDetail'
-        });
-        mui.preload({
-          url: './companyDetail.html',
-          id: 'companyDetail'
-        });
-        mui.preload({
-          url: './selectQualify.html',
-          id: 'selectQualify'
-        });
         myMethods.NVpreload(['selectProvince','searchFilterCompany']);
       });
       mui.init({
@@ -252,16 +232,7 @@
       },
       openWindow: myMethods.openWindow,//跳转详情
       openTabNav :myMethods.openTabNav,
-      openDetail(url, data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openDetail:myMethods.openDetail,
       //页面切换
       jumpTo(key) {
         this.pageFlag = key;

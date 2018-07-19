@@ -45,7 +45,7 @@
           tr
             td.th 信息来源
             td(colspan="2")
-              a(@tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource+'[跳转]'}}
+              a(@tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource+'[点击查看原文]'}}
           tr
             td.th(colspan="3") 原文内容
         .orContent(v-html="pushMsg.content") {{'<div class="orContent">'+pushMsg.content+'</div>'}}
@@ -65,7 +65,7 @@
             td
           template(v-for="(item,index) in pullMsg.section_info")
             tr
-              td.th(colspan="4") {{item.name}}
+              td.text-color-main.th(colspan="4") 标段名称:{{item.name}}
             tr
               td.th 中标单位
               td(colspan="3") {{item.company_name}}
@@ -80,10 +80,10 @@
           tr
             td.th 信息来源
             td(colspan="3")
-              a(@tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.resource+'[跳转]'}}
+              a(@tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.resource+'[点击查看原文]'}}
           tr
             td.th(colspan="4") 原文内容
-        .orContent(v-html="pullMsg.content", @tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.content}}
+        .orContent(v-html="pullMsg.content") {{pullMsg.content}}
       // 其他
       .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
         table.main
@@ -93,7 +93,7 @@
           tr
             td.th 信息来源
             td(colspan="3")
-              a(@tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource+'[跳转]'}}
+              a(@tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource+'[点击查看原文]'}}
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="otherMsg.content") {{otherMsg.content}}
@@ -161,6 +161,7 @@
           '资审': false,
           '流标': false,
           '废标': false,
+          '补遗': false,
           '其他': false,
         },
         menuStatus: false,
@@ -213,6 +214,13 @@
     },
     mounted() {
       let vueThis = this;
+      mui.init({
+        beforeback: () => {
+          let view = plus.webview.getWebviewById('message');
+          mui.fire(view,'readed',{});
+          return true;
+        }
+      });
       window.addEventListener('getData', (e) => {
         vueThis.dataLock = false;
         vueThis.pushMsg = {
@@ -347,11 +355,18 @@
                 color: "#f4d10d",
                 height: "2px"
               },
-              buttons: [{text: '\ue643', color: '#ffffff', fontSize: "18px",fontSrc:'_www/static/iconfont.ttf',float: 'right', onclick:()=>{
-                mui.plusReady(()=>{
-                  plus.runtime.openURL( data.otherUrl);
-                })
-                }}],
+              buttons: [{
+                text: '\ue643',
+                color: '#ffffff',
+                fontSize: "18px",
+                fontSrc: '_www/static/iconfont.ttf',
+                float: 'right',
+                onclick: () => {
+                  mui.plusReady(() => {
+                    plus.runtime.openURL(data.otherUrl);
+                  })
+                }
+              }],
               autoBackButton: true,
             }
           }

@@ -22,8 +22,8 @@
                     div(:class="{'color-icon-SUPERVISION':item.tender_type === '监理','color-icon-design':item.tender_type === '设计','color-icon-INVESTIGATE':item.tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','color-icon-INTEGRATION':item.tender_type === '一体化','color-icon-OTHER':item.tender_type === '其他',}")
                       i.iconfont(:class="{'icon-SUPERVISION':item.tender_type === '监理','icon-design':item.tender_type === '设计','icon-INVESTIGATE':item.tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':item.tender_type === '施工','icon-INTEGRATION':item.tender_type === '一体化','icon-OTHER':item.tender_type === '其他',}")
                       | {{item.tender_type}}
-                    div(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标'}")
-                      i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标'}")
+                    div(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标','color-icon-zhaobiaofangan':item.info_type === '招标','color-icon-tubiao-':item.info_type === '中标'}")
+                      i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标','icon-zhaobiaofangan':item.info_type === '招标','icon-tubiao-':item.info_type === '中标'}")
                       | {{item.info_type}}
                   .pro-main
                     .pro-name {{item.name}}
@@ -109,8 +109,11 @@
     directives: {
       focus: {
         // 指令的定义
-        function (el) {
-          el.focus()
+        inserted: function (el) {
+          el.focus();
+          mui.plusReady(()=>{
+            plus.key.showSoftKeybord();
+          });
         }
       }
     },
@@ -149,7 +152,7 @@
       openWindow: (url, item) => {
         let data = {};
         data['rid'] = item.rid;
-        switch (item.tender_type) {
+        switch (item.info_type) {
           case '招标':
             data['type'] = 1;
             break;
@@ -159,12 +162,15 @@
           default:
             data['type'] = 3;
         }
-        let detailPage = plus.webview.getWebviewById(url);
-        if (!detailPage) {
-          mui.toast('目标正在初始化，请稍候~')
-        }
-        mui.fire(detailPage, 'getData', data);
-        myMethods.openWindow(url);
+        mui.plusReady(function () {
+          mui.preload({
+            url: `./${url}.html`,
+            id: url
+          });
+          let detailPage = plus.webview.getWebviewById(url);
+          mui.fire(detailPage, 'getData', data);
+          myMethods.openWindow(url);
+        });
       },
       //清除输入内容
       clearMessage() {

@@ -97,7 +97,6 @@
             vueThis.district = ''
           }
           vueThis.selectedDo();
-          vueThis.picker.dispose();
         });
       },
       //数据初始化////////////////////////////////////////////////////
@@ -112,7 +111,7 @@
       selectedDo() {
         let province = this.province;
         let city = this.city === '全省' ? '' : this.city;
-        let district = (this.district === '全市' || this.district === '全省') ? '' : this.district;
+        let district = (this.district === '全市' || this.district === '全省'|| this.district === '省本级'|| this.district === '省农垦' ) ? '' : this.district;
         //将定位存入本地缓存
         localStorage.setItem(lsKey.locationProvince, province);
         localStorage.setItem(lsKey.locationCity, city);
@@ -135,6 +134,7 @@
             this.oldSelects.pop();
           }
         }
+        let vueThis = this;
         localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
         mui.plusReady(() => {
           let view = plus.webview.getWebviewById('home');
@@ -143,6 +143,7 @@
             city: city,
             district: district,
           });
+          vueThis.picker.dispose();
           mui.back();
         });
       },
@@ -158,11 +159,19 @@
           city: city,
           district: district,
         });
+        this.picker.dispose();
         mui.back();
       }
     },
     mounted() {
       let vueThis =this;
+      mui.plusReady(() => {
+        plus.key.addEventListener('backbutton', function () {
+          vueThis.picker.dispose();
+          mui.back();
+          }
+        );
+      });
       mui('body').on('tap','.mui-poppicker-btn-cancel',()=>{
         vueThis.picker.dispose();
         mui.back();
@@ -171,9 +180,11 @@
         this.dataInit();
         this.getNation();
       });
-      window.addEventListener('localStorageClear', () => {
-        this.dataInit();
-        this.getNation();
+      mui.init({
+        beforeback: () => {
+          vueThis.picker.dispose();
+          return true;
+        }
       })
     }
   }
