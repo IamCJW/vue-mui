@@ -49,6 +49,7 @@ const httpServer = (opts) => {
         data: opts.dataType ? opts.data : qs.stringify(opts.data),
         headers: Object.assign(publicHeaders, opts.headers),
       };
+      console.log(opts.url);
       console.log(JSON.stringify(httpDefaultOpts.data));
       if (opts.method === 'post') {
         delete httpDefaultOpts.params

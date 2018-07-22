@@ -10,7 +10,7 @@ const myMethods = {
       return false
     }
   },
-  regexPhoneAndMobile(phone){
+  regexPhoneAndMobile(phone) {
     let regex = /^(0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8})|(400|800)([0-9\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$/;
     if (regex.test(phone)) {
       return true
@@ -68,9 +68,11 @@ const myMethods = {
         }
       }
     });
-    mui.plusReady(function () {
+    mui.plusReady(() => {
       let detailPage = plus.webview.getWebviewById(url);
-      mui.fire(detailPage, 'getData', data);
+      myMethods.muiFireLock(detailPage, () => {
+        mui.fire(detailPage, 'getData', data);
+      });
       mui.openWindow(url);
     });
   },
@@ -105,7 +107,7 @@ const myMethods = {
     return `${px}px`;
   },
   //主页跳转
-  openTabNav(id,index) {
+  openTabNav(id, index) {
     if (plus.storage.getItem(plusKey.state) === null && index === 1) {
       mui.toast('该功能需要登录才能访问~');
       myMethods.openWindow('login');
@@ -114,14 +116,18 @@ const myMethods = {
     mui.plusReady(() => {
       let main = plus.webview.currentWebview().opener();
       let openView = plus.webview.getWebviewById(id);
-      plus.webview.show(id,'fade-in',300);
-      mui.fire(openView,'changeTabNav',{
-        index:index
+      plus.webview.show(id, 'fade-in', 300);
+      myMethods.muiFireLock(openView, () => {
+        mui.fire(openView, 'changeTabNav', {
+          index: index
+        });
       });
-      mui.fire(main,'changeTabNav',{
-        index:index
-      });
-    })
+      myMethods.muiFireLock(main, () => {
+        mui.fire(main, 'changeTabNav', {
+          index: index
+        });
+      })
+    });
   },
   openDetail(url, data) {
     mui.plusReady(function () {
@@ -130,12 +136,24 @@ const myMethods = {
         id: url
       });
       let detailPage = plus.webview.getWebviewById(url);
-      mui.fire(detailPage, 'getData', data);
+      myMethods.muiFireLock(detailPage, () => {
+        mui.fire(detailPage, 'getData', data);
+      });
       myMethods.openWindow(url);
     });
   },
+  //muiFire异步加锁事件/////////////////////////
+  muiFireLock(view, fun) {
+    view.addEventListener('loaded', function () {
+      if (mui.os.ios) {
+        fun();
+        lock = false;
+      }
+    });
+    fun();
+  },
   //返回/////////////////////////////
-  muiOldBack(){
+  muiOldBack() {
     mui.back();
   }
 };

@@ -4,10 +4,20 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入建造师姓名或证书号" v-model="message" v-focus)
+        input(type="text" placeholder="请输入建造师姓名或证书号" v-model="message" v-focus)
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
+      .history-header(v-show="historyShow")
+        .history-lable 历史记录
+        .history-clear(@tap="historyClear()")
+          i.iconfont.icon-Rubbish
+          span 清空历史记录
+      ul.media-view.history-content(v-show="historyShow")
+        li.media(v-show="!historyList.length")
+          .media-content 您还没搜索呢，快去搜搜看~
+        li.media(v-for="item in historyList", @tap="historySearch(item)")
+          .media-content {{item}}
       loading(ref="loading")
       .pro-group(v-show="dataLock")
         .none(v-show="builderData.result.length === 0")
@@ -57,7 +67,9 @@
         builderData: {
           cur_page:1,
           result:[]
-        }
+        },
+        historyShow:true,
+        historyList:[],
       }
     },
     directives: {
@@ -73,6 +85,13 @@
     },
     mounted() {
       let vueThis = this;
+      let province = localStorage.getItem(lsKey.locationProvince);
+      window.addEventListener('getData',()=>{
+        this.historyShow = true;
+        if(localStorage.getItem(lsKey.historySearchBuilder) !== null){
+          this.historyList = JSON.parse(localStorage.getItem(lsKey.historySearchBuilder));
+        }
+      });
       mui.init({
         pullRefresh: [{
           container: '#companyGroup',
@@ -83,12 +102,14 @@
               http({
                 url: api.search_company,
                 data: {
+                  search: vueThis.message,
+                  province:province,
                   cur_page: vueThis.builderData.cur_page,
                 }, success: (data) => {
-                  vueThis.builderData.result = vueThis.builderData.result.concat(data.result);
-                  if (data.total_page === vueThis.builderData.cur_page) {
+                  if (data.total_page <= vueThis.builderData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.builderData.result = vueThis.builderData.result.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
                 },
@@ -111,8 +132,38 @@
       });
     },
     methods: {
+      //清除历史记录
+      historyClear(){
+        localStorage.removeItem(lsKey.historySearchBuilder);
+        this.historyList = [];
+      },
+      //历史查询事件
+      historySearch(item){
+        this.message = item;
+        this.search();
+      },
       // 搜索事件
       search() {
+        if (this.message === '') {
+          mui.toast('请输入要搜索的关键字~');
+          return
+        }
+        let message = this.message;
+        let historyList;
+        if (this.historyList.length !== 0){
+          historyList = this.historyList;
+        }else {
+          historyList = [];
+        }
+        historyList.unshift(message);
+        historyList.forEach((item,index)=>{
+          if(item === this.message && index !== 0){
+            historyList.splice(index,1)
+          }
+        });
+        this.historyList = historyList;
+        localStorage.setItem(lsKey.historySearchBuilder,JSON.stringify(this.historyList));
+        this.historyShow = false;
         let province = localStorage.getItem(lsKey.locationProvince);
         mui('#companyGroup').pullRefresh().refresh(true);
         this.$refs.loading.show();
@@ -136,16 +187,7 @@
       },
       // 跳转页面
       openWindow: myMethods.openWindow,//跳转详情
-      openDetail(url, data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openDetail:myMethods.openDetail,
       //清除输入内容
       clearMessage(){
         this.message = '';

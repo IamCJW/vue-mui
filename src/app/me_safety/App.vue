@@ -13,13 +13,13 @@
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 微信绑定
             template(v-show="dataLock")
-              .media-value(v-if="wx") 已绑定
+              .media-value.text-color-assist(v-if="wx" @tap="unBind('weixin')") 解除绑定
               .media-value(v-if="!wx" @tap="otherLogin('weixin')") 去绑定
         li.media
           .media-content.iconfont.icon-right
             .media-lable.text-color-black QQ绑定
-            template(v-show="dataLock" @tap="otherLogin('qq')")
-              .media-value(v-if="qq") 已绑定
+            template(v-show="dataLock")
+              .media-value.text-color-assist(v-if="qq" @tap="unBind('qq')") 解除绑定
               .media-value(v-if="!qq" @tap="otherLogin('qq')") 去绑定
 </template>
 <style lang="stylus" scoped>
@@ -39,8 +39,10 @@
       return {
         dataLock: false,
         wx: false,
+        wxData: {},
         qq: false,
-        mobile:'',
+        qqData: {},
+        mobile: '',
       }
     },
     mounted() {
@@ -58,17 +60,24 @@
         http({
           url: api.member_security_bind,
           success: (data) => {
+            console.log(JSON.stringify(data));
+            this.wx = false;
+            this.qq = false;
             data.forEach((item) => {
               if (item.type === 'wx') {
-                this.wx = true
+                this.wx = true;
+                this.wxData = item;
               }
               if (item.type === 'qq') {
                 this.qq = true;
+                this.qqData = item;
               }
             })
           },
           noFind: () => {
             this.dataLock = true;
+            this.wx = false;
+            this.qq = false;
           }
         })
       },//打开页面
@@ -102,6 +111,7 @@
       },
       //第三方登录操作
       oauthDo(type, sever) {
+        let vueThis = this;
         let opts = {
           flag: type === 'weixin' ? 1 : 2,
           icon: sever.userInfo.headimgurl,
@@ -122,11 +132,11 @@
                 url: api.member_security_bind,
                 data: opts,
                 method: 'post',
-                success:()=>{
+                success: () => {
                   mui.toast('绑定QQ成功');
-                  this.getData();
+                  vueThis.getData();
                 },
-                error(){
+                error() {
                   plus.oauth.getServices(function (services) {
                     for (let i in services) {
                       let s = services[i];
@@ -153,9 +163,9 @@
             method: 'post',
             success(data) {
               mui.toast('绑定微信成功');
-              this.getData();
+              vueThis.getData();
             },
-            error(){
+            error() {
               plus.oauth.getServices(function (services) {
                 for (let i in services) {
                   let s = services[i];
@@ -173,7 +183,40 @@
             }
           });
         }
-      }
+      },
+      // 解除绑定//////////
+      unBind(type) {
+        let message = type === 'weixin' ? '微信' : 'QQ';
+        mui.confirm(`解除${message}绑定，将无法快捷登录，确定解除绑定？`, ' ', ['取消', '确定'], (e) => {
+          if (e.index === 1) {
+            let bindData = type === 'weixin' ? this.wxData : this.qqData;
+            http({
+              url: api.member_security_unbind,
+              method: 'post',
+              data: {
+                flag: type === 'weixin' ? 1 : 2,
+                openid: bindData.open_id
+              },
+              success: () => {
+                mui.toast('解绑成功');
+                plus.oauth.getServices(function (services) {
+                  for (let i in services) {
+                    let s = services[i];
+                    if (s.authResult) {
+                      s.logout(function (e) {
+                        console.log('清除授权列表成功~')
+                      }, function (e) {
+                        console.log('清除授权列表失败~')
+                      });
+                    }
+                  }
+                });
+                this.getData()
+              }
+            });
+          }
+        }, 'div')
+      },
     }
   }
 </script>

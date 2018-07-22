@@ -139,7 +139,11 @@
             },
             success: () => {
               this.followed = !this.followed;
-              mui.toast('取消成功')
+              mui.toast('取消成功');
+              let view = plus.webview.getWebviewById('follow');
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'followChange',{})
+              })
             }
           })
         } else {
@@ -152,7 +156,11 @@
             },
             success: () => {
               this.followed = !this.followed;
-              mui.toast('关注成功')
+              mui.toast('关注成功');
+              let view = plus.webview.getWebviewById('follow');
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'followChange',{})
+              })
             }
           })
         }

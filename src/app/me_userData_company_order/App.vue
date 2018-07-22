@@ -8,7 +8,7 @@
       .cell-row.search-wrapper
         .search-box
           i.iconfont.icon-enterprise
-          input(placeholder="请输入企业全称并选择", @input="searchChange", @change="searchChange", v-model="searchMsg")
+          input(type="text",placeholder="请输入企业全称并选择", @input="searchChange", @change="searchChange", v-model="searchMsg")
           i.iconfont.icon-shutdown(v-show="clearSearchMsgFlag", @tap="clearSearchMsg")
       .none(v-if="!companyList[0]")
         i.iconfont.icon-enterprise
@@ -76,8 +76,10 @@
           },
           success:()=>{
             let view = plus.webview.currentWebview().opener();
-            mui.fire(view, 'addSuccess', {
-              msg: '添加成功成功'
+            myMethods.muiFireLock(view,()=>{
+              mui.fire(view, 'addSuccess', {
+                msg: '添加成功成功'
+              });
             });
             mui.back();
           }

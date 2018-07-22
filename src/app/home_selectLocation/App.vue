@@ -9,7 +9,6 @@
         .oldSelect-group
           span.border-box(v-for="item in oldSelects" @tap="selectLocationOld(item.province,item.city,item.district)") {{item.province}}{{item.city}}{{item.district}}
       .indexed-list
-
 </template>
 <style lang="stylus">
   @import "selectLocation.styl"
@@ -20,6 +19,7 @@
   import {lsKey, ssKey} from '../../assets/js/locationStorage.js'
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import myMethods from '../../assets/js/methods'
 
   export default {
     name: 'selectlocation',
@@ -63,18 +63,19 @@
         data.forEach((item) => {
           provinceData = {
             text: item.name,
-            value: item.code,
+            value: item.name,
             children: [],
           };
           item.city.forEach((item) => {
             cityData = {
               text: item.name,
-              value: item.code,
+              value: item.name,
               children: [],
             };
             item.district.forEach((item) => {
               districtData = {
                 text: item.name,
+                value: item.name,
               };
               cityData.children.push(districtData);
             });
@@ -84,6 +85,16 @@
         });
         let vueThis = this;
         this.picker.setData(setData);
+        let province = localStorage.getItem(lsKey.locationProvince);
+        let city = localStorage.getItem(lsKey.locationCity) || '';
+        let district = localStorage.getItem(lsKey.locationDistrict) || '';
+        this.picker.pickers[0].setSelectedValue(province);
+        this.picker.pickers[1].setSelectedValue(city || '全省');
+        if(city !== '全省'){
+          this.picker.pickers[2].setSelectedValue(district || '全市');
+        }else {
+          this.picker.pickers[2].setSelectedValue('全省');
+        }
         this.picker.show((res)=>{
           console.log(res);
           vueThis.province = res[0].text;
@@ -138,10 +149,12 @@
         localStorage.setItem(lsKey.locationOldSelect, JSON.stringify(this.oldSelects));
         mui.plusReady(() => {
           let view = plus.webview.getWebviewById('home');
-          mui.fire(view, 'changeLocation', {
-            province: province,
-            city: city,
-            district: district,
+          myMethods.muiFireLock(view,()=>{
+            mui.fire(view, 'changeLocation', {
+              province: province,
+              city: city,
+              district: district,
+            });
           });
           vueThis.picker.dispose();
           mui.back();
@@ -154,10 +167,12 @@
         localStorage.setItem(lsKey.locationCity, city);
         localStorage.setItem(lsKey.locationDistrict, district);
         let view = plus.webview.getWebviewById('home');
-        mui.fire(view, 'changeLocation', {
-          province: province,
-          city: city,
-          district: district,
+        myMethods.muiFireLock(view,()=>{
+          mui.fire(view, 'changeLocation', {
+            province: province,
+            city: city,
+            district: district,
+          });
         });
         this.picker.dispose();
         mui.back();

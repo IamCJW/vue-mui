@@ -200,15 +200,15 @@
 	Picker.prototype.startInertiaScroll = function(event) {
 		var self = this;
 		var point = event.changedTouches ? event.changedTouches[0] : event;
-		/** 
+		/**
 		 * 缓动代码
 		 */
 		var nowTime = event.timeStamp || Date.now();
-		var v = (point.pageY - self.lastMoveStart) / (nowTime - self.lastMoveTime); //最后一段时间手指划动速度  
-		var dir = v > 0 ? -1 : 1; //加速度方向  
+		var v = (point.pageY - self.lastMoveStart) / (nowTime - self.lastMoveTime); //最后一段时间手指划动速度
+		var dir = v > 0 ? -1 : 1; //加速度方向
 		var deceleration = dir * 0.0006 * -1;
-		var duration = Math.abs(v / deceleration); // 速度消减至0所需时间  
-		var dist = v * duration / 2; //最终移动多少 
+		var duration = Math.abs(v / deceleration); // 速度消减至0所需时间
+		var dist = v * duration / 2; //最终移动多少
 		var startAngle = self.list.angle;
 		var distAngle = self.calcAngle(dist) * dir;
 		//----
@@ -270,21 +270,20 @@
 		self.triggerChange();
 	};
 
-	Picker.prototype.triggerChange = function(force) {
-		var self = this;
-		setTimeout(function() {
-			var index = self.getSelectedIndex();
-			var item = self.items[index];
-			if ($.trigger && (index != self.lastIndex || force === true)) {
-				$.trigger(self.holder, 'change', {
-					"index": index,
-					"item": item
-				});
-				//console.log('change:' + index);
-			}
-			self.lastIndex = index;
-			typeof force === 'function' && force();
-		}, 0);
+	Picker.prototype.triggerChange = function(callback) {
+    var self = this;
+    var index = self.getSelectedIndex();
+    var item = self.items[index];
+
+    if(index != self.lastIndex) {
+      $.trigger(self.holder, 'change', {
+        "index": index,
+        "item": item
+      });
+    }
+    self.lastIndex = index;
+    typeof callback === 'function' && callback();
+
 	};
 
 	Picker.prototype.correctAngle = function(angle) {

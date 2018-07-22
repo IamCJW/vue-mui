@@ -147,11 +147,15 @@
                 plus.storage.setItem(plusKey.state, "true");
                 let view = plus.webview.getWebviewById('me');
                 let viewMes = plus.webview.getWebviewById('message');
-                mui.fire(viewMes, 'loginSuccess', {
-                  msg: '登录成功'
+                myMethods.muiFireLock(view,()=>{
+                  mui.fire(view, 'loginSuccess', {
+                    msg: '登录成功'
+                  });
                 });
-                mui.fire(view, 'loginSuccess', {
-                  msg: '登录成功'
+                myMethods.muiFireLock(viewMes,()=>{
+                  mui.fire(viewMes, 'loginSuccess', {
+                    msg: '登录成功'
+                  });
                 });
                 plus.webview.currentWebview().close();
               });
@@ -179,6 +183,7 @@
               }
             }
             if (!sever.authResult) {
+              console.log(JSON.stringify(sever));
               sever.login(function (e) {
                 sever.getUserInfo(function (e) {
                   vueThis.oauthDo(type, sever)
@@ -186,6 +191,7 @@
                   mui.toast('获取用户信息失败');
                 });
               }, function (e) {
+                vueThis.oauthDo(type, sever)
                 mui.toast('登录认证失败');
               });
             } else {
@@ -201,6 +207,9 @@
         } else {
           this.clientid = plus.push.getClientInfo().clientid;
           plus.storage.setItem(plusKey.clientid, this.clientid);
+        }
+        if(!this.clientid){
+          this.getClientid();
         }
       },
       //第三方登录操作
@@ -232,11 +241,15 @@
                   plus.storage.setItem(plusKey.state, "true");
                   let view = plus.webview.getWebviewById('me');
                   let viewMes = plus.webview.getWebviewById('message');
-                  mui.fire(viewMes, 'loginSuccess', {
-                    msg: '登录成功'
+                  myMethods.muiFireLock(view,()=>{
+                    mui.fire(view, 'loginSuccess', {
+                      msg: '登录成功'
+                    });
                   });
-                  mui.fire(view, 'loginSuccess', {
-                    msg: '登录成功'
+                  myMethods.muiFireLock(viewMes,()=>{
+                    mui.fire(viewMes, 'loginSuccess', {
+                      msg: '登录成功'
+                    });
                   });
                   plus.webview.currentWebview().close();
                 },
@@ -246,7 +259,9 @@
                     id: 'login_other'
                   });
                   let detailPage = plus.webview.getWebviewById('login_other');
-                  mui.fire(detailPage, 'getData', opts);
+                  myMethods.muiFireLock(detailPage,()=>{
+                    mui.fire(detailPage, 'getData', opts);
+                  });
                   mui.openWindow('login_other');
                 }
               });
@@ -263,11 +278,15 @@
               plus.storage.setItem(plusKey.state, "true");
               let view = plus.webview.getWebviewById('me');
               let viewMes = plus.webview.getWebviewById('message');
-              mui.fire(viewMes, 'loginSuccess', {
-                msg: '登录成功'
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view, 'loginSuccess', {
+                  msg: '登录成功'
+                });
               });
-              mui.fire(view, 'loginSuccess', {
-                msg: '登录成功'
+              myMethods.muiFireLock(viewMes,()=>{
+                mui.fire(viewMes, 'loginSuccess', {
+                  msg: '登录成功'
+                });
               });
               plus.webview.currentWebview().close();
             },
@@ -277,7 +296,9 @@
                 id: 'login_other'
               });
               let detailPage = plus.webview.getWebviewById('login_other');
-              mui.fire(detailPage, 'getData', opts);
+              myMethods.muiFireLock(detailPage,()=>{
+                mui.fire(detailPage, 'getData', opts);
+              });
               mui.openWindow('login_other');
             }
           });

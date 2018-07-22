@@ -158,11 +158,15 @@
                 plus.storage.setItem(plusKey.state, "true");
                 let view = plus.webview.getWebviewById('me');
                 let viewMes = plus.webview.getWebviewById('message');
-                mui.fire(viewMes, 'loginSuccess', {
-                  msg: '登录成功'
+                myMethods.muiFireLock(view,()=>{
+                  mui.fire(view, 'loginSuccess', {
+                    msg: '登录成功'
+                  });
                 });
-                mui.fire(view, 'loginSuccess', {
-                  msg: '登录成功'
+                myMethods.muiFireLock(viewMes,()=>{
+                  mui.fire(viewMes, 'loginSuccess', {
+                    msg: '登录成功'
+                  });
                 });
                 let loginView = plus.webview.getWebviewById('login');
                 let registView = plus.webview.getWebviewById('regist');
@@ -183,15 +187,15 @@
       },
       //获取应用唯一标识
       getClientid() {
-        let vueThis = this;
-        mui.plusReady(() => {
-          if (plus.storage.getItem(plusKey.clientid)) {
-            vueThis.clientid = plus.storage.getItem(plusKey.clientid);
-          } else {
-            vueThis.clientid = plus.push.getClientInfo().clientid;
-            plus.storage.setItem(plusKey.clientid, vueThis.clientid);
-          }
-        });
+        if (plus.storage.getItem(plusKey.clientid)) {
+          this.clientid = plus.storage.getItem(plusKey.clientid);
+        } else {
+          this.clientid = plus.push.getClientInfo().clientid;
+          plus.storage.setItem(plusKey.clientid, this.clientid);
+        }
+        if(!this.clientid){
+          this.getClientid();
+        }
       }
     }
   }

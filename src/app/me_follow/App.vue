@@ -132,35 +132,11 @@
     },
     mounted() {
       let vueThis = this;
-      this.getData();
+      window.addEventListener('followChange',()=>{
+        this.getData();
+      });
       window.addEventListener('getData',()=>{
         this.getData();
-        mui.plusReady(()=>{
-          mui.preload({
-            url: './builderDetail.html',
-            id: 'builderDetail'
-          });
-          mui.preload({
-            url: './companyDetail.html',
-            id: 'companyDetail'
-          });
-          mui.preload({
-            url: './companyDetail_own.html',
-            id: 'companyDetail_own'
-          });
-          mui.preload({
-            url: './searchCompany.html',
-            id: 'searchCompany'
-          });
-          mui.preload({
-            url: './searchBuilder.html',
-            id: 'searchBuilder'
-          });
-          mui.preload({
-            url: './searchCompany_own.html',
-            id: 'searchCompany_own'
-          });
-        })
       });
       mui.init({
         pullRefresh: [{
@@ -308,16 +284,7 @@
         },'div')
       },
       openWindow:myMethods.openWindow,
-      openDetail(url,data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openDetail:myMethods.openDetail,
     }
   }
 </script>

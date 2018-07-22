@@ -4,7 +4,7 @@
       .cell-row.search-wrapper
         .search-box
           i.iconfont.icon-enterprise
-          input(placeholder="请输入企业全称并选择", @input="searchChange", @change="searchChange", v-model="searchMsg")
+          input(type="text",placeholder="请输入企业全称并选择", @input="searchChange", @change="searchChange", v-model="searchMsg")
           i.iconfont.icon-shutdown(v-show="clearSearchMsgFlag", @tap="clearSearchMsg")
       .none(v-if="!companyList[0]")
         i.iconfont.icon-enterprise
@@ -80,7 +80,9 @@
                 mui.toast('企业绑定成功，已为您匹配企业资质~');
                 let viewData = plus.webview.getWebviewById('userData');
                 let viewThis = plus.webview.getWebviewById('userData_company');
-                mui.fire(viewData,'changeCompanyData',{});
+                myMethods.muiFireLock(viewData,()=>{
+                  mui.fire(viewData,'changeCompanyData',{});
+                });
                 viewThis.close();
               }
             })

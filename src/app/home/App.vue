@@ -30,7 +30,7 @@
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
                 warn(icon='icon-404', msg='未有订阅消息~', :show="!pageIndex0.data.length")
-                .pro-group(v-show="pageIndex0.data.length")
+                .pro-group(v-if="pageIndex0.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="(item,index) in pageIndex0.data", :key="index" , @tap="openDetail('detail',{rid:item.rid,type:1})")
                       .pro-time
@@ -40,7 +40,10 @@
                         .pro-main
                           .pro-name.mui-ellipsis-2 {{item.name}}
                           .pro-main-sign.mui-ellipsis
-                            span.pro-style(v-for="tender_type in item.tender_types",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
+                            span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
+                              i.iconfont.icon-INTEGRATION
+                              span &nbsp;一体化
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
                               i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
@@ -60,7 +63,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 warn(icon='icon-404', msg='该区域暂无招标公告~', :show="!pageIndex1.data.length")
-                .pro-group(v-show="pageIndex1.data.length")
+                .pro-group(v-if="pageIndex1.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="item in pageIndex1.data", :key="item.rid" ,@tap="openDetail('detail',{rid:item.rid,type:1})")
                       .pro-time
@@ -70,7 +73,10 @@
                         .pro-main
                           .pro-name.mui-ellipsis-2 {{item.name}}
                           .pro-main-sign.mui-ellipsis
-                            span.pro-style(v-for="tender_type in item.tender_types",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
+                            span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
+                              i.iconfont.icon-INTEGRATION
+                              span &nbsp;一体化
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
                               i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
@@ -90,7 +96,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 warn(icon='icon-404', msg='该区域暂无中标消息~', :show="!pageIndex2.data.length")
-                .pro-group(v-show="pageIndex2.data.length")
+                .pro-group(v-if="pageIndex2.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="(item,index) in pageIndex2.data", :key="index"  , @tap="openDetail('detail',{rid:item.rid,type:2})")
                       .pro-time
@@ -100,7 +106,10 @@
                         .pro-main
                           .pro-name.mui-ellipsis-2 {{item.name}}
                           .pro-main-sign.mui-ellipsis
-                            span.pro-style(v-for="tender_type in item.tender_types",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
+                            span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
+                              i.iconfont.icon-INTEGRATION
+                              span &nbsp;一体化
+                            span.pro-style(v-for="tender_type in item.tender_types",v-if="item.tender_types.indexOf('一体化') === -1",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
                               i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.company_name}}
@@ -120,7 +129,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 warn(icon='icon-404', msg='该区域暂无更多资讯~', :show="!pageIndex3.data.length")
-                .pro-group(v-show="pageIndex3.data.length")
+                .pro-group(v-if="pageIndex3.data.length")
                   transition-group(name='domItem')
                     .pro-item.more(v-for='(item,index) in pageIndex3.data', :key="index", @tap="openDetail('detail',{rid:item.rid,type:3})")
                       .pro-time
@@ -244,21 +253,21 @@
         },
         //招标筛选数据
         filterSelect1: {
-          location: {province: '', city: '', district: ''},
+          province: '', city: '', district: '',
           amount_dict: '',
           construction_dict: '',
           info_type: '',
           tender_dict: ''
         },
         filterSelect2: {
-          location: {province: '', city: '', district: ''},
+          province: '', city: '', district: '',
           amount_dict: '',
           construction_dict: '',
           info_type: '',
           tender_dict: ''
         },
         filterSelect3: {
-          location: {province: '', city: '', district: ''},
+          province: '', city: '', district: '',
           amount_dict: '',
           construction_dict: '',
           info_type: '',
@@ -378,9 +387,10 @@
           default:
             this.filterSelect[key] = value;
         }
+        this.filterSubmit('open');
       },
       //条件提交
-      filterSubmit() {
+      filterSubmit(show) {
         let filterSelect = this.filterSelect;
         if (filterSelect.location.province === '') {
           mui.toast('城市不能为空');
@@ -404,13 +414,16 @@
               data: filterData,
               success: (data) => {
                 this.pageIndex1.data = data.result;
-                this.filterFlag = false;
                 this.filterSelect1 = filterData;
+                console.log(this.filterSelect1);
                 console.log(JSON.stringify(this.filterSelect1));
+                if (show === 'open') return;
+                this.filterFlag = false;
               },
               noFind: (data) => {
                 this.filterSelect1 = filterData;
                 this.pageIndex1.data = [];
+                if (show === 'open') return;
                 this.filterFlag = false;
               }
             });
@@ -422,11 +435,13 @@
               success: (data) => {
                 this.filterSelect2 = filterData;
                 this.pageIndex2.data = data.result;
+                if (show === 'open') return;
                 this.filterFlag = false;
               },
               noFind: (data) => {
                 this.filterSelect2 = filterData;
                 this.pageIndex2.data = [];
+                if (show === 'open') return;
                 this.filterFlag = false;
               }
             });
@@ -438,11 +453,13 @@
               success: (data) => {
                 this.filterSelect3 = filterData;
                 this.pageIndex3.data = data.result;
+                if (show === 'open') return;
                 this.filterFlag = false;
               },
               noFind: (data) => {
                 this.filterSelect3 = filterData;
                 this.pageIndex3.data = [];
+                if (show === 'open') return;
                 this.filterFlag = false;
               }
             });
@@ -474,17 +491,7 @@
           vueThis.openNViewPreload(url);
         })
       },
-      openDetail(url, data) {
-        mui.plusReady(function () {
-          mui.preload({
-            url: `./${url}.html`,
-            id: url
-          });
-          let detailPage = plus.webview.getWebviewById(url);
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openDetail: myMethods.openDetail,
       //置顶
       jumpToTop(key) {
         mui(`#${key}`).pullRefresh().scrollTo(0, 0, 100);
@@ -575,8 +582,8 @@
           });
         } else {
           this.province = localStorage.getItem(lsKey.locationProvince);
-          this.city = localStorage.getItem(lsKey.locationCity);
-          this.district = localStorage.getItem(lsKey.locationDistrict);
+          this.city = localStorage.getItem(lsKey.locationCity) || '';
+          this.district = localStorage.getItem(lsKey.locationDistrict) || '';
           if (this.district === '' && this.city === '') {
             this.localLocation = `${this.province}`
           } else if (this.district === '' && this.city !== '') {
@@ -609,10 +616,49 @@
       },
       //筛选弹窗
       popoutFilter(station, isMore) {
-        this.initFilterLocation();
         this.filterFlag = station;
         this.isMore = isMore;
-        if (!station) return
+        if (station) {
+          if (this.pageKey === 1) {
+            this.filterSelect = {
+              location: {
+                province: this.filterSelect1.province,
+                city: this.filterSelect1.city || "全省",
+                district: this.filterSelect1.district || "全市"
+              },
+              amount_dict: this.filterSelect1.amount_type,
+              construction_dict: this.filterSelect1.construction_type,
+              info_type: this.filterSelect1.info_type,
+              tender_dict: this.filterSelect1.tender_type
+            };
+          } else if (this.pageKey === 2) {
+            this.filterSelect = {
+              location: {
+                province: this.filterSelect2.province,
+                city: this.filterSelect2.city || "全省",
+                district: this.filterSelect2.district || "全市"
+              },
+              amount_dict: this.filterSelect2.amount_type,
+              construction_dict: this.filterSelect2.construction_type,
+              info_type: this.filterSelect2.info_type,
+              tender_dict: this.filterSelect2.tender_type
+            };
+            console.log(JSON.stringify(this.filterSelect2));
+            console.log(JSON.stringify(this.filterSelect));
+          } else {
+            this.filterSelect = {
+              location: {
+                province: this.filterSelect3.province,
+                city: this.filterSelect3.city || "全省",
+                district: this.filterSelect3.district || "全市"
+              },
+              amount_dict: this.filterSelect3.amount_type,
+              construction_dict: this.filterSelect3.construction_type,
+              info_type: this.filterSelect3.info_type,
+              tender_dict: this.filterSelect3.tender_type
+            };
+          }
+        }
       },
       //左滑事件
       contentSwipeleft() {
@@ -690,16 +736,7 @@
                 vueThis.pageIndex1.pageNum = 1;
                 http({
                   url: api.tender,
-                  data: {
-                    amount_type: vueThis.filterSelect1.amount_dict,
-                    city: vueThis.filterSelect1.city,
-                    construction_type: vueThis.filterSelect1.construction_dict,
-                    cur_page: 1,
-                    district: vueThis.filterSelect1.district,
-                    province: vueThis.filterSelect1.province,
-                    tender_type: vueThis.filterSelect1.tender_dict,
-                    info_type: vueThis.filterSelect1.info_type,
-                  },
+                  data: vueThis.filterSelect1,
                   success: (data) => {
                     vueThis.top2 = false;
                     vueThis.pageIndex1.data = data.result;
@@ -719,16 +756,7 @@
                 vueThis.pageIndex1.pageNum += 1;
                 http({
                   url: api.tender,
-                  data: Object.assign({
-                    amount_type: vueThis.filterSelect1.amount_dict,
-                    city: vueThis.filterSelect1.city,
-                    construction_type: vueThis.filterSelect1.construction_dict,
-                    cur_page: 1,
-                    district: vueThis.filterSelect1.district,
-                    province: vueThis.filterSelect1.province,
-                    tender_type: vueThis.filterSelect1.tender_dict,
-                    info_type: vueThis.filterSelect1.info_type,
-                  }, {cur_page: vueThis.pageIndex1.pageNum}),
+                  data: Object.assign(vueThis.filterSelect1, {cur_page: vueThis.pageIndex1.pageNum}),
                   success: (data) => {
                     if (data.total_page <= vueThis.pageIndex1.pageNum) {
                       this.endPullupToRefresh(true);
@@ -753,16 +781,7 @@
                 vueThis.pageIndex2.pageNum = 1;
                 http({
                   url: api.tender_success,
-                  data: {
-                    amount_type: vueThis.filterSelect2.amount_dict,
-                    city: vueThis.filterSelect2.city,
-                    construction_type: vueThis.filterSelect2.construction_dict,
-                    cur_page: 1,
-                    district: vueThis.filterSelect2.district,
-                    province: vueThis.filterSelect2.province,
-                    tender_type: vueThis.filterSelect2.tender_dict,
-                    info_type: vueThis.filterSelect2.info_type,
-                  },
+                  data: vueThis.filterSelect2,
                   success: (data) => {
                     vueThis.top3 = false;
                     vueThis.pageIndex2.data = data.result;
@@ -782,16 +801,7 @@
                 vueThis.pageIndex2.pageNum += 1;
                 http({
                   url: api.tender_success,
-                  data: Object.assign({
-                    amount_type: vueThis.filterSelect2.amount_dict,
-                    city: vueThis.filterSelect2.city,
-                    construction_type: vueThis.filterSelect2.construction_dict,
-                    cur_page: 1,
-                    district: vueThis.filterSelect2.district,
-                    province: vueThis.filterSelect2.province,
-                    tender_type: vueThis.filterSelect2.tender_dict,
-                    info_type: vueThis.filterSelect2.info_type,
-                  }, {cur_page: vueThis.pageIndex2.pageNum}),
+                  data: Object.assign(vueThis.filterSelect2, {cur_page: vueThis.pageIndex2.pageNum}),
                   success: (data) => {
                     if (data.total_page <= vueThis.pageIndex2.pageNum) {
                       this.endPullupToRefresh(true);
@@ -816,16 +826,7 @@
                 vueThis.pageIndex3.pageNum = 1;
                 http({
                   url: api.tender_more,
-                  data: {
-                    amount_type: vueThis.filterSelect3.amount_dict,
-                    city: vueThis.filterSelect3.city,
-                    construction_type: vueThis.filterSelect3.construction_dict,
-                    cur_page: 1,
-                    district: vueThis.filterSelect3.district,
-                    province: vueThis.filterSelect3.province,
-                    tender_type: vueThis.filterSelect3.tender_dict,
-                    info_type: vueThis.filterSelect3.info_type,
-                  },
+                  data: vueThis.filterSelect3,
                   success: (data) => {
                     vueThis.top4 = false;
                     vueThis.pageIndex3.data = data.result;
@@ -845,16 +846,7 @@
                 vueThis.pageIndex3.pageNum += 1;
                 http({
                   url: api.tender_more,
-                  data: Object.assign({
-                    amount_type: vueThis.filterSelect3.amount_dict,
-                    city: vueThis.filterSelect3.city,
-                    construction_type: vueThis.filterSelect3.construction_dict,
-                    cur_page: 1,
-                    district: vueThis.filterSelect3.district,
-                    province: vueThis.filterSelect3.province,
-                    tender_type: vueThis.filterSelect3.tender_dict,
-                    info_type: vueThis.filterSelect3.info_type,
-                  }, {cur_page: vueThis.pageIndex3.pageNum}),
+                  data: Object.assign(vueThis.filterSelect3, {cur_page: vueThis.pageIndex3.pageNum}),
                   success: (data) => {
                     if (data.total_page <= vueThis.pageIndex3.pageNum) {
                       this.endPullupToRefresh(true);
@@ -906,9 +898,7 @@
           plus.navigator.setFullscreen(false);
           plus.navigator.closeSplashscreen();
         }
-
         vueThis.loginState = plus.storage.getItem(plusKey.token);
-
       });
       this.muiInit()
     },
@@ -926,7 +916,7 @@
         let day = parseInt(leftTime / 1000 / 60 / 60 / 24, 10);
         let countDown;
         if (day > 0) {
-          countDown = `剩余${day+1}天截止`
+          countDown = `剩余${day + 1}天截止`
         } else if (day === 0) {
           countDown = '今天'
         } else if (day < 0) {

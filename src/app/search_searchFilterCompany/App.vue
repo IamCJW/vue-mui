@@ -118,16 +118,7 @@
       // 跳转页面
       openWindow: myMethods.openWindow,
       //跳转详情
-      openDetail(url,data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~')
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openDetail:myMethods.openDetail,
     },
   }
 </script>

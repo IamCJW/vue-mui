@@ -11,6 +11,9 @@ let lsKey = {
   nationData:'localStorage_naiton_data',//城市数据
   qualify:'localStorage_qualify',//资质数据
   userMobile:'localStorage_user_mobile',//用户绑定手机
+  historySearchCompany:'localStorage_history_search_company',//公司历史搜索
+  historySearchBuilder:'localStorage_history_search_builder',//建筑师历史搜索
+  historySearchProject:'localStorage_history_search_project',//项目历史搜索
 };
 let ssKey = {
   locationProvince: 'localStorage_location_province',//定位的省

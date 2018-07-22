@@ -38,14 +38,14 @@
       switchBox: switchBox,
     },
     mounted() {
-      window.addEventListener('getData',(e)=>{
+      window.addEventListener('getData', (e) => {
         this.subscription = e.detail;
         this.getData();
       });
-      window.addEventListener('chooseCategory',()=>{
+      window.addEventListener('chooseCategory', () => {
         this.getData();
       });
-      window.addEventListener('qualifysUpdata',()=>{
+      window.addEventListener('qualifysUpdata', () => {
         this.getData();
       });
     },
@@ -59,7 +59,7 @@
           url: api.member_qualify,
           success: (data) => {
             this.qualificationData = data;
-            if(this.subscription.id){
+            if (this.subscription.id) {
               this.qualify_info.forEach((item) => {
                 this.$set(this.qualificationSelected, item.rid, item.status);
               });
@@ -88,7 +88,7 @@
           http({
             url: api.member_subscribe,
             method: 'post',
-            dataType:true,
+            dataType: true,
             data: {
               province: this.subscription.province,
               city: this.subscription.city,
@@ -96,25 +96,29 @@
               qualify_info: data,
               id: this.subscription.id
             },
-            success:()=> {
+            success: () => {
               let view = plus.webview.getWebviewById('subscription');
-              mui.fire(view, 'chooseQualification', {
-                msg: '修改成功'
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'chooseQualification', {
+                  msg: '修改成功'
+                });
               });
               mui.back();
             }
           })
         } else {
           let view = plus.webview.getWebviewById('subscription_add');
-          mui.fire(view, 'chooseQualification', {
-            data: data,
-            selectedQualify: this.qualificationSelected
+          myMethods.muiFireLock(view,()=>{
+            mui.fire(view, 'chooseQualification', {
+              data: data,
+              selectedQualify: this.qualificationSelected
+            });
           });
           mui.back();
         }
       },
-      openWindow:myMethods.openWindow,
-      openNViewPreload:myMethods.openNViewPreload,
+      openWindow: myMethods.openWindow,
+      openNViewPreload: myMethods.openNViewPreload,
     }
   }
 </script>

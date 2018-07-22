@@ -55,7 +55,7 @@
                         span(v-for="sign in item.province_list")
                           i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
                           span {{sign.name}}
-          .content-page(@swiperight="contentSwiperight()", @swipeleft="openTabNav('me',4)")
+          .content-page(@swiperight="contentSwiperight()", @swipeleft="openTabNav('me',3)")
             ul.media-view
               li.media
                 .media-content.iconfont.icon-right
@@ -83,7 +83,7 @@
                 li.media(v-for="item in categoryData")
                   .media-content
                     div.media-value {{item.one}}-{{item.two}}-{{item.three}}-{{item.four}}
-              ul.media-view
+              ul.media-view(v-if="categoryData.length > 1")
                 li.media
                   .media-content
                     div.media-value.select-group
@@ -93,6 +93,16 @@
                       div(@tap="categorySelect(2)")
                         i.iconfont(:class="[conditionCategory===2?'icon-selectss':'icon-CIRCLE']")
                         span 全部符合
+            ul.media-view.border-none
+              li.media
+                .media-content
+                  div.media-value.select-group
+                    div(@tap="qualifyFilterTypeSelect(2)")
+                      i.iconfont(:class="[qualify_filter_type===2?'icon-selectss':'icon-CIRCLE']")
+                      span 包含本级以上
+                    div(@tap="qualifyFilterTypeSelect(1)")
+                      i.iconfont(:class="[qualify_filter_type===1?'icon-selectss':'icon-CIRCLE']")
+                      span 符合本级
             button.search(@tap="search") 查询
 </template>
 <style lang="stylus" scoped>
@@ -112,12 +122,12 @@
       return {
         pageFlag: 0,
         companyData: {
-          result:[],
-          cur_page:1
+          result: [],
+          cur_page: 1
         },//建筑企业信息
         builderData: {
-          result:[],
-          cur_page:1
+          result: [],
+          cur_page: 1
         },//建造师信息
         province: {//省份选择
           name: '',
@@ -125,9 +135,10 @@
         },
         condition: 1,//企业要求
         conditionCategory: 1,//资质设置
+        qualify_filter_type: 2,//本级
         categoryData: [],
-        errorData:false,
-        firstIn:true,
+        errorData: false,
+        firstIn: true,
       }
     },
     components: {
@@ -135,15 +146,15 @@
     },
     mounted() {
       this.getData();
-      window.addEventListener('getData',()=>{
+      window.addEventListener('getData', () => {
         this.firstIn = false;
-        if(this.firstIn){
+        if (this.firstIn) {
           this.getData();
         }
       });
       let vueThis = this;
       mui.plusReady(() => {
-        myMethods.NVpreload(['selectProvince','searchFilterCompany']);
+        myMethods.NVpreload(['selectProvince', 'searchFilterCompany']);
       });
       mui.init({
         pullRefresh: [{
@@ -212,7 +223,7 @@
             this.$refs.loading.hide();
             this.companyData = data;
           },
-          error:(data)=>{
+          error: (data) => {
             this.$refs.loading.hide();
             this.errorData = true;
           }
@@ -230,9 +241,12 @@
       categorySelect(key) {
         this.conditionCategory = key
       },
+      qualifyFilterTypeSelect(key) {
+        this.qualify_filter_type = key;
+      },
       openWindow: myMethods.openWindow,//跳转详情
-      openTabNav :myMethods.openTabNav,
-      openDetail:myMethods.openDetail,
+      openTabNav: myMethods.openTabNav,
+      openDetail: myMethods.openDetail,
       //页面切换
       jumpTo(key) {
         this.pageFlag = key;
@@ -252,22 +266,34 @@
         let key = this.pageFlag;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
-      },//查询事件
+      },
+      //查询事件
       search() {
         let data = {
           province: this.province.name,
           company_type: this.condition,
           filter_type: this.conditionCategory,
+          qualify_filter_type: this.qualify_filter_type,
           qualify_filter: [],
         };
+        if (data.province.name === '') {
+          mui.toast('请选择筛选城市');
+          return
+        }
+        if (this.categoryData.length === 0) {
+          mui.toast('请选择资质条件');
+          return
+        }
         let categoryData = this.categoryData;
         categoryData.forEach((item, index) => {
           data.qualify_filter[index] = {
-            rid:item.id
+            rid: item.id
           }
         });
         let detailPage = plus.webview.getWebviewById('searchFilterCompany');
-        mui.fire(detailPage, 'getData', data);
+        myMethods.muiFireLock(detailPage, () => {
+          mui.fire(detailPage, 'getData', data);
+        });
         myMethods.openWindow('searchFilterCompany');
       }
     }

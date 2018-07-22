@@ -39,6 +39,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import {lsKey} from "../../assets/js/locationStorage";
+  import myMethods from "../../assets/js/methods";
 
   export default {
     name: 'selectQualify',
@@ -176,9 +177,11 @@
             this.getData();
             mui.toast('资质添加成功');
             let view = plus.webview.getWebviewById('subscription_selectQualification');
-            mui.fire(view,'qualifysUpdata',{
-              msg:'资质数据更新'
-            })
+            myMethods.muiFireLock(view,()=>{
+              mui.fire(view,'qualifysUpdata',{
+                msg:'资质数据更新'
+              })
+            });
           },
           error: (data) => {
             mui.toast(data.msg);

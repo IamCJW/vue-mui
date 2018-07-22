@@ -113,8 +113,10 @@
           method: 'post',
           success: () => {
             let view = plus.webview.currentWebview().opener();
-            mui.fire(view, 'editSuccess', {
-              msg: '新增成功'
+            myMethods.muiFireLock(view,()=>{
+              mui.fire(view, 'editSuccess', {
+                msg: '新增成功'
+              });
             });
             mui.back();
           }

@@ -20,6 +20,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import {lsKey} from "../../assets/js/locationStorage";
+  import myMethods from '../../assets/js/methods'
 
   export default {
     name: 'selectlocation',
@@ -94,11 +95,13 @@
       selectLocation(name, shortName) {
         this.province = name;
         let view = plus.webview.currentWebview().opener();
-        mui.fire(view, 'chooseProvince', {
-          province: {
-            name: name,
-            shortName: shortName
-          }
+        myMethods.muiFireLock(view,()=>{
+          mui.fire(view, 'chooseProvince', {
+            province: {
+              name: name,
+              shortName: shortName
+            }
+          });
         });
         mui.back()
       },

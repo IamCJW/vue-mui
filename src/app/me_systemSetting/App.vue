@@ -126,9 +126,13 @@
         mui.toast('清理完毕');
         mui.plusReady(() => {
           let homeView = plus.webview.getWebviewById('home');
-          mui.fire(homeView, 'localStorageClear', {msg: '缓存被清理'})
+          myMethods.muiFireLock(homeView,()=>{
+            mui.fire(homeView, 'localStorageClear', {msg: '缓存被清理'})
+          });
           let selectLocation = plus.webview.getWebviewById('selectLocation');
-          mui.fire(selectLocation, 'localStorageClear', {msg: '缓存被清理'})
+          myMethods.muiFireLock(selectLocation,()=>{
+            mui.fire(selectLocation, 'localStorageClear', {msg: '缓存被清理'})
+          });
         })
       },
       //获取本地缓存
@@ -170,6 +174,7 @@
             plus.storage.removeItem(plusKey.token);
             plus.storage.removeItem(plusKey.state);
             plus.oauth.getServices(function (services) {
+              console.log(JSON.stringify(services));
               for (let i in services) {
                 let s = services[i];
                 if (s.authResult) {
@@ -185,11 +190,15 @@
             });
             let view = plus.webview.getWebviewById('me');
             let homeView = plus.webview.getWebviewById('home');
-            mui.fire(view, 'loginOut', {
-              msg: '退出登录成功~'
+            myMethods.muiFireLock(view,()=>{
+              mui.fire(view, 'loginOut', {
+                msg: '退出登录成功~'
+              });
             });
-            mui.fire(homeView, 'loginOut', {
-              msg: '退出登录成功~'
+            myMethods.muiFireLock(homeView,()=>{
+              mui.fire(homeView, 'loginOut', {
+                msg: '退出登录成功~'
+              });
             });
             plus.webview.currentWebview().close();
           },
@@ -216,6 +225,7 @@
           value: '120',
           text: '两小时'
         }]);
+        userPicker.pickers[0].setSelectedValue[vueThis.notify_type];
         userPicker.show(function (items) {
           http({
             url: api.member_system_config,

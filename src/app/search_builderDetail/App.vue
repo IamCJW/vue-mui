@@ -180,7 +180,11 @@
             },
             success: () => {
               this.followed = !this.followed;
-              mui.toast('取消成功')
+              mui.toast('取消成功');
+              let view = plus.webview.getWebviewById('follow');
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'followChange',{})
+              })
             }
           })
         } else {
@@ -193,21 +197,16 @@
             },
             success: () => {
               this.followed = !this.followed;
-              mui.toast('关注成功')
+              mui.toast('关注成功');
+              let view = plus.webview.getWebviewById('follow');
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'followChange',{})
+              })
             }
           })
         }
       },
-      openDetail(url, data) {
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          if (!detailPage) {
-            mui.toast('目标正在初始化，请稍候~');
-          }
-          mui.fire(detailPage, 'getData', data);
-          myMethods.openWindow(url);
-        });
-      },
+      openDetail:myMethods.openDetail,
     }
   }
 </script>

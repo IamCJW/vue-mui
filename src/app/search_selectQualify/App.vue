@@ -46,6 +46,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import {lsKey} from "../../assets/js/locationStorage";
+  import myMethods from "../../assets/js/methods";
 
   export default {
     name: 'selectQualify',
@@ -53,6 +54,7 @@
       return {
         selectFlag: false,
         selectedArr: [],
+        selectedArrOver:[],
         qualifyFlag: '1',
         qualifyList: {
           1: '建筑业施工企业资质',
@@ -137,16 +139,14 @@
       },
       //删除///////////////////////
       deleteArr(index, id) {
-        mui.confirm('确认删除该资质？', ' ', ['取消', '确定'], (e) => {
-          if (e.index === 1) {
-            this.selectedArr.splice(index, 1);
-          }
-        },'div');
+        this.selectedArr.splice(index, 1);
+        this.selectedArrOver.splice(index, 1);
       }
       ,
       //删除全部//////////////////////
       deleteAll() {
         this.selectedArr = [];
+        this.selectedArrOver= [];
       }
       ,//确定回调函数
       selectSuccess(items) {
@@ -158,8 +158,9 @@
           four: items[2].text,
           id: items[2].value,
         };
-        if (JSON.stringify(this.selectedArr).indexOf(JSON.stringify(item)) === -1) {
+        if (JSON.stringify(this.selectedArrOver).indexOf(JSON.stringify(items[1].text)) === -1) {
           this.selectedArr.unshift(item);
+          this.selectedArrOver.unshift(items[1].text);
         } else {
           mui.toast('请勿重复添加')
         }
@@ -167,8 +168,10 @@
       submitBack() {
         let categoryData = this.selectedArr;
         let view = plus.webview.currentWebview().opener();
-        mui.fire(view, 'chooseCategory', {
-          categoryData: categoryData
+        myMethods.muiFireLock(view,()=>{
+          mui.fire(view, 'chooseCategory', {
+            categoryData: categoryData
+          });
         });
         mui.back();
       }

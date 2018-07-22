@@ -7,6 +7,7 @@ i
 ///////////////////////
 .iconfont
   font-size: .16rem
+  padding-bottom .03rem
 //顶部状态栏////////////////////////////////////////////////////////////////////////
 .header-full
   height .2rem
@@ -38,7 +39,6 @@ header>i,header>span
     background #fff
     border-radius .06rem
     overflow hidden
-    padding-right .45rem
     display-flex()
     flex-align-item(center)
     .iconfont
@@ -48,6 +48,7 @@ header>i,header>span
     input
       border none
       color $text-color-light-x
+      flex-flex(1)
     .icon-shutdown
       position absolute
       right 0
@@ -55,8 +56,6 @@ header>i,header>span
       line-height .35rem
   .search
     font-size .12rem
-.header-nav-search~.mui-content
-  padding-top .44rem
 //常规二级页面头部/////////////////////////////////////////
 .header-nav
   display-flex()
@@ -141,6 +140,8 @@ header>i,header>span
   color $third-color!important
 .text-color-main
   color $main-color!important
+.text-color-assist
+  color $assist-color!important
 /////公共功能列表/////////////
 .media-view
   position: relative;
@@ -155,10 +156,12 @@ header>i,header>span
     overflow: hidden;
     -webkit-touch-callout: none;
     border-bottom $border-default
+    width 100%
     .media-content
       font-size .14rem
       overflow auto
       padding: .11rem .12rem
+      width 100%
       .media-lable
         float left
         color $text-color-light-xx
@@ -265,3 +268,23 @@ header>i,header>span
       i
         margin-right .05rem
         font-size .14rem
+//搜索页的历史查询//////////////////////////////////////////
+.history-header
+  display-flex()
+  flex-justify-content(space-between)
+  flex-align-item(center)
+  padding $cell-left-right-space
+  .history-lable
+    font-size .16rem
+    font-wight 500
+  .history-clear
+    display-flex()
+    flex-align-item(center)
+    font-size .12rem
+    color $text-color-light-xxx
+    border $border-default
+    border-radius 1.05rem
+    padding .03rem .06rem
+.history-content
+  color $text-color-light-xx
+  border-top: none

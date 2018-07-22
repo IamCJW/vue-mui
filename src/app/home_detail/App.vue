@@ -59,10 +59,9 @@
           tr
             td.th 招标人
             td(colspan="3") {{pullMsg.tender_info.tender_name}}
-          tr(v-if="pullMsg.proxy_name === ''")
+          tr(v-if="pullMsg.proxy_name !== ''")
             td.th 招标代理
             td(colspan="3") {{pullMsg.proxy_name}}
-            td
           template(v-for="(item,index) in pullMsg.section_info")
             tr
               td.text-color-main.th(colspan="4") 标段名称:{{item.name}}
@@ -72,10 +71,10 @@
             tr
               td.th 中标金额
               td(colspan="3") {{item.tender_je}}万
-            tr(v-if="item.builder_name === ''")
-              td.th 建造师名称
+            tr(v-if="item.builder_name !== ''")
+              td.th {{pullMsg.tender_info.tender_type === '监理'?'总监':''}}{{pullMsg.tender_info.tender_type === '设计'|| pullMsg.tender_info.tender_type === '勘察' ||pullMsg.tender_info.tender_type === '一体化'?'项目负责人':''}}{{pullMsg.tender_info.tender_type !== '监理'&&pullMsg.tender_info.tender_type !== '设计'&& pullMsg.tender_info.tender_type !== '勘察' &&pullMsg.tender_info.tender_type !== '一体化'?'建造师':''}}
               td.th {{item.builder_name}}
-              td.th 建造师证书
+              td.th 注册证书
               td {{item.certificate_no}}
           tr
             td.th 信息来源
@@ -145,6 +144,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
+  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'detail',
@@ -214,10 +214,18 @@
     },
     mounted() {
       let vueThis = this;
+      this.getData({
+        rid:'19cae2c83730f263c98923d7ce5ee7a8',
+        type:2
+      });
       mui.init({
         beforeback: () => {
           let view = plus.webview.getWebviewById('message');
-          mui.fire(view,'readed',{});
+          myMethods.muiFireLock(view,()=>{
+            if(plus.storage.getItem('station')){
+              mui.fire(view,'readed',{});
+            }
+          });
           return true;
         }
       });
@@ -373,13 +381,14 @@
         });
         mui.plusReady(function () {
           let detailPage = plus.webview.getWebviewById(url);
-          mui.fire(detailPage, 'getData', data);
+          myMethods.muiFireLock(detailPage,()=>{
+            mui.fire(detailPage, 'getData', data);
+          });
           mui.openWindow(url);
         });
       },
       //内容选择
       navSelect(key, rid, type) {
-        console.log(type);
         this.navPage = key;
         switch (type) {
           case 0:
@@ -448,6 +457,10 @@
             success: () => {
               mui.toast('取消关注');
               this.followStatus = !this.followStatus;
+              let view = plus.webview.getWebviewById('follow');
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'followChange',{})
+              })
             }
           })
         } else {
@@ -461,6 +474,10 @@
             success: () => {
               mui.toast('关注成功');
               this.followStatus = !this.followStatus;
+              let view = plus.webview.getWebviewById('follow');
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'followChange',{})
+              })
             }
           })
         }

@@ -177,11 +177,15 @@
         plus.storage.setItem(plusKey.state, "true");
         let view = plus.webview.getWebviewById('me');
         let viewMes = plus.webview.getWebviewById('message');
-        mui.fire(viewMes, 'loginSuccess', {
-          msg: '登录成功'
+        myMethods.muiFireLock(view,()=>{
+          mui.fire(view, 'loginSuccess', {
+            msg: '登录成功'
+          });
         });
-        mui.fire(view, 'loginSuccess', {
-          msg: '登录成功'
+        myMethods.muiFireLock(viewMes,()=>{
+          mui.fire(viewMes, 'loginSuccess', {
+            msg: '登录成功'
+          });
         });
         let loginView = plus.webview.getWebviewById('login');
         let login_otherView = plus.webview.getWebviewById('login_other');

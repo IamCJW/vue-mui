@@ -15,7 +15,7 @@
           .media-content
             .media-lable 姓名
             .media-value
-              input(placeholder='请输入姓名', v-model='name')
+              input(type="text",placeholder='请输入姓名', v-model='name')
         li.media(@tap="changeGender")
           .media-content.iconfont.icon-right
             .media-lable 性别
@@ -39,12 +39,12 @@
           .media-content
             .media-lable 担任职位
             .media-value
-              input(placeholder='请输入职位', v-model="company_info.title")
+              input(type="text",placeholder='请输入职位', v-model="company_info.title")
         li.media
           .media-content
             .media-lable 固定电话
             .media-value
-              input(placeholder='请输入电话', v-model="company_info.tel")
+              input(type="text",placeholder='请输入电话', v-model="company_info.tel")
       button.mid-btn(@tap="saveBase") 保存
     .mask(v-if='headEdit')
       .popout
@@ -161,8 +161,10 @@
             success: () => {
               mui.toast('修改头像成功')
               let view = plus.webview.getWebviewById('me');
-              mui.fire(view,'changeUserData',{
-                msg:'修改头像'
+              myMethods.muiFireLock(view,()=>{
+                mui.fire(view,'changeUserData',{
+                  msg:'修改头像'
+                });
               });
             }
           })
@@ -212,8 +214,10 @@
           success: () => {
             mui.toast('保存成功');
             let view = plus.webview.getWebviewById('me');
-            mui.fire(view,'changeUserData',{
-              msg:'修改基础信息'
+            myMethods.muiFireLock(view,()=>{
+              mui.fire(view,'changeUserData',{
+                msg:'修改基础信息'
+              });
             });
           }
         })

@@ -86,8 +86,10 @@
           },
           success: () => {
             let view = plus.webview.currentWebview().opener();
-            mui.fire(view, 'addSuccess', {
-              msg: '添加成功'
+            myMethods.muiFireLock(view,()=>{
+              mui.fire(view, 'addSuccess', {
+                msg: '添加成功'
+              });
             });
             mui.back();
           }

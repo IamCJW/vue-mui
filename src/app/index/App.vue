@@ -1,11 +1,23 @@
 <template lang="pug">
   nav.mui-bar.mui-bar-tab
-    a.mui-tab-item(v-for='tab in tabs', :class='{ "mui-active": activeIndex === tab.index }', v-on:tap='openTabPage(tab.index)')
+    a.mui-tab-item(v-for='tab in tabs', :class='{ "mui-active": activeIndex === tab.index,"news-item": tab.index === 1 && news}', v-on:tap='openTabPage(tab.index)')
       span.mui-icon.iconfont(:class='tab.icon')
       span.mui-tab-label {{ tab.name }}
 </template>
 <style lang="stylus" scoped>
   @import "nav.styl"
+  .news-item:after
+    content ''
+    width .08rem
+    height .08rem
+    background-color $assist-color
+    border-radius 100%
+    position absolute
+    top 16%
+    left 56%
+    z-index $z-index-popout
+
+
 </style>
 
 <script>
@@ -34,6 +46,7 @@
         ],
         thisWebView: {},
         styles: {},
+        news: false,
       }
     },
     mounted() {
@@ -42,8 +55,11 @@
       });
       window.addEventListener('changeTabNav', (e) => {
         this.activeIndex = e.detail.index;
+        if (e.detail.index === 1) {
+          this.news = false;
+        }
       });
-      let preload = ()=>{
+      let preload = () => {
         let styles = {top: this.changeRem(0), bottom: this.changeRem(0.49), zindex: 1};
         let main = plus.webview.currentWebview();
         this.tabs.forEach((item, index) => {
@@ -57,6 +73,8 @@
         })
       };
       mui.plusReady(() => {
+        plus.runtime.setBadgeNumber(0);
+        this.pushMsg();
         if (plus.storage.getItem(plusKey.firstOpen)) {
           preload();
         } else {
@@ -64,8 +82,7 @@
           mui.openWindow({
             id: 'guide',
             url: './guide.html',
-            styles: {
-            },
+            styles: {},
             show: {
               aniShow: 'none'
             },
@@ -73,14 +90,17 @@
               autoShow: false
             }
           });
-          setTimeout(function() {
+          setTimeout(function () {
             preload();
           }, 200);
-        }
+        };
       })
     },
     methods: {
       openTabPage: function (index) {
+        if (index === 1) {
+          this.news = false
+        }
         // 如果当前 tab 已被激活，则返回
         if (index === this.activeIndex) return;
         let styles = {top: this.changeRem(0), bottom: this.changeRem(0.49), zindex: 1};
@@ -92,7 +112,9 @@
             main.append(subWebview)
           }
           let view = plus.webview.getWebviewById(this.tabs[index].id);
-          mui.fire(view,'getData',{});
+          myMethods.muiFireLock(view, () => {
+            mui.fire(view, 'getData', {});
+          });
           // 显示要打开的子 webview
           plus.webview.show(this.tabs[index].id, 'fade-in', 300);
           // 设置当前 tab index
@@ -100,6 +122,24 @@
         });
       },
       changeRem: myMethods.changeRem,
+      // 推送消息处理
+      pushMsg() {
+        let vueThis = this;
+        plus.push.addEventListener("receive", function (msg) {
+          if (msg.aps) {
+            vueThis.news = true;
+          } else {
+            vueThis.news = true;
+          }
+        }, false);
+        plus.push.addEventListener("click", function (msg) {
+          if (msg.aps) {
+            vueThis.news = true;
+          } else {
+            vueThis.news = true;
+          }
+        }, false);
+      },
     }
   }
 </script>

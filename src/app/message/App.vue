@@ -312,35 +312,23 @@
             data.type = 3;
           }
         }
-        let detailPage = {};
         switch (type) {
           case 1:
-            mui.preload({
-              url: `./detail.html`,
-              id: 'detail'
-            });
-            detailPage = plus.webview.getWebviewById('detail');
-            mui.fire(detailPage, 'getData', data);
-            this.openWindow('detail');
+            this.openDetail('detail',data);
             break;
           case 2:
-            detailPage = plus.webview.getWebviewById('companyDetail');
-            mui.fire(detailPage, 'getData', data);
-            this.openWindow('companyDetail');
+            this.openDetail('companyDetail',data);
             break;
           case 3:
-            detailPage = plus.webview.getWebviewById('builderDetail');
-            mui.fire(detailPage, 'getData', data);
-            this.openWindow('builderDetail');
+            this.openDetail('builderDetail',data);
             break;
           case 4:
-            detailPage = plus.webview.getWebviewById('companyDetail_own');
-            mui.fire(detailPage, 'getData', data);
-            this.openWindow('companyDetail_own');
+            this.openDetail('companyDetail_own',data);
             break;
         }
       },
       openTabNav: myMethods.openTabNav,
+      openDetail:myMethods.openDetail,
     }
   }
 </script>
