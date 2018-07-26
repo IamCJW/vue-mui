@@ -60,7 +60,7 @@
         li.media(@tap="openNViewPreload('advice')")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 反馈意见
-        li.media(@tap="openNViewPreload('aboutUS')")
+        li.media(@tap="openNViewPreload('aboutUS',{},true)")
           .media-content.iconfont.icon-right
             .media-lable.text-color-black 关于我们
         <!--li.media(@tap="ysf")-->
@@ -133,8 +133,8 @@
       },//打开页面
       openWindow: myMethods.openWindow,//打开详情
       openDetail:myMethods.openDetail,
-      openNViewPreload(url, data) {
-        if(this.loginState){
+      openNViewPreload(url, data,loginState) {
+        if(this.loginState || loginState){
           myMethods.openNViewPreload(url, data)
         }else{
          this.openDetail('login');

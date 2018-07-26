@@ -12,34 +12,50 @@
   export default {
     name: 'otherPage',
     data() {
-      return {
-
-      }
+      return {}
     },
     mounted() {
-      mui.back = ()=>{
-        mui.plusReady(()=>{
-          let view = plus.webview.currentWebview();
-          view.close();
-        })
-      };
-      window.addEventListener('getData',(e)=>{
-        mui.init({
-          subpages:[{
-            url:e.detail.otherUrl,
-            id:'otherContent',
-            styles:{
-              top:'45px',
-            }
-          }]
-        });
+      mui.plusReady(() => {
+        let otherUrl = plus.webview.currentWebview().otherUrl;
+        if (mui.os.ios) {
+          mui.init({
+            subpages: [{
+              url: otherUrl,
+              id: 'otherContent',
+              styles: {
+                top: '0',
+                scalable: true,
+                kernel: {
+                  ios: "WKWebview"
+                },
+                dock: 'left',
+                scrollIndicator: 'all',
+                position: 'static',
+              }
+            }]
+          });
+        } else {
+          mui.init({
+            subpages: [{
+              url: otherUrl,
+              id: 'otherContent',
+              styles: {
+                scalable: true,
+                kernel: {
+                  ios: "WKWebview"
+                },
+                dock: 'left',
+                scrollIndicator: 'all',
+                position: 'static',
+              }
+            }]
+          });
+        }
       })
     },
     created() {
 
     },
-    methods: {
-
-    }
+    methods: {}
   }
 </script>

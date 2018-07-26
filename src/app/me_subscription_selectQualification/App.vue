@@ -60,7 +60,7 @@
           success: (data) => {
             this.qualificationData = data;
             if (this.subscription.id) {
-              this.qualify_info.forEach((item) => {
+              this.subscription.qualify_info.forEach((item) => {
                 this.$set(this.qualificationSelected, item.rid, item.status);
               });
               return

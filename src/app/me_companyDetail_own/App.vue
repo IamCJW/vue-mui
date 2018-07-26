@@ -9,6 +9,7 @@
         span {{baseData.province || '省份'}} / {{baseData.city || '城市'}}
     .mui-content
       loading(ref='loading')
+      warn(icon='icon-404', msg='抱歉！该企业资料暂未获取完全,请稍候查看~', :show="warnState")
       .content-page
         .scroll-wrapper.cell-row#proGroup
           .scroll-box
@@ -28,8 +29,8 @@
                   .pro-assist
                     .pro-endTime {{item.end_datetime}}
                     .pro-price
-                      span {{item.amount}}
-                      | 万
+                      span {{item.amount | moneyConversion}}
+                      | {{item.amount ? '万' :'未知'}}
       .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
         .popout
           .popout-arrow
@@ -49,6 +50,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
+  import warn from '../../components/warn'
 
   export default {
     name: 'companyDetail',
@@ -62,10 +64,14 @@
           data: []
         },
         rid: '',
-        shareData:{}
+        shareData: {},
+        warnState: false,
       }
     },
-    components: {loading},
+    components: {
+      loading: loading,
+      warn: warn
+    },
     mounted() {
       let vueThis = this;
       window.addEventListener('getData', (e) => {
@@ -84,7 +90,8 @@
                 data: {
                   code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.proData.pageNum
-                }, success: (data) => {
+                },
+                success: (data) => {
                   vueThis.proData.data = vueThis.proData.data.concat(data.result);
                   if (data.total_page === vueThis.proData.pageNum) {
                     this.endPullupToRefresh(true);
@@ -108,6 +115,7 @@
       //数据请求
       getData() {
         this.$refs.loading.show();
+        this.warnState = false;
         http({
           url: api.search_tender_company_detail,
           data: {code: this.rid},
@@ -116,12 +124,16 @@
             this.proData.data = data.result;
             this.followed = data.followed;
             this.$refs.loading.hide();
-            mui('#page1').pullRefresh().scrollTo(0,0,100);
+            mui('#page1').pullRefresh().scrollTo(0, 0, 100);
             this.shareData = {
-              title:this.baseData.company_name,
-              type:4,
-              id:this.rid
+              title: this.baseData.company_name,
+              type: 4,
+              id: this.rid
             };
+          },
+          noFind: () => {
+            this.$refs.loading.hide();
+            this.warnState = true;
           }
         })
       },//更多
@@ -141,8 +153,8 @@
               this.followed = !this.followed;
               mui.toast('取消成功');
               let view = plus.webview.getWebviewById('follow');
-              myMethods.muiFireLock(view,()=>{
-                mui.fire(view,'followChange',{})
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'followChange', {})
               })
             }
           })
@@ -158,8 +170,8 @@
               this.followed = !this.followed;
               mui.toast('关注成功');
               let view = plus.webview.getWebviewById('follow');
-              myMethods.muiFireLock(view,()=>{
-                mui.fire(view,'followChange',{})
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'followChange', {})
               })
             }
           })

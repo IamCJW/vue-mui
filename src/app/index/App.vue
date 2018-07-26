@@ -50,9 +50,10 @@
       }
     },
     mounted() {
-      mui.init({
-        wipeBack: true,
-      });
+      if(mui.os.ios){
+        let ws=plus.webview.currentWebview();
+        ws.setStyle({'popGesture':'none'});
+      }
       window.addEventListener('changeTabNav', (e) => {
         this.activeIndex = e.detail.index;
         if (e.detail.index === 1) {
@@ -65,10 +66,9 @@
         this.tabs.forEach((item, index) => {
           let subWebview = plus.webview.create(item.url, item.id, styles);
           main.append(subWebview);
-          if (index === 0) {
-            subWebview.show();
-          } else {
-            subWebview.hide();
+          subWebview.show();
+          if(index === 3){
+            plus.webview.getWebviewById('home').show();
           }
         })
       };

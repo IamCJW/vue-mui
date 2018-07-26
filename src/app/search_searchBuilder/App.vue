@@ -148,6 +148,8 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
+        myMethods.uploadReset('#companyGroup');
+        this.builderData.cur_page = 1;
         let message = this.message;
         let historyList;
         if (this.historyList.length !== 0){
@@ -165,7 +167,8 @@
         localStorage.setItem(lsKey.historySearchBuilder,JSON.stringify(this.historyList));
         this.historyShow = false;
         let province = localStorage.getItem(lsKey.locationProvince);
-        mui('#companyGroup').pullRefresh().refresh(true);
+        myMethods.uploadReset('#companyGroup');
+        this.builderData.cur_page = 1;
         this.$refs.loading.show();
         this.dataLock = false;
         http({

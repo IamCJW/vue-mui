@@ -1,4 +1,3 @@
-// src/app/home/App.vue
 <template lang="pug">
   #app
     .header-full
@@ -21,15 +20,15 @@
       .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
-            .jumpToTop(v-show="top1")
-              i.iconfont.icon-zhiding(@tap="jumpToTop('page1')")
+            .jumpToTop(v-show="top1 && pageKey === 0")
+              i.iconfont.icon-zhiding(@tap="jumpToTop('1')")
             .scroll-wrapper#page1
               .scroll-box
                 .filter-wrapper
                   .filter(@tap="openNViewPreloadToken('subscription')")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
-                warn(icon='icon-404', msg='未有订阅消息~', :show="!pageIndex0.data.length")
+                warn(icon='icon-404', msg='暂无订阅消息~', :show="!pageIndex0.data.length")
                 .pro-group(v-if="pageIndex0.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="(item,index) in pageIndex0.data", :key="index" , @tap="openDetail('detail',{rid:item.rid,type:1})")
@@ -43,18 +42,18 @@
                             span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
                               i.iconfont.icon-INTEGRATION
                               span &nbsp;一体化
-                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
-                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他',}")
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
                         .pro-assist
                           .pro-endTime {{!item.end_datetime ? '未知': item.end_datetime | dateCountDown}}
                           .pro-price
-                            span {{item.amount}}
+                            span {{item.amount | moneyConversion}}
                             | {{item.amount ? '万' : '未知' }}
           //公告
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
-            .jumpToTop(v-show="top2", @tap="jumpToTop('page2')")
+            .jumpToTop(v-show="top2 && pageKey === 1", @tap="jumpToTop('2')")
               i.iconfont.icon-zhiding
             .scroll-wrapper#page2
               .scroll-box
@@ -76,19 +75,19 @@
                             span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
                               i.iconfont.icon-INTEGRATION
                               span &nbsp;一体化
-                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
-                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他',}")
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
                         .pro-assist
                           .pro-endTime {{!item.end_datetime ? '未知': item.end_datetime | dateCountDown}}
                           .pro-price
-                            span {{item.amount}}
+                            span {{item.amount|moneyConversion}}
                             | {{item.amount ? '万' : '未知' }}
           //中标
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
-            .jumpToTop(v-show="top3")
-              i.iconfont.icon-zhiding(@tap="jumpToTop('page3')")
+            .jumpToTop(v-show="top3 && pageKey === 2")
+              i.iconfont.icon-zhiding(@tap="jumpToTop('3')")
             .scroll-wrapper#page3
               .scroll-box
                 .filter-wrapper
@@ -109,19 +108,19 @@
                             span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
                               i.iconfont.icon-INTEGRATION
                               span &nbsp;一体化
-                            span.pro-style(v-for="tender_type in item.tender_types",v-if="item.tender_types.indexOf('一体化') === -1",:class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他',}")
-                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他',}")
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.company_name}}
                         .pro-assist
                           .pro-price
-                            span {{item.tender_je}}
+                            span {{item.tender_je | moneyConversion}}
                             | {{item.tender_je ? '万' : '未知'}}
                           .pro-endTime {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
           //更多
           .content-page(@swiperight="contentSwiperight", @swipeleft="openTabNav('message',1)")
-            .jumpToTop(v-show="top4")
-              i.iconfont.icon-zhiding(@tap="jumpToTop('page4')")
+            .jumpToTop(v-show="top4 && pageKey === 3")
+              i.iconfont.icon-zhiding(@tap="jumpToTop('4')")
             .scroll-wrapper#page4
               .scroll-box
                 .filter-wrapper
@@ -137,7 +136,7 @@
                         span  &nbsp;{{item.info_date}}
                       .pro-content
                         .pro-assist
-                          div.pro-style(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标','color-icon-investigate_money':item.info_type === '补遗'}")
+                          div.pro-style(:class="{'color-icon-ANSWERINGQUESTIONS':item.info_type === '答疑','color-icon-CHANGE':item.info_type === '变更','color-icon-clarify':item.info_type === '澄清','color-icon-investigate_money':item.info_type === '资审' || item.info_type === '补遗','color-icon-FLOWSTANDARD':item.info_type === '流标','color-icon-OTHER':item.info_type === '其他','color-icon-THESCRAP':item.info_type === '废标'}")
                             i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标','icon-erji-anquanbuding':item.info_type === '补遗'}")
                             span &nbsp;{{item.info_type}}
                         .pro-main
@@ -391,6 +390,7 @@
       },
       //条件提交
       filterSubmit(show) {
+        let vueThis = this;
         let filterSelect = this.filterSelect;
         if (filterSelect.location.province === '') {
           mui.toast('城市不能为空');
@@ -406,7 +406,6 @@
           tender_type: filterSelect.tender_dict,
           info_type: filterSelect.info_type,
         };
-        console.log(JSON.stringify(filterData));
         switch (this.pageKey) {
           case 1:
             http({
@@ -415,16 +414,18 @@
               success: (data) => {
                 this.pageIndex1.data = data.result;
                 this.filterSelect1 = filterData;
-                console.log(this.filterSelect1);
-                console.log(JSON.stringify(this.filterSelect1));
                 if (show === 'open') return;
                 this.filterFlag = false;
+                myMethods.uploadReset('#page2', vueThis.pageIndex1.pageNum);
+                this.pageIndex1.pageNum = 1;
               },
               noFind: (data) => {
                 this.filterSelect1 = filterData;
                 this.pageIndex1.data = [];
                 if (show === 'open') return;
                 this.filterFlag = false;
+                myMethods.uploadReset('#page2', vueThis.pageIndex1.pageNum);
+                this.pageIndex1.pageNum = 1;
               }
             });
             break;
@@ -437,12 +438,16 @@
                 this.pageIndex2.data = data.result;
                 if (show === 'open') return;
                 this.filterFlag = false;
+                myMethods.uploadReset('#page3', vueThis.pageIndex2.pageNum);
+                this.pageIndex2.pageNum = 1;
               },
               noFind: (data) => {
                 this.filterSelect2 = filterData;
                 this.pageIndex2.data = [];
                 if (show === 'open') return;
                 this.filterFlag = false;
+                myMethods.uploadReset('#page3', vueThis.pageIndex2.pageNum);
+                this.pageIndex2.pageNum = 1;
               }
             });
             break;
@@ -455,12 +460,16 @@
                 this.pageIndex3.data = data.result;
                 if (show === 'open') return;
                 this.filterFlag = false;
+                myMethods.uploadReset('#page4', vueThis.pageIndex3.pageNum);
+                this.pageIndex3.pageNum = 1;
               },
               noFind: (data) => {
                 this.filterSelect3 = filterData;
                 this.pageIndex3.data = [];
                 if (show === 'open') return;
                 this.filterFlag = false;
+                myMethods.uploadReset('#page4', vueThis.pageIndex3.pageNum);
+                this.pageIndex3.pageNum = 1;
               }
             });
             break;
@@ -494,7 +503,7 @@
       openDetail: myMethods.openDetail,
       //置顶
       jumpToTop(key) {
-        mui(`#${key}`).pullRefresh().scrollTo(0, 0, 100);
+        mui(`#page${key}`).pullRefresh().scrollTo(1, 1, 100);
       },
       //页面切换
       jumpTo(key) {
@@ -502,13 +511,6 @@
         this.pageKey = key;
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`;
-        this.top1 = false;
-        this.top2 = false;
-        this.top3 = false;
-        this.top4 = false;
-        if (this[`pageIndex${key}`].pageNum > 2) {
-          this[`top${key + 1}`] = true;
-        }
       },
       //自动定位
       location() {
@@ -689,14 +691,19 @@
             down: {
               callback: function () {
                 vueThis.pageIndex0.pageNum = 1;
+                myMethods.uploadReset('#page1');
                 http({
                   url: api.tender_subscribe,
+                  data: {
+                    cur_page: 1
+                  },
                   success: (data) => {
-                    vueThis.top1 = false;
                     vueThis.pageIndex0.data = data.result;
+                    vueThis.pageIndex0.pageNum = 1;
                     mui('#page1').pullRefresh().endPulldownToRefresh();
                   },
                   noFind: () => {
+                    vueThis.pageIndex0.data = [];
                     mui('#page1').pullRefresh().endPulldownToRefresh();
                   }
                 });
@@ -718,9 +725,6 @@
                     } else {
                       vueThis.pageIndex0.data = vueThis.pageIndex0.data.concat(data.result);
                       this.endPullupToRefresh(false);
-                      if (vueThis.pageKey === 0) {
-                        vueThis.top1 = true;
-                      }
                     }
                   },
                   noFind: (data) => {
@@ -734,11 +738,13 @@
             down: {
               callback: function () {
                 vueThis.pageIndex1.pageNum = 1;
+                myMethods.uploadReset('#page2');
                 http({
                   url: api.tender,
-                  data: vueThis.filterSelect1,
+                  data: Object.assign(vueThis.filterSelect1, {
+                    cur_page: 1
+                  }),
                   success: (data) => {
-                    vueThis.top2 = false;
                     vueThis.pageIndex1.data = data.result;
                     mui('#page2').pullRefresh().endPulldownToRefresh();
                   },
@@ -762,9 +768,6 @@
                       this.endPullupToRefresh(true);
                     } else {
                       vueThis.pageIndex1.data = vueThis.pageIndex1.data.concat(data.result);
-                      if (vueThis.pageKey === 1) {
-                        vueThis.top2 = true;
-                      }
                       this.endPullupToRefresh(false);
                     }
                   },
@@ -779,11 +782,13 @@
             down: {
               callback: function () {
                 vueThis.pageIndex2.pageNum = 1;
+                myMethods.uploadReset('#page3');
                 http({
                   url: api.tender_success,
-                  data: vueThis.filterSelect2,
+                  data: Object.assign(vueThis.filterSelect2, {
+                    cur_page: 1
+                  }),
                   success: (data) => {
-                    vueThis.top3 = false;
                     vueThis.pageIndex2.data = data.result;
                     mui('#page3').pullRefresh().endPulldownToRefresh();
                   },
@@ -806,9 +811,6 @@
                     if (data.total_page <= vueThis.pageIndex2.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
-                      if (vueThis.pageKey === 2) {
-                        vueThis.top3 = true;
-                      }
                       vueThis.pageIndex2.data = vueThis.pageIndex2.data.concat(data.result);
                       this.endPullupToRefresh(false);
                     }
@@ -824,11 +826,13 @@
             down: {
               callback: function () {
                 vueThis.pageIndex3.pageNum = 1;
+                myMethods.uploadReset('#page4');
                 http({
                   url: api.tender_more,
-                  data: vueThis.filterSelect3,
+                  data: Object.assign(vueThis.filterSelect3, {
+                    cur_page: 1
+                  }),
                   success: (data) => {
-                    vueThis.top4 = false;
                     vueThis.pageIndex3.data = data.result;
                     mui('#page4').pullRefresh().endPulldownToRefresh();
                   },
@@ -851,9 +855,6 @@
                     if (data.total_page <= vueThis.pageIndex3.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
-                      if (vueThis.pageKey === 3) {
-                        vueThis.top4 = true;
-                      }
                       vueThis.pageIndex3.data = vueThis.pageIndex3.data.concat(data.result);
                       this.endPullupToRefresh(false);
                     }
@@ -866,6 +867,11 @@
             }
           }]
         });
+        mui('.mui-scroll-wrapper').scroll({
+            deceleration: 0.1,
+            indicators: false
+          }
+        );
       }
     },
     mounted() {
@@ -875,6 +881,15 @@
         this.jumpTo(0);
       } else {
         this.jumpTo(1);
+      }
+      for (let i=1; i <= 4; i++) {
+        document.querySelector(`#page${i}`).addEventListener('scroll', (e) => {
+          if (e.detail.y < -2000) {
+            this[`top${i}`] = true;
+          } else {
+            this[`top${i}`] = false
+          }
+        });
       }
       window.addEventListener('changeLocation', (e) => {
         this.location();
@@ -900,7 +915,6 @@
         }
         vueThis.loginState = plus.storage.getItem(plusKey.token);
       });
-      this.muiInit()
     },
     created() {
 

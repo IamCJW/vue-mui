@@ -3,24 +3,25 @@
     header.detail-header.fixed-header
       .header-title
         span.mui-action-back.iconfont.icon-return
-        .detail-title {{pushMsg.tender_info.name || pullMsg.tender_info.name || otherMsg.tender_info.name}}
+        .detail-title {{tender_info.name}}
         span.iconfont.icon-MORES(@tap="menuShow(true)")
       .header-sign
         .fl
-          span 行业: {{pushMsg.tender_info.tender_type || pullMsg.tender_info.tender_type || otherMsg.tender_info.tender_type}}
-          span 专业：{{pushMsg.tender_info.construction_type || pullMsg.tender_info.construction_type || otherMsg.tender_info.construction_type}}
-        span.fr {{pushMsg.tender_info.province || pullMsg.tender_info.province || otherMsg.tender_info.province}}{{ (pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city) ? ' / '+ (pushMsg.tender_info.city || pullMsg.tender_info.city || otherMsg.tender_info.city) : ''}}{{(pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district) ? ' / '+ (pushMsg.tender_info.district || pullMsg.tender_info.district || otherMsg.tender_info.district):''}}
-      .detail-nav-bar
+          span 行业: {{tender_info.tender_type}}
+          span 专业：{{tender_info.construction_type}}
+        span.fr {{tender_info.province}}{{ tender_info.city ? ' / '+ tender_info.city : ''}}{{tender_info.district ? ' / '+ tender_info.district:''}}
+      .detail-nav-bar(v-if="navigate_list.length")
         span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '招标公告'" , :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,0)") {{item.name}}
         span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '招标公告' " , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,item.info_type)") {{item.name}}
     header.detail-header
       .header-title
-        .detail-title {{pushMsg.tender_info.name || pullMsg.tender_info.name || otherMsg.tender_info.name}}
+        .detail-title {{tender_info.name}}
       .header-sign
         .fl
           span 占位
-      .detail-nav-bar
+      .detail-nav-bar(v-if="navigate_list.length")
         span.detail-bar-item 占位
+    warn(icon='icon-404', msg='抱歉！该项目资料暂未获取完全，请稍候查看~~', :show="warnState")
     .mui-content(v-if="dataLock")
       //招标公示
       .content-table(v-show="navPage === '招标公告'")
@@ -30,10 +31,10 @@
               .time 发布时间: {{pushMsg.info_date}}
           tr
             td.th 招标人
-            td(colspan="2") {{pushMsg.tender_info.tender_name}}
+            td(colspan="2") {{tender_info.tender_name}}
           tr
             td.th 资质要求
-            td(colspan="2") {{pushMsg.tender_info.enterprise_requirement}}
+            td(colspan="2") {{tender_info.enterprise_requirement}}
           tr
             td.th 标段数量
             td(colspan="2") {{pushMsg.section_num}}
@@ -41,11 +42,12 @@
             td.th
               span(v-if="index === 0") 标段金额
             td {{item.name}}
-            td {{item.amount ? item.amount+'万': '未知' }}
+            td(v-if="item.amount") {{item.amount|moneyConversion}}万
+            td(v-if="!item.amount") 未知
           tr
             td.th 信息来源
-            td(colspan="2")
-              a(@tap="openNViewPreload('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource+'[点击查看原文]'}}
+            td(colspan="2",@tap="openNViewView('otherPage',{otherUrl:pushMsg.url},pushMsg.resource)") {{pushMsg.resource}}
+              a.fz10.mui-ellipsis [点击查看原文]
           tr
             td.th(colspan="3") 原文内容
         .orContent(v-html="pushMsg.content") {{'<div class="orContent">'+pushMsg.content+'</div>'}}
@@ -58,8 +60,8 @@
               .time 发布时间: {{pullMsg.info_date}}
           tr
             td.th 招标人
-            td(colspan="3") {{pullMsg.tender_info.tender_name}}
-          tr(v-if="pullMsg.proxy_name !== ''")
+            td(colspan="3") {{tender_info.tender_name}}
+          tr(v-if="pullMsg.proxy_name")
             td.th 招标代理
             td(colspan="3") {{pullMsg.proxy_name}}
           template(v-for="(item,index) in pullMsg.section_info")
@@ -67,19 +69,22 @@
               td.text-color-main.th(colspan="4") 标段名称:{{item.name}}
             tr
               td.th 中标单位
-              td(colspan="3") {{item.company_name}}
+              td(colspan="3", @tap="openDetail('companyDetail',{rid:item.code})") {{item.company_name}}
+                a.fz10.mui-ellipsis [查看企业详情]
             tr
               td.th 中标金额
-              td(colspan="3") {{item.tender_je}}万
+              td(colspan="3") {{item.tender_je | moneyConversion}}万
             tr(v-if="item.builder_name !== ''")
-              td.th {{pullMsg.tender_info.tender_type === '监理'?'总监':''}}{{pullMsg.tender_info.tender_type === '设计'|| pullMsg.tender_info.tender_type === '勘察' ||pullMsg.tender_info.tender_type === '一体化'?'项目负责人':''}}{{pullMsg.tender_info.tender_type !== '监理'&&pullMsg.tender_info.tender_type !== '设计'&& pullMsg.tender_info.tender_type !== '勘察' &&pullMsg.tender_info.tender_type !== '一体化'?'建造师':''}}
-              td.th {{item.builder_name}}
+              td.th {{tender_info.tender_type === '监理'?'总监':''}}{{tender_info.tender_type === '设计'|| tender_info.tender_type === '勘察' ||tender_info.tender_type === '一体化'?'项目负责人':''}}{{tender_info.tender_type !== '监理'&&tender_info.tender_type !== '设计'&& tender_info.tender_type !== '勘察' &&tender_info.tender_type !== '一体化'?'建造师':''}}
+              td.th(@tap="openDetail('builderDetail',{company_name:item.company_name,register_no:item.certificate_no,user_name:item.builder_name})")
+                span.mui-ellipsis {{item.builder_name}}
+                a.fz10.mui-ellipsis [查看详情]
               td.th 注册证书
-              td {{item.certificate_no}}
+              td.mui-ellipsis {{item.certificate_no}}
           tr
             td.th 信息来源
-            td(colspan="3")
-              a(@tap="openNViewPreload('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.resource+'[点击查看原文]'}}
+            td(colspan="3",@tap="openNViewView('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.resource}}
+              a.fz10.mui-ellipsis [查看原文]
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="pullMsg.content") {{pullMsg.content}}
@@ -91,15 +96,15 @@
               .time 发布时间: {{otherMsg.info_date}}
           tr
             td.th 信息来源
-            td(colspan="3")
-              a(@tap="openNViewPreload('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource+'[点击查看原文]'}}
+            td(colspan="3" , @tap="openNViewView('otherPage',{otherUrl:otherMsg.url},otherMsg.resource)") {{otherMsg.resource}}
+              a.fz10.mui-ellipsis [点击查看原文]
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="otherMsg.content") {{otherMsg.content}}
-    footer
+    footer(v-show="dataLock")
       .btn-group
-        .btn-item(v-if="pushMsg.tender_info.tel ||  pullMsg.tender_info.tel || otherMsg.tender_info.tel")
-          a(:href="'tel:'+ pushMsg.tender_info.tel  ||  pullMsg.tender_info.tel  || otherMsg.tender_info.tel")
+        .btn-item(v-if="tender_info.tel")
+          a(:href="'tel:'+ tender_info.tel")
             i.iconfont.icon-CONTACT
             span 联系招标方
         <!--.btn-item(@tap="ysf")-->
@@ -144,12 +149,13 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
-  import {plusKey} from "../../assets/js/locationStorage";
+  import warn from '../../components/warn'
 
   export default {
     name: 'detail',
     data() {
       return {
+        warnState:false,
         dataLock: false,//数据锁
         warnStatus: false,
         warnList: {
@@ -170,60 +176,36 @@
           type: 0,
           show: false
         },
-        pushMsg: {
-          tender_info: {
-            name: '',
-            tender_type: '',
-            construction_type: '',
-            province: '',
-            city: '',
-            district: '',
-            tel: '',
-            followed: ''
-          }
-        },
-        pullMsg: {
-          tender_info: {
-            name: '',
-            tender_type: '',
-            construction_type: '',
-            province: '',
-            city: '',
-            district: '',
-            tel: '',
-            followed: ''
-          }
-        },
-        otherMsg: {
-          tender_info: {
-            name: '',
-            tender_type: '',
-            construction_type: '',
-            province: '',
-            city: '',
-            district: '',
-            tel: '',
-            followed: ''
-          }
+        pushMsg: {},
+        pullMsg: {},
+        otherMsg: {},
+        tender_info: {
+          name: '',
+          tender_type: '',
+          construction_type: '',
+          province: '',
+          city: '',
+          district: '',
+          tel: '',
+          followed: ''
         },
         navPage: '',
-        zbRid: 'b8045cc7b411800d1e66ab661d35343a',
+        zbRid: '',
         navigate_list: [],
         shareData: {},
       }
     },
+    components:{
+      warn:warn
+    },
     mounted() {
       let vueThis = this;
-      this.getData({
-        rid:'19cae2c83730f263c98923d7ce5ee7a8',
-        type:2
-      });
       mui.init({
         beforeback: () => {
           let view = plus.webview.getWebviewById('message');
-          myMethods.muiFireLock(view,()=>{
-            if(plus.storage.getItem('station')){
-              mui.fire(view,'readed',{});
+          myMethods.muiFireLock(view, () => {
+            if (plus.storage.getItem('station')) {
+              mui.fire(view, 'readed', {});
             }
           });
           return true;
@@ -231,41 +213,15 @@
       });
       window.addEventListener('getData', (e) => {
         vueThis.dataLock = false;
-        vueThis.pushMsg = {
-          tender_info: {
-            name: '',
-            tender_type: '',
-            construction_type: '',
-            province: '',
-            city: '',
-            district: '',
-            tel: '',
-            followed: ''
-          }
-        };
-        vueThis.pullMsg = {
-          tender_info: {
-            name: '',
-            tender_type: '',
-            construction_type: '',
-            province: '',
-            city: '',
-            district: '',
-            tel: '',
-            followed: ''
-          }
-        };
-        vueThis.otherMsg = {
-          tender_info: {
-            name: '',
-            tender_type: '',
-            construction_type: '',
-            province: '',
-            city: '',
-            district: '',
-            tel: '',
-            followed: ''
-          }
+        vueThis.tender_info = {
+          name: '',
+          tender_type: '',
+          construction_type: '',
+          province: '',
+          city: '',
+          district: '',
+          tel: '',
+          followed: ''
         };
         vueThis.navigate_list = [];
         let muiData = e.detail;
@@ -284,6 +240,7 @@
     methods: {
       //数据请求
       getData(data) {
+        this.warnState = false;
         let rid = data.rid;
         let type = data.type || 1;
         switch (type) {
@@ -294,14 +251,18 @@
               success: (data) => {
                 this.pushMsg = data;
                 this.navigate_list = data.navigate_list;
+                this.tender_info = data.tender_info;
                 this.navPage = '招标公告';
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
                 this.shareData = {
-                  title: this.pushMsg.tender_info.name || this.pullMsg.tender_info.name || this.otherMsg.tender_info.name,
+                  title: data.tender_info.name,
                   type: 1,
                   id: this.zbRid
                 };
+              },
+              noFind:()=>{
+                this.warnState = true;
               }
             });
             break;
@@ -316,11 +277,15 @@
                 this.followStatus = data.tender_info.followed;
                 this.dataLock = true;
                 this.zbRid = data.tender_info.tender_id;
+                this.tender_info = data.tender_info;
                 this.shareData = {
-                  title: this.pushMsg.tender_info.name || this.pullMsg.tender_info.name || this.otherMsg.tender_info.name,
+                  title: data.tender_info.name,
                   type: 1,
                   id: this.zbRid
                 };
+              },
+              noFind:()=>{
+                this.warnState = true;
               }
             });
             break;
@@ -337,22 +302,29 @@
                   }
                 });
                 this.followStatus = data.tender_info.followed;
+                this.tender_info = data.tender_info;
                 this.dataLock = true;
                 this.zbRid = data.tender_info.tender_id;
                 this.shareData = {
-                  title: this.pushMsg.tender_info.name || this.pullMsg.tender_info.name || this.otherMsg.tender_info.name,
+                  title: data.tender_info.name,
                   type: 1,
                   id: this.zbRid
                 };
+              },
+              noFind:()=>{
+                this.warnState = true;
               }
             });
             break;
         }
       },
-      openNViewPreload(url, data, title) {
-        mui.preload({
+      openDetail: myMethods.openDetail,
+      openNViewPreload: myMethods.openNViewPreload,
+      openNViewView(url, data, title) {
+        mui.openWindow({
           url: `./${url}.html`,
           id: url,
+          extras: data,
           styles: {
             titleNView: {
               titleText: title,
@@ -378,13 +350,6 @@
               autoBackButton: true,
             }
           }
-        });
-        mui.plusReady(function () {
-          let detailPage = plus.webview.getWebviewById(url);
-          myMethods.muiFireLock(detailPage,()=>{
-            mui.fire(detailPage, 'getData', data);
-          });
-          mui.openWindow(url);
         });
       },
       //内容选择
@@ -458,8 +423,8 @@
               mui.toast('取消关注');
               this.followStatus = !this.followStatus;
               let view = plus.webview.getWebviewById('follow');
-              myMethods.muiFireLock(view,()=>{
-                mui.fire(view,'followChange',{})
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'followChange', {})
               })
             }
           })
@@ -475,8 +440,8 @@
               mui.toast('关注成功');
               this.followStatus = !this.followStatus;
               let view = plus.webview.getWebviewById('follow');
-              myMethods.muiFireLock(view,()=>{
-                mui.fire(view,'followChange',{})
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'followChange', {})
               })
             }
           })

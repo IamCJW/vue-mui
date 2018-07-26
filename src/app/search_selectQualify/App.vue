@@ -21,7 +21,7 @@
       .typeItem(v-for="(item,key) in qualifyList", :class="{active:qualifyFlag === key}", @tap="changeQualify(key)") {{item === '建筑业施工企业资质'? '施工资质' : item}}
 
 </template>
-<style lang="stylus" scoped>
+<style lang="stylus">
   @import "selectQualify.styl"
   .typeGroup
     position fixed
@@ -39,6 +39,20 @@
       color #fff
       &.active
         border-color $third-color
+  .mui-pciker-list li
+    font-size .12rem
+    display-flex()
+    flex-align-item(center)
+    flex-justify-content(center)
+    line-height .18rem
+    white-space inherit
+  .mui-poppicker-body
+    .mui-picker:last-child
+      width 20%!important
+    .mui-picker:nth-child(2)
+      width 50%!important
+    .mui-picker:nth-child(1)
+      width 30%!important
 </style>
 <script>
   /* global mui */
@@ -74,6 +88,9 @@
       this.getNation();
       mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
+      });
+      window.addEventListener('localStorageClear',()=>{
+        this.getNation();
       });
       mui.plusReady(() => {
         plus.key.addEventListener('backbutton', function () {
@@ -126,14 +143,22 @@
         });
       },
       changeQualify(key) {
+        let vueThis = this;
         if (!this.qualifyData) {
-          mui.toast('正在加载数据，请稍后切换');
+          mui.toast('正在加载数据，请稍候切换');
           return
         }
         this.qualifyFlag = key;
         for (let i in this.qualifyData) {
           if (this.qualifyData[i].text === this.qualifyList[key]) {
+            this.picker.dispose();
+            this.picker = new mui.PopPicker({
+              layer: 3
+            });
             this.picker.setData(this.qualifyData[i].children);
+            this.picker.show(function (items) {
+              vueThis.selectSuccess(items);
+            })
           }
         }
       },

@@ -3485,8 +3485,8 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
         up: {
           height: 50,
           auto: false,
-          contentinit: '上拉显示更多',
-          contentdown: '上拉显示更多',
+          contentinit: '看不够，上拉试试',
+          contentdown: '看不够，上拉试试',
           contentrefresh: '正在加载...',
           contentnomore: '再拉也没有数据了~',
           duration: 300

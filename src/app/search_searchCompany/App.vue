@@ -144,7 +144,8 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
-        mui('#companyGroup').pullRefresh().refresh(true);
+        myMethods.uploadReset('#companyGroup');
+        this.companyData.cur_page = 1;
         let message = this.message;
         let historyList;
         if (this.historyList.length !== 0){

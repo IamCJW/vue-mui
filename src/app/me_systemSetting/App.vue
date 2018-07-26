@@ -133,6 +133,14 @@
           myMethods.muiFireLock(selectLocation,()=>{
             mui.fire(selectLocation, 'localStorageClear', {msg: '缓存被清理'})
           });
+          let selectQualify = plus.webview.getWebviewById('selectQualify');
+          myMethods.muiFireLock(selectQualify,()=>{
+            mui.fire(selectQualify, 'localStorageClear', {msg: '缓存被清理'})
+          });
+          let selectQualifys = plus.webview.getWebviewById('selectQualifys');
+          myMethods.muiFireLock(selectQualifys,()=>{
+            mui.fire(selectQualifys, 'localStorageClear', {msg: '缓存被清理'})
+          });
         })
       },
       //获取本地缓存
@@ -174,7 +182,6 @@
             plus.storage.removeItem(plusKey.token);
             plus.storage.removeItem(plusKey.state);
             plus.oauth.getServices(function (services) {
-              console.log(JSON.stringify(services));
               for (let i in services) {
                 let s = services[i];
                 if (s.authResult) {
@@ -183,6 +190,10 @@
                   }, function (e) {
                     console.log('清除授权列表失败~')
                   });
+                }else {
+                  s.login(function () {
+                    s.logout()
+                  })
                 }
               }
             }, function (e) {
@@ -206,6 +217,28 @@
             mui.toast(data.msg);
           }
         })
+      },
+      otherLoginOut(type) {
+        let vueThis = this;
+        plus.oauth.getServices(function (services) {
+          let sever;
+          for (let i = 0; i < services.length; i++) {
+            if (services[i].id === type) {
+              sever = services[i];
+            }
+          }
+          if (sever.authResult) {
+            sever.logout(function (e) {
+              console.log('清除授权列表成功~')
+            }, function (e) {
+              console.log('清除授权列表失败~')
+            });
+          } else {
+            sever.login(function (e) {
+              vueThis.otherLoginOut(type);
+            });
+          }
+        });
       },
       //频率选择
       chooseNotify_type() {

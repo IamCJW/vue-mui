@@ -10,20 +10,20 @@ const merge = require('webpack-merge')
 let PAGE_PATH = path.resolve(__dirname, '../src/app')
 //多入口配置
 exports.entries = function() {
-  var entryFiles = glob.sync(PAGE_PATH + '/*/*.js')
-  var map = {}
+  let entryFiles = glob.sync(PAGE_PATH + '/*/*.js');
+  let map = {"babel-polyfill":"babel-polyfill"};
   entryFiles.forEach((filePath) => {
-    var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+    let filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'));
     map[filename] = filePath
-  })
+  });
   return map
 }
 //多页面输出配置
 exports.htmlPlugin = function() {
   let entryHtml = glob.sync(PAGE_PATH + '/*/*.pug')
-  let arr = []
+  let arr = [];
   entryHtml.forEach((filePath) => {
-    let filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+    let filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'));
     let conf = {
       template: filePath,
       filename: filename + '.html',

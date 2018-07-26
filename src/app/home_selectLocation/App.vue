@@ -113,8 +113,8 @@
       //数据初始化////////////////////////////////////////////////////
       dataInit() {
         let province = localStorage.getItem(lsKey.locationProvince);
-        let city = localStorage.getItem(lsKey.locationCity);
-        let district = localStorage.getItem(lsKey.locationDistrict);
+        let city = localStorage.getItem(lsKey.locationCity) || '';
+        let district = localStorage.getItem(lsKey.locationDistrict) || '';
         this.location = `${province}${city}${district}`;
         this.oldSelects = localStorage.getItem(lsKey.locationOldSelect) ? JSON.parse(localStorage.getItem(lsKey.locationOldSelect)) : [];
       },

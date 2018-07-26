@@ -5,7 +5,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(placeholder="请输入企业名称" v-model="message" v-focus)
+        input(type="text" placeholder="请输入企业名称" v-model="message" v-focus)
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -110,14 +110,24 @@
     methods: {
       // 搜索事件
       search() {
+        if(!this.message){
+          mui.toast('请输入关键字~');
+          return
+        }
         this.$refs.loading.show();
         this.dataLock = false;
+        myMethods.uploadReset('#companyGroup');
+        this.companyData.cur_page = 1;
         http({
           url: api.search_tender_company,
           data: {search: this.message},
           success: (data) => {
             this.total = data.total;
             this.companyData = data;
+            this.$refs.loading.hide();
+            this.dataLock = true;
+          },
+          noFind:()=>{
             this.$refs.loading.hide();
             this.dataLock = true;
           }

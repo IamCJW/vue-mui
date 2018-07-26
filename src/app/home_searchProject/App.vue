@@ -162,6 +162,8 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
+        myMethods.uploadReset('#page1');
+        this.proData.pageNum = 1;
         let searchMsg = this.searchMsg;
         let historyList;
         if (this.historyList.length !== 0) {
@@ -198,7 +200,7 @@
             this.proData = {
               pageNum: 1,
               data: []
-            }
+            };
             this.dataLock = true;
             this.$refs.loading.hide();
           }

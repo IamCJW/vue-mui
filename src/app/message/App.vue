@@ -101,12 +101,6 @@
     },
     mounted() {
       let vueThis = this;
-      mui.plusReady(() => {
-        mui.preload({
-          url: "companyDetail_own.html",
-          id: "companyDetail_own"
-        })
-      });
       window.addEventListener('changeTabNav',()=>{
         this.getData();
       });
@@ -170,8 +164,15 @@
           }
         }]
       });
+      mui('.mui-scroll-wrapper').scroll({
+          deceleration: 0.1,
+          indicators: false
+        }
+      );
       window.addEventListener('getData', () => {
         this.getData();
+        myMethods.uploadReset('#page1');
+        this.subscribeData.pageNum = 1;
       });
       window.addEventListener('loginSuccess', () => {
         this.getData();

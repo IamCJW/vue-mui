@@ -38,7 +38,7 @@
                     i.iconfont.icon-yezhu
                     span 暂未关注业主~
                   button.mid-btn(@tap="openDetail('searchCompany_own')") 添加业主关注
-                ul.media-view(v-if='company_follows.data.length && dataLock')
+                ul.media-view(v-if='tender_follows.data.length && dataLock')
                   li.media(@tap="openDetail('searchCompany_own')")
                     .media-content.add
                       i.iconfont.icon-attentions &nbsp;
@@ -134,9 +134,25 @@
       let vueThis = this;
       window.addEventListener('followChange',()=>{
         this.getData();
+        myMethods.uploadReset('#page1');
+        this.project_follows.pageNum = 1;
+        myMethods.uploadReset('#page2');
+        this.tender_follows.pageNum = 1;
+        myMethods.uploadReset('#page3');
+        this.company_follows.pageNum = 1;
+        myMethods.uploadReset('#page4');
+        this.builder_follows.pageNum = 1;
       });
       window.addEventListener('getData',()=>{
         this.getData();
+        myMethods.uploadReset('#page1');
+        this.project_follows.pageNum = 1;
+        myMethods.uploadReset('#page2');
+        this.tender_follows.pageNum = 1;
+        myMethods.uploadReset('#page3');
+        this.company_follows.pageNum = 1;
+        myMethods.uploadReset('#page4');
+        this.builder_follows.pageNum = 1;
       });
       mui.init({
         pullRefresh: [{

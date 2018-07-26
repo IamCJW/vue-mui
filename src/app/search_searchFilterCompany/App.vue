@@ -54,6 +54,8 @@
       window.addEventListener('getData', (e) => {
         vueThis.muiData = e.detail;
         vueThis.getData(e.detail);
+        myMethods.uploadReset('#companyGroup');
+        this.companyData.cur_page = 1;
         mui.init({
           pullRefresh: [{
             container: '#companyGroup',

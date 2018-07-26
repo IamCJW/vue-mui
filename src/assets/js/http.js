@@ -44,7 +44,7 @@ const httpServer = (opts) => {
       let httpDefaultOpts = { //http默认配置
         method: opts.method,
         url: opts.url,
-        timeout: 10000,
+        timeout: 30000,
         params: opts.data,
         data: opts.dataType ? opts.data : qs.stringify(opts.data),
         headers: Object.assign(publicHeaders, opts.headers),

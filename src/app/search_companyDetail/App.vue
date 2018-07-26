@@ -15,6 +15,7 @@
         <!--span.detail-bar-item(@tap="jumpTo(4)", :class="{active: pageKey===4}") 法律讼诉-->
     .mui-content
       loading(ref="loading")
+      warn(icon='icon-404', msg='抱歉！该企业资料暂未获取完全，请稍候查看~~', :show="warnState")
       .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           //基本信息
@@ -83,8 +84,8 @@
                           span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
                       .pro-assist
                         .pro-price
-                          span {{item.tender_je}}
-                          | 万
+                          span {{item.tender_je | moneyConversion}}
+                          | {{item.tender_je ? '万' :'未知'}}
                         .pro-endTime {{item.builder_name}}
           //建造师
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
@@ -97,7 +98,7 @@
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
                 .bui-group
-                  .bui-item(v-for="item in builderData.data" @tap="openNViewPreload('builderDetail',{rid:item.rid})")
+                  .bui-item(v-for="item in builderData.data" @tap="openDetail('builderDetail',{rid:item.rid})")
                     .bui-top
                       .bui-name {{item.user_name}}
                       .bui-id 注册号:{{item.register_no}}
@@ -253,12 +254,17 @@
   import api from '../../assets/js/api.js'
   import myMethods from '../../assets/js/methods'
   import loading from "../../components/loading";
+  import warn from "../../components/warn"
 
   export default {
     name: 'companyDetail',
-    components: {loading: loading},
+    components: {
+      loading: loading,
+      warn: warn,
+    },
     data() {
       return {
+        warnState: false,
         dataLock: false,
         rid: '',
         followed: false,
@@ -266,7 +272,7 @@
         pageKey: 1,//页面状态
         baseData: '',//基本信息
         phoneFlag: false,//联系人
-        qualificationFlag: false,//企业资质展示
+        qualificationFlag: true,//企业资质展示
         tenderSuccessData: {
           pageNum: 1,
           data: []
@@ -289,7 +295,7 @@
           pageNum: 1,
           data: []
         },//法律讼诉
-        shareData:{},
+        shareData: {},
       }
     },
     mounted() {
@@ -298,6 +304,8 @@
         vueThis.dataLock = false;
         vueThis.rid = e.detail.rid;
         vueThis.getData();
+        myMethods.uploadReset('#tenderSuccess');
+        this.tenderSuccessData.pageNum = 1;
       });
       this.jumpTo(this.pageKey);
       mui.init({
@@ -319,55 +327,68 @@
                     vueThis.tenderSuccessData.data = vueThis.tenderSuccessData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
+                },
+                noFind: () => {
+                  this.endPullupToRefresh(true);
                 }
               });
             }
           }
-        }, {
-          container: '#legalPage',
-          up: {
-            contentrefresh: "正在加载...",
-            callback: function () {
-              vueThis.legalData.pageNum += 1;
-              http({
-                url: api.search_company_legal,
-                data: {
-                  code: vueThis.rid,//////////////////////////////////公司编码
-                  cur_page: vueThis.legalData.pageNum
-                }, success: (data) => {
-                  if (data.total_page <= vueThis.legalData.pageNum) {
+        },
+          //   {
+          //   container: '#legalPage',
+          //   up: {
+          //     contentrefresh: "正在加载...",
+          //     callback: function () {
+          //       vueThis.legalData.pageNum += 1;
+          //       http({
+          //         url: api.search_company_legal,
+          //         data: {
+          //           code: vueThis.rid,//////////////////////////////////公司编码
+          //           cur_page: vueThis.legalData.pageNum
+          //         },
+          //         success: (data) => {
+          //           if (data.total_page <= vueThis.legalData.pageNum) {
+          //             this.endPullupToRefresh(true);
+          //           } else {
+          //             vueThis.legalData.data = vueThis.legalData.data.concat(data.result);
+          //             this.endPullupToRefresh(false);
+          //           }
+          //         },
+          //         noFind:()=>{
+          //           this.endPullupToRefresh(true);
+          //         }
+          //       });
+          //     }
+          //   }
+          // },
+          , {
+            container: '#builder',
+            up: {
+              contentrefresh: "正在加载...",
+              callback: function () {
+                vueThis.builderData.pageNum += 1;
+                http({
+                  url: api.search_company_builder,
+                  data: {
+                    code: vueThis.rid,//////////////////////////////////公司编码
+                    cur_page: vueThis.builderData.pageNum
+                  },
+                  success: (data) => {
+                    if (data.total_page <= vueThis.builderData.pageNum) {
+                      this.endPullupToRefresh(true);
+                    } else {
+                      vueThis.builderData.data = vueThis.builderData.data.concat(data.result);
+                      this.endPullupToRefresh(false);
+                    }
+                  },
+                  noFind: () => {
                     this.endPullupToRefresh(true);
-                  } else {
-                    vueThis.legalData.data = vueThis.legalData.data.concat(data.result);
-                    this.endPullupToRefresh(false);
                   }
-                }
-              });
+                });
+              }
             }
-          }
-        }, {
-          container: '#builder',
-          up: {
-            contentrefresh: "正在加载...",
-            callback: function () {
-              vueThis.builderData.pageNum += 1;
-              http({
-                url: api.search_company_builder,
-                data: {
-                  code: vueThis.rid,//////////////////////////////////公司编码
-                  cur_page: vueThis.builderData.pageNum
-                }, success: (data) => {
-                  if (data.total_page <= vueThis.builderData.pageNum) {
-                    this.endPullupToRefresh(true);
-                  } else {
-                    vueThis.builderData.data = vueThis.builderData.data.concat(data.result);
-                    this.endPullupToRefresh(false);
-                  }
-                }
-              });
-            }
-          }
-        }]
+          }]
       });
       mui('.scroll-wrapper').scroll({
         indicators: false
@@ -383,6 +404,7 @@
       //数据请求
       getData() {
         this.$refs.loading.show();
+        this.warnState = false;
         http({
           url: api.search_company_detail,
           data: {code: this.rid},
@@ -400,14 +422,19 @@
             this.$refs.loading.hide();
             this.dataLock = true;
             this.shareData = {
-              title:this.baseData.company_name,
-              type:3,
-              id:this.rid
+              title: this.baseData.company_name,
+              type: 3,
+              id: this.rid
             };
+          },
+          noFind: () => {
+            this.$refs.loading.hide();
+            this.warnState = true;
           }
         })
       },
-      openNViewPreload:myMethods.openNViewPreload,
+      openNViewPreload: myMethods.openNViewPreload,
+      openDetail:myMethods.openDetail,
       //页面切换
       jumpTo(key) {
         this.filterFlag = false;
@@ -449,8 +476,8 @@
               this.followed = !this.followed;
               mui.toast('取消成功');
               let view = plus.webview.getWebviewById('follow');
-              myMethods.muiFireLock(view,()=>{
-                mui.fire(view,'followChange',{})
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'followChange', {})
               })
             }
           })
@@ -466,14 +493,14 @@
               this.followed = !this.followed;
               mui.toast('关注成功');
               let view = plus.webview.getWebviewById('follow');
-              myMethods.muiFireLock(view,()=>{
-                mui.fire(view,'followChange',{})
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'followChange', {})
               })
             }
           })
         }
       },
-      openDetail:myMethods.openDetail,
+      openDetail: myMethods.openDetail,
     }
   }
 </script>

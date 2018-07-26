@@ -20,7 +20,7 @@
         li.media
           .media-content.iconfont.icon-right
             .media-lable.text-color-black
-              a(href='tel:075526656735') 固话:&nbsp;&nbsp;&nbsp;&nbsp;075526656735
+              a(href='tel:075526656735') 固话:&nbsp;&nbsp;&nbsp;&nbsp;0755-26656735
       .conpany Copyright&copy;2018-2018&nbsp;&nbsp;深圳市快标科技有限公司
 
 </template>

@@ -44,11 +44,20 @@ const myMethods = {
     let self = plus.webview.currentWebview();
     return self;
   },
-  //设置导航栏颜色
-  setStatusbar: (function () {
+  //初始化plus内容
+  loadedInit: (function () {
     mui.plusReady(() => {
+      //设置导航栏颜色
       plus.navigator.setStatusBarBackground('#04a3ee');
-    })
+      //重定义返回事件
+      let oldBack = mui.back;
+      mui.back = function () {
+        mui.plusReady(()=>{
+          plus.key.hideSoftKeybord();
+          oldBack();
+        });
+      }
+    });
   })(),
   //预加载页面，并打开页面
   openNViewPreload(url, data) {
@@ -144,17 +153,24 @@ const myMethods = {
   },
   //muiFire异步加锁事件/////////////////////////
   muiFireLock(view, fun) {
-    view.addEventListener('loaded', function () {
-      if (mui.os.ios) {
+    if (mui.os.ios){
+      view.addEventListener('loaded', function () {
         fun();
-        lock = false;
-      }
-    });
-    fun();
+      });
+      fun();
+    }else {
+      fun();
+    }
   },
   //返回/////////////////////////////
   muiOldBack() {
     mui.back();
+  },
+  /*
+  * domId:节点参数
+  * */
+  uploadReset(domId){
+    mui(domId).pullRefresh().refresh(true);
   }
 };
 

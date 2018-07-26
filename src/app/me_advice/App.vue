@@ -29,7 +29,9 @@
     },
     components: {},
     mounted() {
-
+      window.addEventListener('getData',()=>{
+        this.advice = '';
+      })
     },
     created() {
     },

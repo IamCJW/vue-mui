@@ -20,13 +20,12 @@
         img(src="../../assets/guide3_nav.png")
 
 </template>
-<style lang="stylus" scoped>
+<style lang="stylus">
   @import "guide.styl"
   .mui-slider-item
     width 100%
     img
       width 100%
-
   .nav-bar
     position absolute
     bottom .3rem

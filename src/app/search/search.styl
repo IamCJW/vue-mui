@@ -27,11 +27,12 @@
         position absolute
         bottom 0
         border-radius .05rem
-.mui-content
+.content-wrapper
+  position absolute
+  top 0
+  width 100%
   height 100vh
   padding-top .44rem
-.content-wrapper
-  height 100%
   overflow hidden
   z-index $z-index-content
   .content-full-scroll
@@ -102,9 +103,9 @@
                   display-inline-flex()
                   flex-align-item(center)
                   .iconfont.z
-                    color $third-color-x
-                  .iconfont.b
                     color $fourth-color
+                  .iconfont.b
+                    color $third-color-x
           .bui-group
             padding-top .12rem
             .bui-item

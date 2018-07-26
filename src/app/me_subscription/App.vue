@@ -64,7 +64,8 @@
     mounted() {
       window.addEventListener('getData', () => {
         this.getData();
-        myMethods.NVpreload(['subscription_add', 'subscription_selectLocation', 'subscription_selectQualification']);
+        myMethods.uploadReset('#page1');
+        this.subscriptionData.pageNum = 1;
       });
       window.addEventListener('chooseQualification', (e) => {
         this.getData();
@@ -72,6 +73,8 @@
       });
       window.addEventListener('addSuccess', (e) => {
         this.getData();
+        myMethods.uploadReset('#page1');
+        this.subscriptionData.pageNum = 1;
         mui.toast(e.detail.msg);
       });
       let vueThis = this;
@@ -219,6 +222,18 @@
         });
         let vueThis = this;
         this.picker.setData(setData);
+        let provinceSet =  itemData.province;
+        let citySet =  itemData.city || '全省';
+        let districtSet =  itemData.district;
+        if(citySet !== '全省'){
+          districtSet = districtSet || '全市';
+        }else {
+          districtSet = '全省';
+        }
+        this.picker.pickers[0].setSelectedValue(provinceSet);
+        console.log(citySet)
+        this.picker.pickers[1].setSelectedValue(citySet);
+        this.picker.pickers[1].setSelectedValue(districtSet);
         this.picker.show((res)=>{
           let province = res[0].text;
           let city = res[1].text;

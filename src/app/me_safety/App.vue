@@ -199,23 +199,34 @@
               },
               success: () => {
                 mui.toast('解绑成功');
-                plus.oauth.getServices(function (services) {
-                  for (let i in services) {
-                    let s = services[i];
-                    if (s.authResult) {
-                      s.logout(function (e) {
-                        console.log('清除授权列表成功~')
-                      }, function (e) {
-                        console.log('清除授权列表失败~')
-                      });
-                    }
-                  }
-                });
-                this.getData()
+                this.otherLoginOut(type);
+                this.getData();
               }
             });
           }
         }, 'div')
+      },
+      otherLoginOut(type) {
+        let vueThis = this;
+        plus.oauth.getServices(function (services) {
+          let sever;
+          for (let i = 0; i < services.length; i++) {
+            if (services[i].id === type) {
+              sever = services[i];
+            }
+          }
+          if (sever.authResult) {
+            sever.logout(function (e) {
+              console.log('清除授权列表成功~')
+            }, function (e) {
+              console.log('清除授权列表失败~')
+            });
+          } else {
+            sever.login(function (e) {
+              vueThis.otherLoginOut(type);
+            });
+          }
+        });
       },
     }
   }
