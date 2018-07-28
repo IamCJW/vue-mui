@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text",placeholder="请输入企业名称或统一信用代码" v-model="message" v-focus)
+        input(type="text",placeholder="请输入企业名称或统一信用代码" v-model="message")
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -33,7 +33,7 @@
                   span 资质:{{item.qualify_num}}
                   span 建造师:{{item.builder_num}}
                   span 中标:{{item.tender_sucess_num}}
-                  span.fr 最近中标:{{item.tender_last_date}}
+                  span.fr 最近中标:{{item.tender_last_date ? item.tender_last_date : '未知'}}
                 .com-records
                   span(v-for="sign in item.province_list")
                     i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
@@ -70,20 +70,11 @@
     components: {
       loading: loading
     },
-    directives: {
-      focus: {
-        inserted: function (el) {
-          el.focus();
-          mui.plusReady(()=>{
-            plus.key.showSoftKeybord();
-          });
-        }
-      }
-    },
     mounted() {
       let vueThis = this;
       window.addEventListener('getData',()=>{
         this.historyShow = true;
+        this.$refs.loading.hide();
         if(localStorage.getItem(lsKey.historySearchCompany) !== null){
           this.historyList = JSON.parse(localStorage.getItem(lsKey.historySearchCompany));
         }
@@ -102,7 +93,7 @@
                   search: vueThis.message
                 },
                 success: (data) => {
-                  if (data.total_page <= vueThis.companyData.cur_page) {
+                  if (data.total_page < vueThis.companyData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.companyData.result = vueThis.companyData.result.concat(data.result);

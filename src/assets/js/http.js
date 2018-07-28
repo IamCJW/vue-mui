@@ -41,6 +41,7 @@ const httpServer = (opts) => {
         "token": plus.storage.getItem(plusKey.token) || plus.storage.getItem(plusKey.temporaryToken),
         // "token": 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4Y2RkMmJjMWRkNzU2MGJlMWY1MjBhYzBkNzk3ZTljZiIsImlhdCI6MTUzMTM4MTYwMywic3ViIjoiMjAxODA3MTIxMTU4NTM1NTY1OCIsImlzcyI6ImtiYXBwYmFja2dyb3VkYXBpIiwiaXNHdWVzdCI6ZmFsc2V9.-a_uXcg2VJ2vz9hji2JPtWxkZ18sVza-NfAb80V9vYw',
       };
+      console.log(publicHeaders.token);
       let httpDefaultOpts = { //http默认配置
         method: opts.method,
         url: opts.url,

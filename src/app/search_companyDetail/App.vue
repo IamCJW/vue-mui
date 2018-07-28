@@ -85,7 +85,7 @@
                       .pro-assist
                         .pro-price
                           span {{item.tender_je | moneyConversion}}
-                          | {{item.tender_je ? '万' :'未知'}}
+                          | {{item.tender_je ? '万元' :'未知'}}
                         .pro-endTime {{item.builder_name}}
           //建造师
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
@@ -107,7 +107,7 @@
                       span.bui-sign 二级注册建造师
                       span.fr
                         span 专业数:{{item.professional_num}}
-                        span 最近中标:{{item.last_tender_sucess_date}}
+                        span 最近中标:{{item.tender_last_date ? item.tender_last_date : '未知'}}
                     .bui-company {{item.company_name}}
                     .bui-records
                       span(v-for="sign in item.province_list")
@@ -306,6 +306,8 @@
         vueThis.getData();
         myMethods.uploadReset('#tenderSuccess');
         this.tenderSuccessData.pageNum = 1;
+        myMethods.uploadReset('#builder');
+        this.builderData.pageNum = 1;
       });
       this.jumpTo(this.pageKey);
       mui.init({
@@ -321,7 +323,7 @@
                   code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.tenderSuccessData.pageNum
                 }, success: (data) => {
-                  if (data.total_page <= vueThis.tenderSuccessData.pageNum) {
+                  if (data.total_page < vueThis.tenderSuccessData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.tenderSuccessData.data = vueThis.tenderSuccessData.data.concat(data.result);
@@ -375,7 +377,7 @@
                     cur_page: vueThis.builderData.pageNum
                   },
                   success: (data) => {
-                    if (data.total_page <= vueThis.builderData.pageNum) {
+                    if (data.total_page < vueThis.builderData.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
                       vueThis.builderData.data = vueThis.builderData.data.concat(data.result);

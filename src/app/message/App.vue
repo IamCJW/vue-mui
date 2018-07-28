@@ -107,6 +107,18 @@
       window.addEventListener('readed',()=>{
         this.getData();
       });
+      window.addEventListener('getData', () => {
+        this.getData();
+        myMethods.uploadReset('#page1');
+        this.subscribeData.pageNum = 1;
+      });
+      window.addEventListener('loginSuccess', () => {
+        this.getData();
+      });
+      window.addEventListener('loginOut', () => {
+        this.dataLock = false;
+        this.unToken = true;
+      });
       mui.init({
         gestureConfig: {
           longtap: true, //默认为false
@@ -123,7 +135,7 @@
                   cur_page: vueThis.subscribeData.pageNum,
                   msg_type: vueThis.filterMsg.subscribeFlag,
                 }, success: (data) => {
-                  if (data.total_page <= vueThis.subscribeData.pageNum) {
+                  if (data.total_page < vueThis.subscribeData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.subscribeData.data = vueThis.subscribeData.data.concat(data.result);
@@ -149,7 +161,7 @@
                   msg_type: vueThis.filterMsg.systemFlag,
                 },
                 success: (data) => {
-                  if (data.total_page <= vueThis.systemData.pageNum) {
+                  if (data.total_page < vueThis.systemData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.systemData.data = vueThis.systemData.data.concat(data.result);
@@ -169,14 +181,6 @@
           indicators: false
         }
       );
-      window.addEventListener('getData', () => {
-        this.getData();
-        myMethods.uploadReset('#page1');
-        this.subscribeData.pageNum = 1;
-      });
-      window.addEventListener('loginSuccess', () => {
-        this.getData();
-      });
     },
     created() {
 

@@ -5,10 +5,20 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text" placeholder="请输入企业名称" v-model="message" v-focus)
+        input(type="text" placeholder="请输入企业名称" v-model="message")
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
+      .history-header(v-show="historyShow")
+        .history-lable 历史记录
+        .history-clear(@tap="historyClear()")
+          i.iconfont.icon-Rubbish
+          span 清空历史记录
+      ul.media-view.history-content(v-show="historyShow")
+        li.media(v-show="!historyList.length")
+          .media-content 您还没搜索呢，快去搜搜看~
+        li.media(v-for="item in historyList", @tap="historySearch(item)")
+          .media-content {{item}}
       loading(ref="loading")
       .box(v-show="dataLock")
         .none(v-show="total === 0")
@@ -39,6 +49,7 @@
   import api from '../../assets/js/api'
   import myMethods from '../../assets/js/methods'
   import loading from '../../components/loading'
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'searchCompany',
@@ -50,18 +61,9 @@
         companyData: {
           cur_page: 1,
           result: []
-        }
-      }
-    },
-    directives: {
-      focus: {
-        // 指令的定义
-        inserted: function (el) {
-          el.focus();
-          mui.plusReady(()=>{
-            plus.key.showSoftKeybord();
-          });
-        }
+        },
+        historyShow:true,
+        historyList:[],
       }
     },
     components: {
@@ -69,6 +71,13 @@
     },
     mounted() {
       let vueThis = this;
+      window.addEventListener('getData',()=>{
+        this.historyShow = true;
+        this.$refs.loading.hide();
+        if(localStorage.getItem(lsKey.historySearchCompanyOwn) !== null){
+          this.historyList = JSON.parse(localStorage.getItem(lsKey.historySearchCompanyOwn));
+        }
+      });
       mui.init({
         pullRefresh: [{
           container: '#companyGroup',
@@ -108,6 +117,16 @@
       });
     },
     methods: {
+      //清除历史记录
+      historyClear(){
+        localStorage.removeItem(lsKey.historySearchCompanyOwn);
+        this.historyList = [];
+      },
+      //历史查询事件
+      historySearch(item){
+        this.message = item;
+        this.search();
+      },
       // 搜索事件
       search() {
         if(!this.message){
@@ -116,8 +135,24 @@
         }
         this.$refs.loading.show();
         this.dataLock = false;
-        myMethods.uploadReset('#companyGroup');
         this.companyData.cur_page = 1;
+        let message = this.message;
+        let historyList;
+        if (this.historyList.length !== 0){
+          historyList = this.historyList;
+        }else {
+          historyList = [];
+        }
+        historyList.unshift(message);
+        historyList.forEach((item,index)=>{
+          if(item === this.message && index !== 0){
+            historyList.splice(index,1)
+          }
+        });
+        this.historyList = historyList;
+        localStorage.setItem(lsKey.historySearchCompanyOwn,JSON.stringify(this.historyList));
+        this.historyShow = false;
+        myMethods.uploadReset('#companyGroup');
         http({
           url: api.search_tender_company,
           data: {search: this.message},

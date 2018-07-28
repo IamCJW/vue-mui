@@ -85,28 +85,39 @@
       otherLogin(type) {
         let vueThis = this;
         mui.plusReady(function () {
-          plus.oauth.getServices((services) => {
-            let sever;
-            for (let i = 0; i < services.length; i++) {
-              if (services[i].id === type) {
-                sever = services[i];
-                break;
+          plus.oauth.getServices(
+            (services) => {
+              let sever;
+              for (let i = 0; i < services.length; i++) {
+                if (services[i].id === type) {
+                  sever = services[i];
+                  break;
+                }
               }
-            }
-            if (!sever.authResult) {
-              sever.login(function (e) {
-                sever.getUserInfo(function (e) {
-                  vueThis.oauthDo(type, sever)
-                }, function (e) {
-                  mui.toast('获取用户信息失败');
-                });
-              }, function (e) {
-                mui.toast('登录认证失败');
-              });
-            } else {
-              vueThis.oauthDo(type, sever)
-            }
-          })
+              sever.login(
+                (e) => {
+                  sever.getUserInfo(
+                    (e) => {
+                      vueThis.oauthDo(type, sever)
+                    },
+                    (e) => {
+                      mui.toast('获取用户信息失败');
+                    }
+                  );
+                },
+                (e) => {
+                  sever.logout(function (e) {
+                    console.log('清除授权列表成功~')
+                  }, function (e) {
+                    console.log('清除授权列表失败~')
+                  });
+                  mui.toast('登录认证失败');
+                }
+              );
+            },
+            () => {
+              mui.toast('登录认证失败');
+            })
         })
       },
       //第三方登录操作
@@ -207,7 +218,6 @@
         }, 'div')
       },
       otherLoginOut(type) {
-        let vueThis = this;
         plus.oauth.getServices(function (services) {
           let sever;
           for (let i = 0; i < services.length; i++) {
@@ -215,17 +225,11 @@
               sever = services[i];
             }
           }
-          if (sever.authResult) {
-            sever.logout(function (e) {
-              console.log('清除授权列表成功~')
-            }, function (e) {
-              console.log('清除授权列表失败~')
-            });
-          } else {
-            sever.login(function (e) {
-              vueThis.otherLoginOut(type);
-            });
-          }
+          sever.logout(function (e) {
+            console.log('清除授权列表成功~')
+          }, function (e) {
+            console.log('清除授权列表失败~')
+          });
         });
       },
     }

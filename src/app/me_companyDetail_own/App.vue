@@ -30,7 +30,7 @@
                     .pro-endTime {{item.end_datetime}}
                     .pro-price
                       span {{item.amount | moneyConversion}}
-                      | {{item.amount ? '万' :'未知'}}
+                      | {{item.amount ? '万元' :'未知'}}
       .mask.menu(v-show="menuStatus", @tap="menuShow(false)")
         .popout
           .popout-arrow

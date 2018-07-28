@@ -50,7 +50,7 @@
                           .pro-endTime {{!item.end_datetime ? '未知': item.end_datetime | dateCountDown}}
                           .pro-price
                             span {{item.amount | moneyConversion}}
-                            | {{item.amount ? '万' : '未知' }}
+                            | {{item.amount ? '万元' : '未知' }}
           //公告
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .jumpToTop(v-show="top2 && pageKey === 1", @tap="jumpToTop('2')")
@@ -83,7 +83,7 @@
                           .pro-endTime {{!item.end_datetime ? '未知': item.end_datetime | dateCountDown}}
                           .pro-price
                             span {{item.amount|moneyConversion}}
-                            | {{item.amount ? '万' : '未知' }}
+                            | {{item.amount ? '万元' : '未知' }}
           //中标
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .jumpToTop(v-show="top3 && pageKey === 2")
@@ -115,8 +115,8 @@
                         .pro-assist
                           .pro-price
                             span {{item.tender_je | moneyConversion}}
-                            | {{item.tender_je ? '万' : '未知'}}
-                          .pro-endTime {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
+                            | {{item.tender_je ? '万元' : '未知'}}
+                          .pro-endTime {{item.province | addressFilter}}{{!item.city? '':' · '+item.city| addressFilter}}</br>{{!item.district? '': item.district| addressFilter}}
           //更多
           .content-page(@swiperight="contentSwiperight", @swipeleft="openTabNav('message',1)")
             .jumpToTop(v-show="top4 && pageKey === 3")
@@ -227,7 +227,7 @@
           },
         },
         loginState: false,//登录状态
-        pageKey: 0,//页面状态
+        pageKey: 1,//页面状态
         localLocation: '正在定位',//定位信息
         province: '',//选择的省份
         city: '',//选择的城市
@@ -285,7 +285,7 @@
     },
     methods: {
       //获取初始数据
-      getData() {
+      getData(fun) {
         this.muiInit();
         this.$refs.loading.show();
         this.pageIndex0 = {data: [], pageNum: 1};//招标订阅信息
@@ -313,11 +313,11 @@
             mui('#page2').pullRefresh().scrollTo(0, 0, 100);
             mui('#page3').pullRefresh().scrollTo(0, 0, 100);
             mui('#page4').pullRefresh().scrollTo(0, 0, 100);
+            fun();
           },
-          error: (data) => {
+          error: () => {
             this.$refs.loading.hide();
             this.dataLock = true;
-            mui.toast(data.msg);
           }
         });
         http({
@@ -720,7 +720,7 @@
                     cur_page: vueThis.pageIndex0.pageNum
                   },
                   success: (data) => {
-                    if (data.total_page <= vueThis.pageIndex0.pageNum) {
+                    if (data.total_page < vueThis.pageIndex0.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
                       vueThis.pageIndex0.data = vueThis.pageIndex0.data.concat(data.result);
@@ -728,7 +728,7 @@
                     }
                   },
                   noFind: (data) => {
-                    this.endPullupToRefresh(true);
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -764,7 +764,7 @@
                   url: api.tender,
                   data: Object.assign(vueThis.filterSelect1, {cur_page: vueThis.pageIndex1.pageNum}),
                   success: (data) => {
-                    if (data.total_page <= vueThis.pageIndex1.pageNum) {
+                    if (data.total_page < vueThis.pageIndex1.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
                       vueThis.pageIndex1.data = vueThis.pageIndex1.data.concat(data.result);
@@ -772,7 +772,7 @@
                     }
                   },
                   noFind: () => {
-                    this.endPullupToRefresh(true);
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -808,7 +808,7 @@
                   url: api.tender_success,
                   data: Object.assign(vueThis.filterSelect2, {cur_page: vueThis.pageIndex2.pageNum}),
                   success: (data) => {
-                    if (data.total_page <= vueThis.pageIndex2.pageNum) {
+                    if (data.total_page < vueThis.pageIndex2.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
                       vueThis.pageIndex2.data = vueThis.pageIndex2.data.concat(data.result);
@@ -816,7 +816,7 @@
                     }
                   },
                   noFind: () => {
-                    this.endPullupToRefresh(true);
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -852,7 +852,7 @@
                   url: api.tender_more,
                   data: Object.assign(vueThis.filterSelect3, {cur_page: vueThis.pageIndex3.pageNum}),
                   success: (data) => {
-                    if (data.total_page <= vueThis.pageIndex3.pageNum) {
+                    if (data.total_page < vueThis.pageIndex3.pageNum) {
                       this.endPullupToRefresh(true);
                     } else {
                       vueThis.pageIndex3.data = vueThis.pageIndex3.data.concat(data.result);
@@ -860,28 +860,25 @@
                     }
                   },
                   noFind: () => {
-                    this.endPullupToRefresh(true);
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
             }
           }]
         });
-        mui('.mui-scroll-wrapper').scroll({
-            deceleration: 0.1,
-            indicators: false
-          }
-        );
       }
     },
     mounted() {
       this.location();
-      this.getData();
-      if (this.pageIndex0.data.length !== 0) {
-        this.jumpTo(0);
-      } else {
-        this.jumpTo(1);
-      }
+      let vueThis = this;
+      this.getData(function () {
+        if (vueThis.pageIndex0.data.length) {
+          vueThis.jumpTo(0);
+        } else {
+          vueThis.jumpTo(1);
+        }
+      });
       for (let i=1; i <= 4; i++) {
         document.querySelector(`#page${i}`).addEventListener('scroll', (e) => {
           if (e.detail.y < -2000) {
@@ -907,7 +904,6 @@
         this.location();
         this.getData();
       });
-      let vueThis = this;
       mui.plusReady(() => {
         if (plus.storage.getItem(plusKey.firstOpen)) {
           plus.navigator.setFullscreen(false);

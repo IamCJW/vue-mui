@@ -190,6 +190,7 @@
         let vueThis = this;
         let changSex = new mui.PopPicker();
         changSex.setData([{value: '1', text: '男'}, {value: '0', text: '女'}]);
+        changSex.pickers[0].setSelectedValue(vueThis.gender === '男' ? 1 : 0);
         changSex.show(function (items) {
           vueThis.gender = items[0].text;
         });

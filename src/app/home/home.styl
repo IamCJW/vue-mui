@@ -61,17 +61,19 @@
     height 100%
     position relative
     overflow hidden
-    left 0
+    left -100vw
     transition .3s left
     .content-page
       position relative
       float left
       width 100vw
       height 100%
-      padding 0 .12rem
       overflow-y auto
       .scroll-wrapper
         height 100%
+        position: relative;
+        overflow: hidden;
+        padding 0 .12rem
       .filter-wrapper
         overflow hidden
         .filter
@@ -133,12 +135,14 @@
             height 100%
             color $text-color-light-x
             div
-              height 49.8%
+              height 34.8%
               width 100%
               display-flex()
               flex-align-item(center)
               flex-justify-content(center)
               line-height 1.2
+              &:last-child
+                height 65%
             div:last-child
               border-top $border-default
             .pro-price

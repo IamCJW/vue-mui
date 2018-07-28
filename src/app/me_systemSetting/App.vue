@@ -63,7 +63,7 @@
         verData: {},
         wxCode: false,
         codeUrl: '',
-        pushP:false,
+        pushP: false,
       }
     },
     components: {
@@ -75,7 +75,7 @@
       mui.plusReady(() => {
         vueThis.version = plus.runtime.version;
         let pp = plus.navigator.checkPermission('NOTIFITION');
-        if(pp !== 'authorized') vueThis.pushP = true;
+        if (pp !== 'authorized') vueThis.pushP = true;
       });
       window.addEventListener('getData', () => {
         this.getData();
@@ -126,19 +126,19 @@
         mui.toast('清理完毕');
         mui.plusReady(() => {
           let homeView = plus.webview.getWebviewById('home');
-          myMethods.muiFireLock(homeView,()=>{
+          myMethods.muiFireLock(homeView, () => {
             mui.fire(homeView, 'localStorageClear', {msg: '缓存被清理'})
           });
           let selectLocation = plus.webview.getWebviewById('selectLocation');
-          myMethods.muiFireLock(selectLocation,()=>{
+          myMethods.muiFireLock(selectLocation, () => {
             mui.fire(selectLocation, 'localStorageClear', {msg: '缓存被清理'})
           });
           let selectQualify = plus.webview.getWebviewById('selectQualify');
-          myMethods.muiFireLock(selectQualify,()=>{
+          myMethods.muiFireLock(selectQualify, () => {
             mui.fire(selectQualify, 'localStorageClear', {msg: '缓存被清理'})
           });
           let selectQualifys = plus.webview.getWebviewById('selectQualifys');
-          myMethods.muiFireLock(selectQualifys,()=>{
+          myMethods.muiFireLock(selectQualifys, () => {
             mui.fire(selectQualifys, 'localStorageClear', {msg: '缓存被清理'})
           });
         })
@@ -184,29 +184,29 @@
             plus.oauth.getServices(function (services) {
               for (let i in services) {
                 let s = services[i];
-                if (s.authResult) {
-                  s.logout(function (e) {
-                    console.log('清除授权列表成功~')
-                  }, function (e) {
-                    console.log('清除授权列表失败~')
-                  });
-                }else {
-                  s.login(function () {
-                    s.logout()
-                  })
-                }
+                s.logout(function (e) {
+                  console.log('清除授权列表成功~')
+                }, function (e) {
+                  console.log('清除授权列表失败~')
+                });
               }
             }, function (e) {
               console.log('获取授权列表失败~')
             });
             let view = plus.webview.getWebviewById('me');
             let homeView = plus.webview.getWebviewById('home');
-            myMethods.muiFireLock(view,()=>{
+            let msgView = plus.webview.getWebviewById('message');
+            myMethods.muiFireLock(msgView, () => {
+              mui.fire(msgView, 'loginOut', {
+                msg: '退出登录成功~'
+              });
+            });
+            myMethods.muiFireLock(view, () => {
               mui.fire(view, 'loginOut', {
                 msg: '退出登录成功~'
               });
             });
-            myMethods.muiFireLock(homeView,()=>{
+            myMethods.muiFireLock(homeView, () => {
               mui.fire(homeView, 'loginOut', {
                 msg: '退出登录成功~'
               });
@@ -217,28 +217,6 @@
             mui.toast(data.msg);
           }
         })
-      },
-      otherLoginOut(type) {
-        let vueThis = this;
-        plus.oauth.getServices(function (services) {
-          let sever;
-          for (let i = 0; i < services.length; i++) {
-            if (services[i].id === type) {
-              sever = services[i];
-            }
-          }
-          if (sever.authResult) {
-            sever.logout(function (e) {
-              console.log('清除授权列表成功~')
-            }, function (e) {
-              console.log('清除授权列表失败~')
-            });
-          } else {
-            sever.login(function (e) {
-              vueThis.otherLoginOut(type);
-            });
-          }
-        });
       },
       //频率选择
       chooseNotify_type() {
@@ -258,7 +236,7 @@
           value: '120',
           text: '两小时'
         }]);
-        userPicker.pickers[0].setSelectedValue[vueThis.notify_type];
+        userPicker.pickers[0].setSelectedValue(vueThis.notify_type);
         userPicker.show(function (items) {
           http({
             url: api.member_system_config,

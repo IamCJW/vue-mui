@@ -171,6 +171,7 @@ const myMethods = {
   * */
   uploadReset(domId){
     mui(domId).pullRefresh().refresh(true);
+    mui(domId).pullRefresh().scrollTo(0,0,0);
   }
 };
 

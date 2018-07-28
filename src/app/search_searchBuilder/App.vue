@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text" placeholder="请输入建造师姓名或证书号" v-model="message" v-focus)
+        input(type="text" placeholder="请输入建造师姓名或证书号" v-model="message")
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -36,7 +36,7 @@
                   span.bui-sign {{item.level}}
                   span.fr
                     span 专业数:{{item.professional_num}}
-                    span 最近中标:{{item.tender_last_date}}
+                    span 最近中标:{{item.tender_last_date ? item.tender_last_date : '未知'}}
                 .bui-company {{item.company_name}}
                 .bui-records
                   span(v-for="sign in item.province_list")
@@ -72,22 +72,12 @@
         historyList:[],
       }
     },
-    directives: {
-      focus: {
-        // 指令的定义
-        inserted: function (el) {
-          el.focus();
-          mui.plusReady(()=>{
-            plus.key.showSoftKeybord();
-          });
-        }
-      }
-    },
     mounted() {
       let vueThis = this;
       let province = localStorage.getItem(lsKey.locationProvince);
       window.addEventListener('getData',()=>{
         this.historyShow = true;
+        this.$refs.loading.hide();
         if(localStorage.getItem(lsKey.historySearchBuilder) !== null){
           this.historyList = JSON.parse(localStorage.getItem(lsKey.historySearchBuilder));
         }
@@ -100,7 +90,7 @@
             callback: function () {
               vueThis.builderData.cur_page += 1;
               http({
-                url: api.search_company,
+                url: api.search_builder_search,
                 data: {
                   search: vueThis.message,
                   province:province,
@@ -130,6 +120,11 @@
           return true;
         }
       });
+      mui('.mui-scroll-wrapper').scroll({
+          deceleration: 0.1,
+          indicators: false
+        }
+      );
     },
     methods: {
       //清除历史记录

@@ -42,7 +42,7 @@
             td.th
               span(v-if="index === 0") 标段金额
             td {{item.name}}
-            td(v-if="item.amount") {{item.amount|moneyConversion}}万
+            td(v-if="item.amount") {{item.amount|moneyConversion}}万元
             td(v-if="!item.amount") 未知
           tr
             td.th 信息来源
@@ -62,27 +62,27 @@
             td.th 招标人
             td(colspan="3") {{tender_info.tender_name}}
           tr(v-if="pullMsg.proxy_name")
-            td.th 招标代理
+            td.th 招标</br>代理
             td(colspan="3") {{pullMsg.proxy_name}}
           template(v-for="(item,index) in pullMsg.section_info")
             tr
               td.text-color-main.th(colspan="4") 标段名称:{{item.name}}
             tr
-              td.th 中标单位
+              td.th 中标</br>单位
               td(colspan="3", @tap="openDetail('companyDetail',{rid:item.code})") {{item.company_name}}
                 a.fz10.mui-ellipsis [查看企业详情]
             tr
-              td.th 中标金额
-              td(colspan="3") {{item.tender_je | moneyConversion}}万
+              td.th 中标</br>金额
+              td(colspan="3") {{item.tender_je | moneyConversion}}万元
             tr(v-if="item.builder_name !== ''")
               td.th {{tender_info.tender_type === '监理'?'总监':''}}{{tender_info.tender_type === '设计'|| tender_info.tender_type === '勘察' ||tender_info.tender_type === '一体化'?'项目负责人':''}}{{tender_info.tender_type !== '监理'&&tender_info.tender_type !== '设计'&& tender_info.tender_type !== '勘察' &&tender_info.tender_type !== '一体化'?'建造师':''}}
               td.th(@tap="openDetail('builderDetail',{company_name:item.company_name,register_no:item.certificate_no,user_name:item.builder_name})")
                 span.mui-ellipsis {{item.builder_name}}
                 a.fz10.mui-ellipsis [查看详情]
-              td.th 注册证书
+              td.th 注册</br>证书
               td.mui-ellipsis {{item.certificate_no}}
           tr
-            td.th 信息来源
+            td.th 信息</br>来源
             td(colspan="3",@tap="openNViewView('otherPage',{otherUrl:pullMsg.url},pullMsg.resource)") {{pullMsg.resource}}
               a.fz10.mui-ellipsis [查看原文]
           tr

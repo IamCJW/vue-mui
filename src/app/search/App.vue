@@ -25,7 +25,7 @@
                         span 资质:{{item.qualify_num}}
                         span 建造师:{{item.builder_num}}
                         span 中标:{{item.tender_sucess_num}}
-                        span.fr 最近中标:{{item.tender_last_date}}
+                        span.fr 最近中标:{{item.tender_last_date ? item.tender_last_date : '未知'}}
                       .com-records
                         span(v-for="sign in item.province_list")
                           i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
@@ -49,7 +49,7 @@
                         span.bui-sign {{item.level || 未知}}
                         span.fr
                           span 专业数:{{item.professional_num}}
-                          span 最近中标:{{item.tender_last_date}}
+                          span 最近中标:{{item.tender_last_date ? item.tender_last_date : '未知'}}
                       .bui-company {{item.company_name}}
                       .bui-records
                         span(v-for="sign in item.province_list")
@@ -170,7 +170,7 @@
                   cur_page: vueThis.companyData.cur_page,
                 }, success: (data) => {
                   vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
-                  if (data.total_page <= vueThis.companyData.cur_page) {
+                  if (data.total_page < vueThis.companyData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
@@ -192,7 +192,7 @@
                   cur_page: vueThis.builderData.cur_page,
                 }, success: (data) => {
                   vueThis.builderData.result = vueThis.builderData.result.concat(data.result);
-                  if (data.total_page <= vueThis.builderData.cur_page) {
+                  if (data.total_page < vueThis.builderData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);

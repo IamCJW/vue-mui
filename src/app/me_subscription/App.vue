@@ -90,7 +90,7 @@
                 data: {
                   cur_page: vueThis.subscriptionData.pageNum
                 }, success: (data) => {
-                  if (data.total_page <= vueThis.subscriptionData.pageNum) {
+                  if (data.total_page < vueThis.subscriptionData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.subscriptionData.data = vueThis.subscriptionData.data.concat(data.result);
@@ -201,18 +201,19 @@
         data.forEach((item) => {
           provinceData = {
             text: item.name,
-            value: item.code,
+            value: item.name,
             children: [],
           };
           item.city.forEach((item) => {
             cityData = {
               text: item.name,
-              value: item.code,
+              value: item.name,
               children: [],
             };
             item.district.forEach((item) => {
               districtData = {
                 text: item.name,
+                value:item.name,
               };
               cityData.children.push(districtData);
             });
@@ -231,9 +232,8 @@
           districtSet = '全省';
         }
         this.picker.pickers[0].setSelectedValue(provinceSet);
-        console.log(citySet)
         this.picker.pickers[1].setSelectedValue(citySet);
-        this.picker.pickers[1].setSelectedValue(districtSet);
+        this.picker.pickers[2].setSelectedValue(districtSet);
         this.picker.show((res)=>{
           let province = res[0].text;
           let city = res[1].text;

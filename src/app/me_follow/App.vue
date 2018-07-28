@@ -2,7 +2,7 @@
   #app
     .detail-nav-bar
       span.detail-bar-item(@tap="jumpTo(0)", :class="{active: pageKey===0}") 项目
-      span.detail-bar-item(@tap="jumpTo(1)", :class="{active: pageKey===1}") 业主
+      span.detail-bar-item(@tap="jumpTo(1)", :class="{active: pageKey===1}",v-if="false") 业主
       span.detail-bar-item(@tap="jumpTo(2)", :class="{active: pageKey===2}") 建筑企业
       span.detail-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 建造师
     .mui-content
@@ -30,7 +30,7 @@
                         .mui-ellipsis {{item.name}}
                         .mui-ellipsis.tip {{item.name}}
                       button(@tap.stop="follow(item.code,1)") 取消关注
-          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()")
+          .content-page(@swipeleft="contentSwipeleft()", @swiperight="contentSwiperight()",v-if="false")
             .scroll-wrapper#page2
               .scroll-box
                 template(v-if='!company_follows.data.length && dataLock')
@@ -136,8 +136,8 @@
         this.getData();
         myMethods.uploadReset('#page1');
         this.project_follows.pageNum = 1;
-        myMethods.uploadReset('#page2');
-        this.tender_follows.pageNum = 1;
+        // myMethods.uploadReset('#page2');
+        // this.tender_follows.pageNum = 1;
         myMethods.uploadReset('#page3');
         this.company_follows.pageNum = 1;
         myMethods.uploadReset('#page4');
@@ -147,8 +147,8 @@
         this.getData();
         myMethods.uploadReset('#page1');
         this.project_follows.pageNum = 1;
-        myMethods.uploadReset('#page2');
-        this.tender_follows.pageNum = 1;
+        // myMethods.uploadReset('#page2');
+        // this.tender_follows.pageNum = 1;
         myMethods.uploadReset('#page3');
         this.company_follows.pageNum = 1;
         myMethods.uploadReset('#page4');
@@ -166,7 +166,7 @@
                 data: {
                   cur_page: vueThis.project_follows.pageNum
                 }, success: (data) => {
-                  if (data.total_page <= vueThis.project_follows.pageNum) {
+                  if (data.total_page < vueThis.project_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.project_follows.data = vueThis.project_follows.data.concat(data.result);
@@ -176,28 +176,30 @@
               });
             }
           }
-        },{
-          container: '#page2',
-          up: {
-            contentrefresh: "正在加载...",
-            callback: function () {
-              vueThis.company_follows.pageNum += 1;
-              http({
-                url: api.member_follow_company,
-                data: {
-                  cur_page: vueThis.company_follows.pageNum
-                }, success: (data) => {
-                  if (data.total_page <= vueThis.company_follows.pageNum) {
-                    this.endPullupToRefresh(true);
-                  } else {
-                    vueThis.company_follows.data = vueThis.company_follows.data.concat(data.result);
-                    this.endPullupToRefresh(false);
-                  }
-                }
-              });
-            }
-          }
-        },{
+        },
+        //   {
+        //   container: '#page2',
+        //   up: {
+        //     contentrefresh: "正在加载...",
+        //     callback: function () {
+        //       vueThis.company_follows.pageNum += 1;
+        //       http({
+        //         url: api.member_follow_company,
+        //         data: {
+        //           cur_page: vueThis.company_follows.pageNum
+        //         }, success: (data) => {
+        //           if (data.total_page < vueThis.company_follows.pageNum) {
+        //             this.endPullupToRefresh(true);
+        //           } else {
+        //             vueThis.company_follows.data = vueThis.company_follows.data.concat(data.result);
+        //             this.endPullupToRefresh(false);
+        //           }
+        //         }
+        //       });
+        //     }
+        //   }
+        // },
+          {
           container: '#page3',
           up: {
             contentrefresh: "正在加载...",
@@ -208,7 +210,7 @@
                 data: {
                   cur_page: vueThis.tender_follows.pageNum
                 }, success: (data) => {
-                  if (data.total_page <= vueThis.tender_follows.pageNum) {
+                  if (data.total_page < vueThis.tender_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.tender_follows.data = vueThis.tender_follows.data.concat(data.result);
@@ -229,7 +231,7 @@
                 data: {
                   cur_page: vueThis.builder_follows.pageNum
                 }, success: (data) => {
-                  if (data.total_page <= vueThis.builder_follows.pageNum) {
+                  if (data.total_page < vueThis.builder_follows.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.builder_follows.data = vueThis.builder_follows.data.concat(data.result);
@@ -257,7 +259,7 @@
             this.project_follows.data = data.project_follows || [];
             this.tender_follows.data = data.tender_follows || [];
             mui('#page1').pullRefresh().scrollTo(0,0,100);
-            mui('#page2').pullRefresh().scrollTo(0,0,100);
+            // mui('#page2').pullRefresh().scrollTo(0,0,100);
             mui('#page3').pullRefresh().scrollTo(0,0,100);
             mui('#page4').pullRefresh().scrollTo(0,0,100);
             this.$refs.loading.hide();
@@ -268,20 +270,35 @@
       //页面切换
       jumpTo(key) {
         this.pageKey = key;
+        if(key>0){
+          key = key -1;
+        }
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`;
       },
       //左滑事件
       contentSwipeleft() {
         this.pageKey = this.pageKey + 1;
+        if(this.pageKey === 1){
+          this.pageKey = this.pageKey + 1;
+        }
         let key = this.pageKey;
+        if(key>0){
+          key = key -1;
+        }
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },
       //右滑事件
       contentSwiperight() {
         this.pageKey = this.pageKey - 1;
+        if(this.pageKey === 1){
+          this.pageKey = this.pageKey -1;
+        }
         let key = this.pageKey;
+        if(key>0){
+          key = key -1;
+        }
         let leftValue = 100 * key;
         this.$refs.barscroll.style.left = `-${leftValue}vw`
       },//关注按钮

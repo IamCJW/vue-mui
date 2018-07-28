@@ -112,6 +112,7 @@
           this.codeText = `${this.totalTime}s后获取`;
           if (this.totalTime < 1) {
             window.clearInterval(clock);
+            this.totalTime = 60;
             this.codeText = '重新获取';
             this.codeFlag = false;
           }

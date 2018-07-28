@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text",placeholder="请输入要查询的项目",v-model='searchMsg', v-focus)
+        input(type="text",placeholder="请输入要查询的项目",v-model='searchMsg',)
         i(v-show="searchMsg.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="searchPro") 搜索
     .mui-content
@@ -76,6 +76,7 @@
       let vueThis = this;
       window.addEventListener('getData', () => {
         this.historyShow = true;
+        this.$refs.loading.hide();
         if (localStorage.getItem(lsKey.historySearchProject) !== null) {
           this.historyList = JSON.parse(localStorage.getItem(lsKey.historySearchProject));
         }
@@ -107,7 +108,7 @@
                   search: vueThis.searchMsg
                 },
                 success: (data) => {
-                  if (data.total_page <= vueThis.proData.pageNum) {
+                  if (data.total_page < vueThis.proData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.proData.data = vueThis.proData.data.concat(data.result);
@@ -134,17 +135,6 @@
           return true;
         }
       },)
-    },
-    directives: {
-      focus: {
-        // 指令的定义
-        inserted: function (el) {
-          el.focus();
-          mui.plusReady(() => {
-            plus.key.showSoftKeybord();
-          });
-        }
-      }
     },
     methods: {
       //清除历史记录

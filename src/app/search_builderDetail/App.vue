@@ -34,11 +34,12 @@
                     span  {{baseData.tender_sucess_num}}
                   .fr
                     span.text-color-black 最近中标
-                    span  {{baseData.last_tender_sucess_date}}
+                    span  {{baseData.tender_last_date ? baseData.tender_last_date : '未知'}}
               .module2
-                div.overflow-auto
+                div.overflow-auto(@tap="openDetail('companyDetail',{rid:baseData.company_code})")
                   .fl.text-color-black 注册公司
                   .fr {{baseData.company_name}}
+                    a.fz10.mui-ellipsis [查看详情]
               .module3
                 span(v-for="sign in baseData.province_list")
                   i.iconfont(:class="[sign.is_register === 1 ? 'icon-Note z' : 'icon-Prepare b']")
@@ -57,7 +58,7 @@
                   .pro-assist
                     .pro-price
                       span {{item.tender_je | moneyConversion}}
-                      | {{item.tender_je ? '万' :'未知'}}
+                      | {{item.tender_je ? '万元' :'未知'}}
                     .pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
 
 </template>
@@ -111,7 +112,7 @@
                   code: vueThis.rid,
                 },
                 success: (data) => {
-                  if (data.total_page <= vueThis.builderTenderData.pageNum) {
+                  if (data.total_page < vueThis.builderTenderData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
                     vueThis.builderTenderData.data = vueThis.builderTenderData.data.concat(data.result);
@@ -119,6 +120,9 @@
                   }
                 },
                 noFind:()=>{
+                  this.endPullupToRefresh(true);
+                },
+                error:()=>{
                   this.endPullupToRefresh(true);
                 }
               });

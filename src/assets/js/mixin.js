@@ -7,7 +7,9 @@ const mixin = {
   filters: {
     moneyConversion: (mon) => {
       let money = mon/1000000;
-      return money.toFixed(6);
+      money = money.toFixed(6);
+      money = parseFloat(money);
+      return money;
     }
   },
   methods: {
