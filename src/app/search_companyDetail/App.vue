@@ -104,7 +104,7 @@
                       .bui-id 注册号:{{item.register_no}}
                       div 中标数量:{{item.tender_sucess_num}}
                     .bui-mid
-                      span.bui-sign 二级注册建造师
+                      span.bui-sign {{item.level}}
                       span.fr
                         span 专业数:{{item.professional_num}}
                         span 最近中标:{{item.tender_last_date ? item.tender_last_date : '未知'}}

@@ -2,7 +2,7 @@
   #app
     header.header-nav
       span.mui-action-back.iconfont.icon-return
-      .header-title {{baseData.user_name  || '姓名'}}
+      .header-title {{baseData.user_name}}
       .hide-module
         .modoule-top
           .user-head
@@ -98,6 +98,16 @@
     },
     mounted() {
       let vueThis = this;
+      window.addEventListener('getData', (e) => {
+        this.rid = e.detail.rid || '';
+        this.company_name = e.detail.company_name || '';
+        this.register_no = e.detail.register_no || '';
+        this.user_name = e.detail.user_name || '';
+        vueThis.dataLock = false;
+        vueThis.getData();
+        myMethods.uploadReset('#builderTender');
+        this.builderTenderData.pageNum = 1;
+      });
       mui.init({
         pullRefresh: [{
           container: '#builderTender',
@@ -129,16 +139,6 @@
             }
           }
         }]
-      });
-      window.addEventListener('getData', (e) => {
-        this.rid = e.detail.rid || '';
-        this.company_name = e.detail.company_name || '';
-        this.register_no = e.detail.register_no || '';
-        this.user_name = e.detail.user_name || '';
-        vueThis.dataLock = false;
-        vueThis.getData();
-        myMethods.uploadReset('#builderTender');
-        this.builderTenderData.pageNum = 1;
       });
       mui.plusReady(() => {
         this.updateSerivces();
