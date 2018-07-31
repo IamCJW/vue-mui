@@ -2,6 +2,7 @@ const mixin = {
   data() {
     return {
       shares: null,//分享列表
+      connectionState:false,//网络连接状态
     }
   },
   filters: {
@@ -13,6 +14,24 @@ const mixin = {
     }
   },
   methods: {
+    connectionOnline(){
+      if(this.$refs.loading){
+        this.$refs.loading.hide();
+      }
+      if(this.dataLock !== null){
+        this.dataLock = true
+      }
+      this.connectionState = false;
+    },
+    connectionUnline(){
+      if(this.$refs.loading){
+        this.$refs.loading.hide();
+      }
+      if(this.dataLock !== null){
+        this.dataLock = false
+      }
+      this.connectionState = true;
+    },
     //分享//////
     share(shareData) {
       console.log(JSON.stringify(shareData));

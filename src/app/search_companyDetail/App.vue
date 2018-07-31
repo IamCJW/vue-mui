@@ -15,7 +15,8 @@
         <!--span.detail-bar-item(@tap="jumpTo(4)", :class="{active: pageKey===4}") 法律讼诉-->
     .mui-content
       loading(ref="loading")
-      warn(icon='icon-404', msg='抱歉！该企业资料暂未获取完全，请稍候查看~~', :show="warnState")
+      warn(icon='icon-404', msg='抱歉！该企业资料暂未获取完全，请稍候查看~~', v-show="warnState")
+      warn(v-if="connectionState")
       .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           //基本信息
@@ -322,7 +323,8 @@
                 data: {
                   code: vueThis.rid,//////////////////////////////////公司编码
                   cur_page: vueThis.tenderSuccessData.pageNum
-                }, success: (data) => {
+                },
+                success: (data) => {
                   if (data.total_page < vueThis.tenderSuccessData.pageNum) {
                     this.endPullupToRefresh(true);
                   } else {
@@ -332,6 +334,10 @@
                 },
                 noFind: () => {
                   this.endPullupToRefresh(true);
+                },
+                connectionNone:()=>{
+                  this.endPullupToRefresh(false);
+                  vueThis.tenderSuccessData.pageNum -= 1;
                 }
               });
             }
@@ -386,6 +392,10 @@
                   },
                   noFind: () => {
                     this.endPullupToRefresh(true);
+                  },
+                  connectionNone:()=>{
+                    vueThis.builderData.pageNum -= 1;
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -421,8 +431,7 @@
             this.tenderSuccessData.data = data.tender_success_list || [];
             this.builderData.data = data.builder_list || [];
             this.followed = data.followed;
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
             this.shareData = {
               title: this.baseData.company_name,
               type: 3,
@@ -430,13 +439,16 @@
             };
           },
           noFind: () => {
-            this.$refs.loading.hide();
+            this.connectionOnline();
             this.warnState = true;
+          },
+          connectionNone: ()=>{
+            this.connectionUnline();
           }
         })
       },
       openNViewPreload: myMethods.openNViewPreload,
-      openDetail:myMethods.openDetail,
+      openDetail: myMethods.openDetail,
       //页面切换
       jumpTo(key) {
         this.filterFlag = false;

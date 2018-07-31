@@ -17,6 +17,7 @@
         button.home-bar-item(@tap="jumpTo(3)", :class="{active: pageKey===3}") 更多信息
     .mui-content
       loading(ref="loading")
+      warn(v-show="connectionState", :remakeDo="true")
       .content-wrapper(v-show="dataLock")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()")
@@ -28,7 +29,7 @@
                   .filter(@tap="openNViewPreloadToken('subscription')")
                     span 订阅管理&nbsp;
                     i.iconfont.icon-filter
-                warn(icon='icon-404', msg='暂无订阅消息~', :show="!pageIndex0.data.length")
+                warn(icon='icon-404', msg='暂无订阅消息~', v-show="!pageIndex0.data.length")
                 .pro-group(v-if="pageIndex0.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="(item,index) in pageIndex0.data", :key="index" , @tap="openDetail('detail',{rid:item.rid,type:1})")
@@ -61,7 +62,7 @@
                   .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
-                warn(icon='icon-404', msg='该区域暂无招标公告~', :show="!pageIndex1.data.length")
+                warn(icon='icon-404', msg='该区域暂无招标公告~', v-show="!pageIndex1.data.length")
                 .pro-group(v-if="pageIndex1.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="item in pageIndex1.data", :key="item.rid" ,@tap="openDetail('detail',{rid:item.rid,type:1})")
@@ -94,7 +95,7 @@
                   .filter(@tap="popoutFilter(true,false)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
-                warn(icon='icon-404', msg='该区域暂无中标消息~', :show="!pageIndex2.data.length")
+                warn(icon='icon-404', msg='该区域暂无中标消息~', v-show="!pageIndex2.data.length")
                 .pro-group(v-if="pageIndex2.data.length")
                   transition-group(name='domItem')
                     .pro-item(v-for="(item,index) in pageIndex2.data", :key="index"  , @tap="openDetail('detail',{rid:item.rid,type:2})")
@@ -127,7 +128,7 @@
                   .filter(@tap="popoutFilter(true,true)")
                     span 筛选&nbsp;
                     i.iconfont.icon-filter
-                warn(icon='icon-404', msg='该区域暂无更多资讯~', :show="!pageIndex3.data.length")
+                warn(icon='icon-404', msg='该区域暂无更多资讯~', v-show="!pageIndex3.data.length")
                 .pro-group(v-if="pageIndex3.data.length")
                   transition-group(name='domItem')
                     .pro-item.more(v-for='(item,index) in pageIndex3.data', :key="index", @tap="openDetail('detail',{rid:item.rid,type:3})")
@@ -307,8 +308,7 @@
               this.pageIndex2.data = data.success_tender_list || [];
               this.pageIndex3.data = data.more_list || [];
             }
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
             mui('#page1').pullRefresh().scrollTo(0, 0, 100);
             mui('#page2').pullRefresh().scrollTo(0, 0, 100);
             mui('#page3').pullRefresh().scrollTo(0, 0, 100);
@@ -316,8 +316,10 @@
             fun();
           },
           error: () => {
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
+          },
+          connectionNone: () => {
+            this.connectionUnline()
           }
         });
         http({
@@ -336,6 +338,9 @@
               localStorage.setItem(lsKey.nationData, JSON.stringify(data));
               this.nation = data;
               this.initFilterLocation()
+            },
+            connectionNone: () => {
+              this.connectionUnline()
             }
           });
         }
@@ -426,6 +431,9 @@
                 this.filterFlag = false;
                 myMethods.uploadReset('#page2', vueThis.pageIndex1.pageNum);
                 this.pageIndex1.pageNum = 1;
+              },
+              connectionNone: () => {
+                this.connectionUnline()
               }
             });
             break;
@@ -448,6 +456,9 @@
                 this.filterFlag = false;
                 myMethods.uploadReset('#page3', vueThis.pageIndex2.pageNum);
                 this.pageIndex2.pageNum = 1;
+              },
+              connectionNone: () => {
+                this.connectionUnline()
               }
             });
             break;
@@ -470,6 +481,9 @@
                 this.filterFlag = false;
                 myMethods.uploadReset('#page4', vueThis.pageIndex3.pageNum);
                 this.pageIndex3.pageNum = 1;
+              },
+              connectionNone: () => {
+                this.connectionUnline();
               }
             });
             break;
@@ -705,6 +719,9 @@
                   noFind: () => {
                     vueThis.pageIndex0.data = [];
                     mui('#page1').pullRefresh().endPulldownToRefresh();
+                  },
+                  connectionNone: () => {
+                    mui('#page1').pullRefresh().endPulldownToRefresh();
                   }
                 });
               }
@@ -729,6 +746,10 @@
                   },
                   noFind: (data) => {
                     this.endPullupToRefresh(false);
+                  },
+                  connectionNone: () => {
+                    vueThis.pageIndex0.pageNum -= 1;
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -750,6 +771,9 @@
                   },
                   noFind: () => {
                     vueThis.pageIndex1.data = [];
+                    mui('#page2').pullRefresh().endPulldownToRefresh();
+                  },
+                  connectionNone: () => {
                     mui('#page2').pullRefresh().endPulldownToRefresh();
                   }
                 });
@@ -773,6 +797,10 @@
                   },
                   noFind: () => {
                     this.endPullupToRefresh(false);
+                  },
+                  connectionNone: () => {
+                    vueThis.pageIndex1.pageNum -= 1;
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -794,6 +822,9 @@
                   },
                   noFind: () => {
                     vueThis.pageIndex2.data = [];
+                    mui('#page3').pullRefresh().endPulldownToRefresh();
+                  },
+                  connectionNone: () => {
                     mui('#page3').pullRefresh().endPulldownToRefresh();
                   }
                 });
@@ -817,6 +848,10 @@
                   },
                   noFind: () => {
                     this.endPullupToRefresh(false);
+                  },
+                  connectionNone: () => {
+                    vueThis.pageIndex2.pageNum -= 1;
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -838,6 +873,9 @@
                   },
                   noFind: () => {
                     vueThis.pageIndex3.data = [];
+                    mui('#page4').pullRefresh().endPulldownToRefresh();
+                  },
+                  connectionNone: () => {
                     mui('#page4').pullRefresh().endPulldownToRefresh();
                   }
                 });
@@ -861,6 +899,10 @@
                   },
                   noFind: () => {
                     this.endPullupToRefresh(false);
+                  },
+                  connectionNone: () => {
+                    vueThis.pageIndex3.pageNum -= 1;
+                    this.endPullupToRefresh(false);
                   }
                 });
               }
@@ -879,7 +921,7 @@
           vueThis.jumpTo(1);
         }
       });
-      for (let i=1; i <= 4; i++) {
+      for (let i = 1; i <= 4; i++) {
         document.querySelector(`#page${i}`).addEventListener('scroll', (e) => {
           if (e.detail.y < -2000) {
             this[`top${i}`] = true;

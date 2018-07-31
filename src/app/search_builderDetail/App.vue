@@ -12,7 +12,8 @@
           .user-share(@tap="share(shareData)") 分享
     .mui-content
       loading(ref="loading")
-      warn(icon='icon-404', msg='抱歉！该人员资料暂未获取完全，请稍候查看~', :show="warnState")
+      warn(icon='icon-404', msg='抱歉！该人员资料暂未获取完全，请稍候查看~', v-show="warnState")
+      warn(v-show="connectionState")
       .scroll-wrapper#builderTender(v-show="dataLock")
         .scroll-box
           .cell-row
@@ -134,6 +135,10 @@
                 },
                 error:()=>{
                   this.endPullupToRefresh(true);
+                },
+                connectionNone:()=>{
+                  this.endPullupToRefresh(false);
+                  vueThis.builderTenderData.pageNum -= 1;
                 }
               });
             }
@@ -170,8 +175,7 @@
             this.baseData = data;
             this.builderTenderData.data = data.tender_success_list;
             this.followed = data.followed;
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
             this.shareData = {
               title: this.baseData.user_name,
               type: 2,
@@ -179,8 +183,11 @@
             };
           },
           noFind:()=>{
-            this.$refs.loading.hide();
+            this.connectionOnline();
             this.warnState = true;
+          },
+          connectionNone:()=>{
+            this.connectionUnline();
           }
         })
       },//关注按钮

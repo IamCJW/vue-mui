@@ -10,18 +10,15 @@
           i.iconfont(@tap="showFilter()", :class="[filterMsg.flag &&  pageFlag === 1 ? 'icon-TRIANGLE-copy':'icon-TRIANGLE']")
     .mui-content
       loading(ref="loading")
-      .none(v-show="unToken")
-        i.iconfont.icon-news-copy
-        span 该功能需登录才能使用~
-        button.mid-btn(@tap="openWindow('login')") 前往登录
-      .content-wrapper(v-show="dataLock")
+      warn(v-if="connectionState", :remakeDo="true")
+      warn(v-show="unToken", icon="icon-news-copy", msg="该功能需登录才能使用~")
+      button.mid-btn(@tap="openWindow('login')", v-show="unToken") 前往登录
+      .content-wrapper(v-show="dataLock && !unToken")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('home',0)")
             .scroll-wrapper#page1
               .scroll-box
-                .none(v-show="!subscribeData.data.length")
-                  i.iconfont.icon-news-copy
-                  span 暂无关注消息~
+                warn(v-show="!subscribeData.data.length", icon="icon-news-copy", msg="暂无关注消息~")
                 ul.media-view(v-show="subscribeData.data.length")
                   transition-group(name="domItem")
                     li.media(v-for="(item,index) in subscribeData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,1)", @tap="goToDetail(item.msg_type,{rid:item.ref_id,type:item.info_type})")
@@ -35,9 +32,7 @@
           .content-page(@swiperight="contentSwiperight()", @swipeleft="openTabNav('search',2)")
             .scroll-wrapper#page2
               .scroll-box
-                .none(v-show="!systemData.data.length")
-                  i.iconfont.icon-news-copy
-                  span 暂无系统消息~
+                warn(v-show="!systemData.data.length",icon="icon-news-copy",msg="暂无系统消息~")
                 ul.media-view(v-show="systemData.data.length")
                   transition-group(name="domItem")
                     li.media(v-for="(item,index) in systemData.data", :key="item.rid" ,:class="{active:item.readed === 0}", @longtap="deleteMes(item.rid,item.index,0)")
@@ -66,6 +61,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
+  import Warn from "../../components/warn"
 
   export default {
     name: 'message',
@@ -97,6 +93,7 @@
       }
     },
     components: {
+      Warn,
       loading: loading
     },
     mounted() {
@@ -144,6 +141,10 @@
                 },
                 noFind: () => {
                   this.endPullupToRefresh(true);
+                },
+                connectionNone:()=>{
+                  vueThis.subscribeData.pageNum -= 1;
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -170,6 +171,10 @@
                 },
                 noFind: () => {
                   this.endPullupToRefresh(true);
+                },
+                connectionNone:()=>{
+                  vueThis.systemData.pageNum -= 1;
+                  this.endPullupToRefresh(true);
                 }
               });
             }
@@ -193,19 +198,19 @@
           url: api.message_subscribe_notify,
           success: (data) => {
             this.subscribeData.data = data.result;
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
             this.unToken = false;
           },
           noFind: () => {
             this.subscribeData.data = [];
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
             this.unToken = false;
           },
           unToken:()=>{
-            this.$refs.loading.hide();
-            this.unToken = true;
+            this.connectionOnline();
+          },
+          connectionNone:()=>{
+            this.connectionUnline();
           }
         });
         http({

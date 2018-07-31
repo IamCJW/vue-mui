@@ -19,12 +19,11 @@
         li.media(v-for="item in historyList", @tap="historySearch(item)")
           .media-content {{item}}
       loading(ref="loading")
+      warn(v-if="connectionState")
       .content-page(v-show="dataLock")
         .scroll-wrapper#page1
           .scroll-box
-            .none(v-if="proData.data.length === 0")
-              i.iconfont.icon-xiangmu
-              span 暂无相关项目信息~
+            warn(v-if="proData.data.length === 0", icon="icon-xiangmu", msg="暂无相关项目信息~")
             .pro-group.cell-row(v-if="proData.data.length")
               transition-group(name="domItem")
                 .pro-item(v-for="(item,index) in proData.data",:key="index",@tap="openWindow('detail',item)")
@@ -53,6 +52,7 @@
   import http from '../../assets/js/http.js'
   import loading from '../../components/loading'
   import myMethods from '../../assets/js/methods'
+  import warn from '../../components/warn'
 
   export default {
     name: 'searchProject',
@@ -71,7 +71,7 @@
         historyList: [],
       }
     },
-    components: {loading: loading},
+    components: {warn: warn, loading: loading},
     mounted() {
       let vueThis = this;
       window.addEventListener('getData', () => {
@@ -91,13 +91,6 @@
             contentrefresh: "正在加载...",
             callback: function () {
               vueThis.proData.pageNum += 1;
-              console.log(JSON.stringify({
-                cur_page: vueThis.proData.pageNum,
-                province: vueThis.province,
-                city: vueThis.city,
-                district: vueThis.district,
-                search: vueThis.searchMsg
-              }));
               http({
                 url: api.index_project_search,
                 data: {
@@ -119,6 +112,11 @@
                   this.endPullupToRefresh(true);
                 },
                 error: () => {
+                  vueThis.proData.pageNum -= 1;
+                  this.endPullupToRefresh(false);
+                },
+                connectionNone:()=>{
+                  vueThis.proData.pageNum -= 1;
                   this.endPullupToRefresh(false);
                 }
               });
@@ -183,16 +181,17 @@
           success: (data) => {
             this.proData.pageNum = 1;
             this.proData.data = data.result;
-            this.dataLock = true;
-            this.$refs.loading.hide();
+            this.connectionOnline();
           },
           noFind: () => {
             this.proData = {
               pageNum: 1,
               data: []
             };
-            this.dataLock = true;
-            this.$refs.loading.hide();
+            this.connectionOnline();
+          },
+          connectionNone:()=>{
+           this.connectionUnline();
           }
         })
       },

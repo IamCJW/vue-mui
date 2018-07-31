@@ -1,7 +1,8 @@
 <template lang="pug">
-  .none(v-if="show")
-    i.iconfont(:class="icon")
-    span {{msg}}
+    .none
+      i.iconfont(:class="icon")
+      span {{msg}}
+      button.mid-btn(v-if="remakeDo", @tap="remake") 重新尝试
 </template>
 <style lang="stylus" scoped>
   @import "../stylus/_mixin.styl"
@@ -22,25 +23,26 @@
   export default {
     name: "warn",
     props: {
-      icon:{
-        type:String,
-        require:true
+      icon: {
+        type: String,
+        default: 'icon-wuwangluo',
       },
-      msg:{
-        type:String,
-        require:true
+      msg: {
+        type: String,
+        default:'网络已断开，请查看网络设置~'
       },
-      show:{
-        require:true
+      remakeDo: {
+        type: Boolean,
+        default: false,
       }
     },
-    data(){
-      return{
-
-      }
+    data() {
+      return {}
     },
     methods: {
-
+      remake() {
+        this.$parent.getData();
+      }
     }
   }
 </script>

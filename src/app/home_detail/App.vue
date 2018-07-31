@@ -21,8 +21,9 @@
           span 占位
       .detail-nav-bar(v-if="navigate_list.length")
         span.detail-bar-item 占位
-    warn(icon='icon-404', msg='抱歉！该项目资料暂未获取完全，请稍候查看~~', :show="warnState")
-    .mui-content(v-if="dataLock")
+    warn(icon='icon-404', msg='抱歉！该项目资料暂未获取完全，请稍候查看~~', v-show="warnState")
+    warn(v-show="connectionState", :remakeDo="false")
+    .mui-content(v-show="dataLock")
       //招标公示
       .content-table(v-show="navPage === '招标公告'")
         table.main
@@ -249,12 +250,12 @@
               url: api.tender_id,
               data: {rid: rid},
               success: (data) => {
+                this.connectionOnline();
                 this.pushMsg = data;
                 this.navigate_list = data.navigate_list;
                 this.tender_info = data.tender_info;
                 this.navPage = '招标公告';
                 this.followStatus = data.tender_info.followed;
-                this.dataLock = true;
                 this.shareData = {
                   title: data.tender_info.name,
                   type: 1,
@@ -263,6 +264,10 @@
               },
               noFind:()=>{
                 this.warnState = true;
+                this.connectionOnline();
+              },
+              connectionNone:()=>{
+                this.connectionUnline();
               }
             });
             break;
@@ -275,7 +280,6 @@
                 this.navigate_list = data.navigate_list;
                 this.navPage = '中标';
                 this.followStatus = data.tender_info.followed;
-                this.dataLock = true;
                 this.zbRid = data.tender_info.tender_id;
                 this.tender_info = data.tender_info;
                 this.shareData = {
@@ -283,9 +287,14 @@
                   type: 1,
                   id: this.zbRid
                 };
+                this.connectionOnline();
               },
               noFind:()=>{
                 this.warnState = true;
+                this.connectionOnline();
+              },
+              connectionNone:()=>{
+                this.connectionUnline();
               }
             });
             break;
@@ -303,16 +312,20 @@
                 });
                 this.followStatus = data.tender_info.followed;
                 this.tender_info = data.tender_info;
-                this.dataLock = true;
                 this.zbRid = data.tender_info.tender_id;
                 this.shareData = {
                   title: data.tender_info.name,
                   type: 1,
                   id: this.zbRid
                 };
+                this.connectionOnline();
               },
               noFind:()=>{
                 this.warnState = true;
+                this.connectionOnline();
+              },
+              connectionNone:()=>{
+                this.connectionUnline();
               }
             });
             break;

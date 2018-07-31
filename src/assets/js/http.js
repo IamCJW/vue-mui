@@ -45,7 +45,7 @@ const httpServer = (opts) => {
       let httpDefaultOpts = { //http默认配置
         method: opts.method,
         url: opts.url,
-        timeout: 30000,
+        timeout: 10000,
         params: opts.data,
         data: opts.dataType ? opts.data : qs.stringify(opts.data),
         headers: Object.assign(publicHeaders, opts.headers),
@@ -60,27 +60,47 @@ const httpServer = (opts) => {
       axios(httpDefaultOpts).then((res) => {
           let data = res.data;
           console.log(JSON.stringify(res.data));
-          if (data.code === '00000') {
-            opts.success(data.data);
-          } else if (data.code === '404') {
-            opts.noFind(data.data);
-          } else if (data.code === '40001') {
-            mui.toast('游客权限失效');
-            plus.storage.removeItem(plusKey.temporaryToken);
-            httpServer(opts);
-          }else if(data.code === '401'){
-            setTimeout(()=>{myMethods.openDetail('login')},500);
-            opts.unToken();
-          }else {
-            mui.toast(data.msg);
-            opts.error(data);
+          switch (data.code) {
+            case '00000':
+              opts.success(data.data);
+              break;
+            case '404':
+              opts.noFind(data.data);
+              break;
+            case '40001':
+              mui.toast('游客权限失效');
+              plus.storage.removeItem(plusKey.temporaryToken);
+              httpServer(opts);
+              break;
+            case '401':
+              setTimeout(() => {
+                myMethods.openDetail('login')
+              }, 500);
+              opts.unToken();
+              break;
+            default:
+              mui.toast(data.msg);
+              opts.error(data);
           }
         }
-      ).catch((response) => {
-          if (response) {
-
+      ).catch((error) => {
+          if (JSON.stringify(error) === '{}') return;
+          if (error.config.timeout) {
+            if (plus.networkinfo.getCurrentType() === 1) {
+              mui.toast('您的网络已断开~');
+              if (opts.connectionNone === undefined) {
+                return
+              }
+              opts.connectionNone();
+            } else {
+              if (opts.reRequest) {
+                httpServer(opts);
+              } else {
+                mui.toast('网络状况不佳，请稍候再试~');
+              }
+            }
           } else {
-            mui.toast('请求异常');
+            mui.toast('请求异常~')
           }
         }
       )

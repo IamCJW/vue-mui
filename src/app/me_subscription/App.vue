@@ -2,9 +2,8 @@
   #app
     .mui-content
       loading(ref="loading")
-      .none(v-show="dataLock && subscriptionData.data.length === 0")
-        i.iconfont.icon-subscription
-        span 暂无订阅信息，请先添加订阅~
+      warn(v-if="connectionState", :remakeDo="true")
+      warn(v-show="dataLock && subscriptionData.data.length === 0", icon="icon-subscription" , msg="暂无订阅信息，请先添加订阅~")
         button.mid-btn(@tap="openNViewPreload('subscription_add')") 添加订阅
       .content-wrapper(v-show="dataLock && subscriptionData.data.length !== 0")
         .mui-wrapper#page1
@@ -43,6 +42,7 @@
   import switchBox from '../../components/switch.vue'
   import loading from '../../components/loading'
   import {lsKey} from "../../assets/js/locationStorage";
+  import warn from "../../components/warn"
 
   export default {
     name: 'subscription',
@@ -60,6 +60,7 @@
     components: {
       switchBox: switchBox,
       loading: loading,
+      warn:warn,
     },
     mounted() {
       window.addEventListener('getData', () => {
@@ -96,6 +97,10 @@
                     vueThis.subscriptionData.data = vueThis.subscriptionData.data.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
+                },
+                connectionNone:()=>{
+                  vueThis.subscriptionData.pageNum -= 1;
+                  this.endPullupToRefresh(false);
                 }
               });
             }
@@ -122,9 +127,11 @@
             data.result.forEach((item) => {
               this.$set(this.switchData, `${item.id}`, item.status);
             });
-            this.$refs.loading.hide();
-            this.dataLock = true;
+            this.connectionOnline();
             mui('#page1').pullRefresh().scrollTo(0, 0, 100);
+          },
+          connectionNone: ()=>{
+            this.connectionUnline();
           }
         });
       },

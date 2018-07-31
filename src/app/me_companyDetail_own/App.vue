@@ -9,7 +9,7 @@
         span {{baseData.province || '省份'}} / {{baseData.city || '城市'}}
     .mui-content
       loading(ref='loading')
-      warn(icon='icon-404', msg='抱歉！该企业资料暂未获取完全,请稍候查看~', :show="warnState")
+      warn(icon='icon-404', msg='抱歉！该企业资料暂未获取完全,请稍候查看~', v-show="warnState")
       .content-page
         .scroll-wrapper.cell-row#proGroup
           .scroll-box

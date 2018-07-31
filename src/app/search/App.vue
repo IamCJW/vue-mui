@@ -16,7 +16,8 @@
                   .search-box(@tap="openDetail('searchCompany')")
                     span 请输入企业名称或统一信用代码
                     i.iconfont.icon-SEARCH
-                .search-result 建设帮招标共收录建筑企业{{companyData.total}}家
+                .search-result(v-show="companyData.total") 建设帮招标共收录建筑企业{{companyData.total}}家
+                warn(v-if="connectionState", :remakeDo="true")
                 .com-group
                   transition-group(name="domItem")
                     .com-item(v-for="item in companyData.result", :key="item.rid" ,@tap="openDetail('companyDetail',{rid:item.rid})")
@@ -37,7 +38,8 @@
                   .search-box(@tap="openDetail('searchBuilder')")
                     span 请输入建造师姓名或证书号
                     i.iconfont.icon-SEARCH
-                .search-result 建设帮招标共收录建造师{{builderData.total}}名
+                .search-result(v-show="builderData.total") 建设帮招标共收录建造师{{builderData.total}}名
+                warn(v-if="connectionState", :remakeDo="true")
                 .bui-group
                   transition-group(name="domItem")
                     .bui-item(v-for="item in builderData.result", :key="item.rid" , @tap="openDetail('builderDetail',{rid:item.rid})")
@@ -115,6 +117,7 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
+  import warn from '../../components/warn'
 
   export default {
     name: 'selectlocation',
@@ -137,12 +140,12 @@
         conditionCategory: 1,//资质设置
         qualify_filter_type: 2,//本级
         categoryData: [],
-        errorData: false,
         firstIn: true,
       }
     },
     components: {
       loading: loading,
+      warn: warn
     },
     mounted() {
       this.getData();
@@ -168,13 +171,18 @@
                 url: api.search_company,
                 data: {
                   cur_page: vueThis.companyData.cur_page,
-                }, success: (data) => {
-                  vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
+                },
+                success: (data) => {
                   if (data.total_page < vueThis.companyData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
+                    vueThis.companyData.result = vueThis.companyData.result.concat(data.result);
                     this.endPullupToRefresh(false);
                   }
+                },
+                connectionNone:()=>{
+                  this.endPullupToRefresh(false);
+                  vueThis.companyData.cur_page -= 1;
                 }
               });
             }
@@ -190,13 +198,18 @@
                 url: api.search_builder_search,
                 data: {
                   cur_page: vueThis.builderData.cur_page,
-                }, success: (data) => {
+                },
+                success: (data) => {
                   vueThis.builderData.result = vueThis.builderData.result.concat(data.result);
                   if (data.total_page < vueThis.builderData.cur_page) {
                     this.endPullupToRefresh(true);
                   } else {
                     this.endPullupToRefresh(false);
                   }
+                },
+                connectionNone:()=>{
+                  this.endPullupToRefresh(false);
+                  vueThis.builderData.cur_page -= 1;
                 }
               });
             }
@@ -220,18 +233,23 @@
         http({
           url: api.search_company,
           success: (data) => {
-            this.$refs.loading.hide();
+            this.connectionOnline();
             this.companyData = data;
           },
           error: (data) => {
-            this.$refs.loading.hide();
-            this.errorData = true;
+            this.connectionOnline();
+          },
+          connectionNone:()=>{
+            this.connectionUnline();
           }
         });
         http({
           url: api.search_builder_search,
           success: (data) => {
             this.builderData = data;
+          },
+          connectionNone:()=>{
+            this.connectionUnline();
           }
         })
       },
