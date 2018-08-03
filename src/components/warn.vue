@@ -1,8 +1,9 @@
 <template lang="pug">
+  div
     .none
       i.iconfont(:class="icon")
       span {{msg}}
-      button.mid-btn(v-if="remakeDo", @tap="remake") 重新尝试
+    button.mid-btn(v-if="remakeDo", @tap="remake") 重新尝试
 </template>
 <style lang="stylus" scoped>
   @import "../stylus/_mixin.styl"
@@ -29,7 +30,7 @@
       },
       msg: {
         type: String,
-        default:'网络已断开，请查看网络设置~'
+        default:'服务突然抽风了，请查看网络设置或稍候重试~'
       },
       remakeDo: {
         type: Boolean,

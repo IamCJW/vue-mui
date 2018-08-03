@@ -7,12 +7,11 @@
         span.iconfont.icon-MORES(@tap="menuShow(true)")
       .header-sign
         .fl
-          span 行业: {{tender_info.tender_type}}
-          span 专业：{{tender_info.construction_type}}
+          span 行业: {{tender_info.tender_type || "未知"}}
+          span 专业：{{tender_info.construction_type || "未知"}}
         span.fr {{tender_info.province}}{{ tender_info.city ? ' / '+ tender_info.city : ''}}{{tender_info.district ? ' / '+ tender_info.district:''}}
       .detail-nav-bar(v-if="navigate_list.length")
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name === '招标公告'" , :class="{active:'招标公告' === navPage}", @tap="navSelect('招标公告',zbRid,0)") {{item.name}}
-        span.detail-bar-item(v-for="item in navigate_list", v-if="item.name !== '招标公告' " , :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,item.info_type)") {{item.name}}
+        span.detail-bar-item(v-for="item in navigate_list", :class="{active:item.name === navPage}", @tap="navSelect(item.name,item.rid,item.info_type)") {{item.name}}
     header.detail-header
       .header-title
         .detail-title {{tender_info.name}}
@@ -25,24 +24,24 @@
     warn(v-show="connectionState", :remakeDo="false")
     .mui-content(v-show="dataLock")
       //招标公示
-      .content-table(v-show="navPage === '招标公告'")
+      .content-table(v-show="navType === 0")
         table.main
           tr
             td(colspan="3")
-              .time 发布时间: {{pushMsg.info_date}}
+              .time 发布时间: {{pushMsg.info_date || "未知"}}
           tr
             td.th 招标人
-            td(colspan="2") {{tender_info.tender_name}}
+            td(colspan="2") {{tender_info.tender_name || "未知"}}
           tr
             td.th 资质要求
-            td(colspan="2") {{tender_info.enterprise_requirement}}
+            td(colspan="2") {{tender_info.enterprise_requirement || "未知"}}
           tr
             td.th 标段数量
-            td(colspan="2") {{pushMsg.section_num}}
+            td(colspan="2") {{pushMsg.section_num || "未知"}}
           tr(v-for="(item,index) in pushMsg.section_info")
             td.th
               span(v-if="index === 0") 标段金额
-            td {{item.name}}
+            td {{item.name|| "未知"}}
             td(v-if="item.amount") {{item.amount|moneyConversion}}万元
             td(v-if="!item.amount") 未知
           tr
@@ -54,23 +53,23 @@
         .orContent(v-html="pushMsg.content") {{'<div class="orContent">'+pushMsg.content+'</div>'}}
 
       // 中标
-      .content-table(v-show="navPage === '中标'")
+      .content-table(v-show="navType === 1")
         table.main
           tr
             td(colspan="4")
-              .time 发布时间: {{pullMsg.info_date}}
+              .time 发布时间: {{pullMsg.info_date || "未知"}}
           tr
             td.th 招标人
-            td(colspan="3") {{tender_info.tender_name}}
+            td(colspan="3") {{tender_info.tender_name || "未知"}}
           tr(v-if="pullMsg.proxy_name")
             td.th 招标</br>代理
             td(colspan="3") {{pullMsg.proxy_name}}
           template(v-for="(item,index) in pullMsg.section_info")
             tr
-              td.text-color-main.th(colspan="4") 标段名称:{{item.name}}
+              td.text-color-main.th(colspan="4") 标段名称:{{item.name || "未知"}}
             tr
               td.th 中标</br>单位
-              td(colspan="3", @tap="openDetail('companyDetail',{rid:item.code})") {{item.company_name}}
+              td(colspan="3", @tap="openDetail('companyDetail',{rid:item.code})") {{item.company_name || "未知"}}
                 a.fz10.mui-ellipsis [查看企业详情]
             tr
               td.th 中标</br>金额
@@ -90,7 +89,7 @@
             td.th(colspan="4") 原文内容
         .orContent(v-html="pullMsg.content") {{pullMsg.content}}
       // 其他
-      .content-table(v-show="navPage !== '中标' && navPage !== '招标公告'")
+      .content-table(v-show="navType !== 0 && navType !== 1")
         table.main
           tr
             td(colspan="4")
@@ -156,21 +155,10 @@
     name: 'detail',
     data() {
       return {
-        warnState:false,
+        warnState: false,
         dataLock: false,//数据锁
         warnStatus: false,
-        warnList: {
-          '招标': false,
-          '中标': false,
-          '答疑': false,
-          '变更': false,
-          '澄清': false,
-          '资审': false,
-          '流标': false,
-          '废标': false,
-          '补遗': false,
-          '其他': false,
-        },
+        warnList: {},
         menuStatus: false,
         followStatus: false,
         buyType: {
@@ -191,13 +179,14 @@
           followed: ''
         },
         navPage: '',
+        navType: 1,
         zbRid: '',
         navigate_list: [],
         shareData: {},
       }
     },
-    components:{
-      warn:warn
+    components: {
+      warn: warn
     },
     mounted() {
       let vueThis = this;
@@ -254,19 +243,32 @@
                 this.pushMsg = data;
                 this.navigate_list = data.navigate_list;
                 this.tender_info = data.tender_info;
-                this.navPage = '招标公告';
+                data.navigate_list.forEach((item) => {
+                  if (item.rid === rid) {
+                    this.navPage = item.name;
+                    this.navType = item.info_type;
+                  }
+                });
                 this.followStatus = data.tender_info.followed;
                 this.shareData = {
                   title: data.tender_info.name,
                   type: 1,
                   id: this.zbRid
                 };
+                if (data.navigate_list) {
+                  let errList = {};
+                  data.navigate_list.forEach((item) => {
+                    errList[item.name] = false;
+                  });
+                  this.warnList = errList;
+                }
               },
-              noFind:()=>{
-                this.warnState = true;
+              noFind: () => {
                 this.connectionOnline();
+                this.warnState = true;
+                this.dataLock = false;
               },
-              connectionNone:()=>{
+              connectionNone: () => {
                 this.connectionUnline();
               }
             });
@@ -278,7 +280,6 @@
               success: (data) => {
                 this.pullMsg = data;
                 this.navigate_list = data.navigate_list;
-                this.navPage = '中标';
                 this.followStatus = data.tender_info.followed;
                 this.zbRid = data.tender_info.tender_id;
                 this.tender_info = data.tender_info;
@@ -287,13 +288,27 @@
                   type: 1,
                   id: this.zbRid
                 };
+                data.navigate_list.forEach((item) => {
+                  if (item.rid === rid) {
+                    this.navPage = item.name;
+                    this.navType = item.info_type;
+                  }
+                });
                 this.connectionOnline();
+                if (data.navigate_list) {
+                  let errList = {};
+                  data.navigate_list.forEach((item) => {
+                    errList[item.name] = false;
+                  });
+                  this.warnList = errList;
+                }
               },
-              noFind:()=>{
+              noFind: () => {
+                this.connectionOnline();
+                this.dataLock=false;
                 this.warnState = true;
-                this.connectionOnline();
               },
-              connectionNone:()=>{
+              connectionNone: () => {
                 this.connectionUnline();
               }
             });
@@ -308,6 +323,7 @@
                 data.navigate_list.forEach((item) => {
                   if (item.rid === rid) {
                     this.navPage = item.name;
+                    this.navType = item.info_type;
                   }
                 });
                 this.followStatus = data.tender_info.followed;
@@ -319,12 +335,20 @@
                   id: this.zbRid
                 };
                 this.connectionOnline();
+                if (data.navigate_list) {
+                  let errList = {};
+                  data.navigate_list.forEach((item) => {
+                    errList[item.name] = false;
+                  });
+                  this.warnList = errList;
+                }
               },
-              noFind:()=>{
-                this.warnState = true;
+              noFind: () => {
                 this.connectionOnline();
+                this.warnState = true;
+                this.dataLock = false;
               },
-              connectionNone:()=>{
+              connectionNone: () => {
                 this.connectionUnline();
               }
             });
@@ -368,6 +392,7 @@
       //内容选择
       navSelect(key, rid, type) {
         this.navPage = key;
+        this.navType = type;
         switch (type) {
           case 0:
             http({

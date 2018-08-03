@@ -3,7 +3,8 @@
     .mui-content
       loading(ref="loading")
       warn(v-if="connectionState", :remakeDo="true")
-      warn(v-show="dataLock && subscriptionData.data.length === 0", icon="icon-subscription" , msg="暂无订阅信息，请先添加订阅~")
+      template(v-if="dataLock && subscriptionData.data.length === 0")
+        warn(icon="icon-subscription" , msg="暂无订阅信息，请先添加订阅~")
         button.mid-btn(@tap="openNViewPreload('subscription_add')") 添加订阅
       .content-wrapper(v-show="dataLock && subscriptionData.data.length !== 0")
         .mui-wrapper#page1

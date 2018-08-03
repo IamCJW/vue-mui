@@ -18,7 +18,7 @@
                     i.iconfont.icon-SEARCH
                 .search-result(v-show="companyData.total") 建设帮招标共收录建筑企业{{companyData.total}}家
                 warn(v-if="connectionState", :remakeDo="true")
-                .com-group
+                .com-group(v-show="!connectionState")
                   transition-group(name="domItem")
                     .com-item(v-for="item in companyData.result", :key="item.rid" ,@tap="openDetail('companyDetail',{rid:item.rid})")
                       .com-name {{item.company_name}}
@@ -40,7 +40,7 @@
                     i.iconfont.icon-SEARCH
                 .search-result(v-show="builderData.total") 建设帮招标共收录建造师{{builderData.total}}名
                 warn(v-if="connectionState", :remakeDo="true")
-                .bui-group
+                .bui-group(v-show="!connectionState")
                   transition-group(name="domItem")
                     .bui-item(v-for="item in builderData.result", :key="item.rid" , @tap="openDetail('builderDetail',{rid:item.rid})")
                       .bui-top

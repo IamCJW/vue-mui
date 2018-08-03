@@ -11,10 +11,6 @@
                 span 订阅资质选择
               .qualify-item(v-for="item in qualifyList", v-if="selectedQualify[item.rid]")
                 span {{item.name}}-{{item.level}}
-        li.media
-          .media-content.flex
-            span.fl 订阅状态{{status ? '已开启' : '已关闭'}}
-            switchBox.fr(:status="status", :key-name="'status'", @changeStatus="upStatus")
       .fixed-bottom-btn(@tap="save") 保存
 </template>
 <style lang="stylus" scoped>
@@ -40,9 +36,6 @@
         selectedQualify: {},
         qualifyList: [],
       }
-    },
-    components: {
-      switchBox: switchBox,
     },
     mounted() {
       let vueThis = this;

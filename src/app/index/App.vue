@@ -68,7 +68,11 @@
           main.append(subWebview);
           subWebview.show();
           if(index === 3){
-            plus.webview.getWebviewById('home').show();
+              let view = plus.webview.getWebviewById('home');
+              view.addEventListener('loaded',()=>{
+                mui.fire(view,'openInit',{})
+              });
+              plus.webview.getWebviewById('home').show();
           }
         })
       };
@@ -76,7 +80,9 @@
         plus.runtime.setBadgeNumber(0);
         this.pushMsg();
         if (plus.storage.getItem(plusKey.firstOpen)) {
-          preload();
+          setTimeout(function () {
+            preload();
+          }, 200);
         } else {
           plus.navigator.setFullscreen(true);
           mui.openWindow({
@@ -93,7 +99,7 @@
           setTimeout(function () {
             preload();
           }, 200);
-        };
+        }
       })
     },
     methods: {

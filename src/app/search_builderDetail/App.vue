@@ -31,14 +31,14 @@
               .module2
                 div.overflow-auto
                   .fl
-                    span.text-color-black 中标总数
+                    span.text-color-black 中标数量
                     span  {{baseData.tender_sucess_num}}
                   .fr
                     span.text-color-black 最近中标
                     span  {{baseData.tender_last_date ? baseData.tender_last_date : '未知'}}
               .module2
                 div.overflow-auto(@tap="openDetail('companyDetail',{rid:baseData.company_code})")
-                  .fl.text-color-black 注册公司
+                  .fl.text-color-black 注册单位
                   .fr {{baseData.company_name}}
                     a.fz10.mui-ellipsis [查看详情]
               .module3
@@ -60,7 +60,7 @@
                     .pro-price
                       span {{item.tender_je | moneyConversion}}
                       | {{item.tender_je ? '万元' :'未知'}}
-                    .pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
+                    .pro-location {{item.province | addressFilter}}{{!item.city? '':' · '+item.city| addressFilter}}</br>{{!item.district? '': item.district| addressFilter}}
 
 </template>
 <style lang="stylus" scoped>
@@ -173,6 +173,7 @@
           },
           success: (data) => {
             this.baseData = data;
+            this.rid = data.rid;
             this.builderTenderData.data = data.tender_success_list;
             this.followed = data.followed;
             this.connectionOnline();
@@ -185,6 +186,7 @@
           noFind:()=>{
             this.connectionOnline();
             this.warnState = true;
+            this.dataLock = false;
           },
           connectionNone:()=>{
             this.connectionUnline();

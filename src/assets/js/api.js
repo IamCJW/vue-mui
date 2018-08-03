@@ -1,6 +1,6 @@
-// const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
+const prefix = 'http://192.168.50.26:8080/api';//本地测试地址
 // const prefix = 'http://192.168.50.26';//本地测试地址
-const prefix = 'http://service.jsb.red';//外网地址
+// const prefix = 'http://service.jsb.red';//外网地址
 export default (config => {
   let copy = {};
   for (let key in config) {

@@ -11,8 +11,9 @@
     .mui-content
       loading(ref="loading")
       warn(v-if="connectionState", :remakeDo="true")
-      warn(v-show="unToken", icon="icon-news-copy", msg="该功能需登录才能使用~")
-      button.mid-btn(@tap="openWindow('login')", v-show="unToken") 前往登录
+      template(v-if="unToken")
+        warn(icon="icon-news-copy", msg="该功能需登录才能使用~")
+        button.mid-btn(@tap="openWindow('login')") 前往登录
       .content-wrapper(v-show="dataLock && !unToken")
         .content-full-scroll(ref='barscroll')
           .content-page(@swipeleft="contentSwipeleft()", @swiperight="openTabNav('home',0)")
@@ -67,7 +68,7 @@
     name: 'message',
     data() {
       return {
-        unToken:'',
+        unToken:true,
         dataLock: false,
         pageFlag: 0,
         filterMsg: {
@@ -208,6 +209,7 @@
           },
           unToken:()=>{
             this.connectionOnline();
+            this.unToken = true;
           },
           connectionNone:()=>{
             this.connectionUnline();

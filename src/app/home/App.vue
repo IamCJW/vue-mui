@@ -38,20 +38,20 @@
                         span  &nbsp;{{item.info_date}}
                       .pro-content
                         .pro-main
-                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-name.mui-ellipsis-2 {{item.title}}
                           .pro-main-sign.mui-ellipsis
                             span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
                               i.iconfont.icon-INTEGRATION
                               span &nbsp;一体化
-                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
-                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购',}")
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理' || tender_type === '测绘','color-icon-design':tender_type === '设计' || tender_type === '检测','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购','icon-renzhengjiance':tender_type === '检测','icon-celiangfuwu':tender_type === '测绘',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
                         .pro-assist
-                          .pro-endTime {{!item.end_datetime ? '未知': item.end_datetime | dateCountDown}}
+                          .pro-endTime {{!item.end_datetime ? '截止时间未知': item.end_datetime | dateCountDown}}
                           .pro-price
                             span {{item.amount | moneyConversion}}
-                            | {{item.amount ? '万元' : '未知' }}
+                            | {{item.amount ? '万元' : '招标金额未知' }}
           //公告
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .jumpToTop(v-show="top2 && pageKey === 1", @tap="jumpToTop('2')")
@@ -71,20 +71,20 @@
                         span  &nbsp;{{item.info_date}}
                       .pro-content
                         .pro-main
-                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-name.mui-ellipsis-2 {{item.title}}
                           .pro-main-sign.mui-ellipsis
                             span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
                               i.iconfont.icon-INTEGRATION
                               span &nbsp;一体化
-                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
-                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购',}")
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理' || tender_type === '测绘','color-icon-design':tender_type === '设计' || tender_type === '检测','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购','icon-renzhengjiance':tender_type === '检测','icon-celiangfuwu':tender_type === '测绘',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.province | addressFilter}}{{!item.city? '':' / '+item.city| addressFilter}}{{!item.district? '': ' / '+item.district| addressFilter}}
                         .pro-assist
-                          .pro-endTime {{!item.end_datetime ? '未知': item.end_datetime | dateCountDown}}
+                          .pro-endTime {{!item.end_datetime ? '截止时间未知': item.end_datetime | dateCountDown}}
                           .pro-price
                             span {{item.amount|moneyConversion}}
-                            | {{item.amount ? '万元' : '未知' }}
+                            | {{item.amount ? '万元' : '招标金额未知' }}
           //中标
           .content-page(@swipeleft="contentSwipeleft", @swiperight="contentSwiperight")
             .jumpToTop(v-show="top3 && pageKey === 2")
@@ -104,19 +104,19 @@
                         span  &nbsp;{{item.info_date}}
                       .pro-content
                         .pro-main
-                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-name.mui-ellipsis-2 {{item.title}}
                           .pro-main-sign.mui-ellipsis
                             span.pro-style.color-icon-INTEGRATION(v-if="item.tender_types.indexOf('一体化') !== -1")
                               i.iconfont.icon-INTEGRATION
                               span &nbsp;一体化
-                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理','color-icon-design':tender_type === '设计','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
-                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购',}")
+                            span.pro-style(v-for="tender_type in item.tender_types", v-if="item.tender_types.indexOf('一体化') === -1", :class="{'color-icon-SUPERVISION':tender_type === '监理' || tender_type === '测绘','color-icon-design':tender_type === '设计' || tender_type === '检测','color-icon-INVESTIGATE':tender_type === '勘察','color-icon-THECONSTRUCTIONOFTHE':tender_type === '施工','color-icon-INTEGRATION':tender_type === '一体化','color-icon-OTHER':tender_type === '其他' || tender_type === '采购',}")
+                              i.iconfont(:class="{'icon-SUPERVISION':tender_type === '监理','icon-design':tender_type === '设计','icon-INVESTIGATE':tender_type === '勘察','icon-THECONSTRUCTIONOFTHE':tender_type === '施工','icon-INTEGRATION':tender_type === '一体化','icon-OTHER':tender_type === '其他','icon-icon-cart':tender_type === '采购','icon-renzhengjiance':tender_type === '检测','icon-celiangfuwu':tender_type === '测绘',}")
                               span &nbsp;{{tender_type}}
                             span.pro-location {{item.company_name}}
                         .pro-assist
                           .pro-price
                             span {{item.tender_je | moneyConversion}}
-                            | {{item.tender_je ? '万元' : '未知'}}
+                            | {{item.tender_je ? '万元' : '中标金额未知'}}
                           .pro-endTime {{item.province | addressFilter}}{{!item.city? '':' · '+item.city| addressFilter}}</br>{{!item.district? '': item.district| addressFilter}}
           //更多
           .content-page(@swiperight="contentSwiperight", @swipeleft="openTabNav('message',1)")
@@ -141,7 +141,7 @@
                             i.iconfont(:class="{'icon-ANSWERINGQUESTIONS':item.info_type === '答疑','icon-CHANGE':item.info_type === '变更','icon-clarify':item.info_type === '澄清','icon-investigate_money':item.info_type === '资审','icon-FLOWSTANDARD':item.info_type === '流标','icon-OTHER':item.info_type === '其他','icon-THESCRAP':item.info_type === '废标','icon-erji-anquanbuding':item.info_type === '补遗'}")
                             span &nbsp;{{item.info_type}}
                         .pro-main
-                          .pro-name.mui-ellipsis-2 {{item.name}}
+                          .pro-name.mui-ellipsis-2 {{item.title}}
                           .pro-main-sign
                             span.pro-location {{item.province}}{{item.city? '/'+item.city:''}}{{item.district?'/'+item.district:''}}
     //筛选
@@ -154,8 +154,7 @@
               .filter-typeGroup
                 .filter-type 招标地域
                 .filter-keyGrouup
-                  <!--span(v-if='filterLocation.index !== 0',@tap="filterBack()") 上一级-->
-                  span(v-for="(item,index) in filterLocation.data", :class="{active:filterSelect.location.province === item.name || filterSelect.location.city === item.name || filterSelect.location.district === item.name}", @tap="filterSelectPro(filterLocation.index,item.name)") {{item.name}}
+                  span(v-for="(item,index) in filterLocation.data", :class="{active:filterSelect.location.province === item.title || filterSelect.location.city === item.name || filterSelect.location.district === item.name}", @tap="filterSelectPro(filterLocation.index,item.name)") {{item.name}}
               template( v-if="!isMore")
                 .filter-typeGroup(v-for="(value,key) in commonDict" v-if="key !== 'info_dict'")
                   .filter-type(v-if="key === 'amount_dict'") 招标金额(万元)
@@ -163,12 +162,12 @@
                   .filter-type(v-else-if="key === 'construction_dict'") 专业类型
                   .filter-keyGrouup
                     span(:class="{active:!filterSelect[key]}", @tap="filterSelectPro(key,'')") 全部
-                    span(v-for="item in value",:class="{active:filterSelect[key] === item.name}", @tap="filterSelectPro(key,item.name)") {{item.name}}
+                    span(v-for="item in value",:class="{active:filterSelect[key] === item.value}", @tap="filterSelectPro(key,item.value)") {{item.name}}
               .filter-typeGroup(v-else)
                 .filter-type 信息类型
                 .filter-keyGrouup
                   span(:class="{active:!filterSelect['info_type']}", @tap="filterSelectPro('info_type','')") 全部
-                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_type'] === item.name}", @tap="filterSelectPro('info_type',item.name)") {{item.name}}
+                  span(v-for="item in commonDict['info_dict']" ,:class="{active:filterSelect['info_type'] === item.value}", @tap="filterSelectPro('info_type',item.value)") {{item.name}}
             .popout-filter-btnGroup
               button(@tap="filterReset()") 重置
               button(@tap="filterSubmit()") 确定
@@ -313,7 +312,9 @@
             mui('#page2').pullRefresh().scrollTo(0, 0, 100);
             mui('#page3').pullRefresh().scrollTo(0, 0, 100);
             mui('#page4').pullRefresh().scrollTo(0, 0, 100);
-            fun();
+            if (fun) {
+              fun();
+            }
           },
           error: () => {
             this.connectionOnline();
@@ -324,6 +325,7 @@
         });
         http({
           url: api.common_dict,
+          data: {province: this.province},
           success: (data) => {
             this.commonDict = data;
           }
@@ -527,7 +529,7 @@
         this.$refs.barscroll.style.left = `-${leftValue}vw`;
       },
       //自动定位
-      location() {
+      location(first) {
         if (localStorage.getItem(lsKey.locationProvince) === null) {
           let _this = this;
           //全局的this在方法中不能使用，需要重新定义一下
@@ -593,7 +595,17 @@
                 info_type: '',
                 tender_dict: ''
               };
-              _this.getData();
+              if (first) {
+                _this.getData(function () {
+                  if (_this.pageIndex0.data.length) {
+                    _this.jumpTo(0);
+                  } else {
+                    _this.jumpTo(1);
+                  }
+                });
+              }else {
+                _this.getData();
+              }
             });
           });
         } else {
@@ -628,6 +640,17 @@
             info_type: '',
             tender_dict: ''
           };
+          if (first) {
+            this.getData(function () {
+              if (this.pageIndex0.data.length) {
+                this.jumpTo(0);
+              } else {
+                this.jumpTo(1);
+              }
+            });
+          }else {
+            this.getData();
+          }
         }
       },
       //筛选弹窗
@@ -912,39 +935,30 @@
       }
     },
     mounted() {
-      this.location();
       let vueThis = this;
-      this.getData(function () {
-        if (vueThis.pageIndex0.data.length) {
-          vueThis.jumpTo(0);
-        } else {
-          vueThis.jumpTo(1);
+      window.addEventListener('openInit', () => {
+        this.location(true);
+        for (let i = 1; i <= 4; i++) {
+          document.querySelector(`#page${i}`).addEventListener('scroll', (e) => {
+            if (e.detail.y < -2000) {
+              this[`top${i}`] = true;
+            } else {
+              this[`top${i}`] = false
+            }
+          });
         }
       });
-      for (let i = 1; i <= 4; i++) {
-        document.querySelector(`#page${i}`).addEventListener('scroll', (e) => {
-          if (e.detail.y < -2000) {
-            this[`top${i}`] = true;
-          } else {
-            this[`top${i}`] = false
-          }
-        });
-      }
       window.addEventListener('changeLocation', (e) => {
         this.location();
-        this.getData();
       });
       window.addEventListener('localStorageClear', () => {
         this.location();
-        this.getData();
       });
       window.addEventListener('loginSuccess', () => {
         this.location();
-        this.getData();
       });
       window.addEventListener('loginOut', () => {
         this.location();
-        this.getData();
       });
       mui.plusReady(() => {
         if (plus.storage.getItem(plusKey.firstOpen)) {
@@ -960,7 +974,7 @@
     filters: {
       //倒计时过滤器
       dateCountDown: (data) => {
-        if (data === '未知') return data;
+        if (data === '截止时间未知') return data;
         let dateArr = data.split('-');
         let now = new Date();
         let endTime = new Date(dateArr[0], dateArr[1] - 1, dateArr[2], 23, 59, 59);

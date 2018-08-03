@@ -440,6 +440,7 @@
           },
           noFind: () => {
             this.connectionOnline();
+            this.dataLock = false;
             this.warnState = true;
           },
           connectionNone: ()=>{

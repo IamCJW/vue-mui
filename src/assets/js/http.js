@@ -45,7 +45,7 @@ const httpServer = (opts) => {
       let httpDefaultOpts = { //http默认配置
         method: opts.method,
         url: opts.url,
-        timeout: 10000,
+        timeout: 30000,
         params: opts.data,
         data: opts.dataType ? opts.data : qs.stringify(opts.data),
         headers: Object.assign(publicHeaders, opts.headers),
@@ -85,22 +85,21 @@ const httpServer = (opts) => {
         }
       ).catch((error) => {
           if (JSON.stringify(error) === '{}') return;
-          if (error.config.timeout) {
-            if (plus.networkinfo.getCurrentType() === 1) {
-              mui.toast('您的网络已断开~');
-              if (opts.connectionNone === undefined) {
-                return
-              }
-              opts.connectionNone();
-            } else {
-              if (opts.reRequest) {
-                httpServer(opts);
-              } else {
-                mui.toast('网络状况不佳，请稍候再试~');
-              }
+          if (!error.config) return;
+          if (plus.networkinfo.getCurrentType() === 1) {
+            mui.toast('您的网络突然就断了~');
+            if (opts.connectionNone === undefined) {
+              return
             }
+            opts.connectionNone();
+            return;
+          }
+          if (error.response) {
+            opts.connectionNone();
+            mui.toast('网络开小差了，请稍候再试~');
           } else {
-            mui.toast('请求异常~')
+            opts.connectionNone();
+            mui.toast('请求跑到外太空了~')
           }
         }
       )
