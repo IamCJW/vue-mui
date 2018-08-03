@@ -66,7 +66,7 @@
                   url: api.search_company_qualify_search,
                   method: 'post',
                   dataType: true,
-                  data: Object.assign(e.detail, {
+                  data: Object.assign(vueThis.muiData, {
                     cur_page: vueThis.companyData.cur_page,
                   }),
                   success: (data) => {

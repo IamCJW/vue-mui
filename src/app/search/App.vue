@@ -288,13 +288,13 @@
       //查询事件
       search() {
         let data = {
-          province: this.province.name,
+          province: this.province.name || '',
           company_type: this.condition,
           filter_type: this.conditionCategory,
           qualify_filter_type: this.qualify_filter_type,
           qualify_filter: [],
         };
-        if (data.province.name === '') {
+        if (data.province === '') {
           mui.toast('请选择筛选城市');
           return
         }
