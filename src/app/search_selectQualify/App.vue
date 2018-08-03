@@ -3,7 +3,6 @@
     header.header-nav
       span.mui-action-back.iconfont.icon-return
       .header-title 资质设置
-      span(@tap="submitBack") 确定
     .mui-content
       .selected-content
         .selected-title
@@ -16,7 +15,8 @@
               span {{item.one === '建筑业施工企业资质'? '施工资质' : item.one}}-{{item.two}}-{{item.three}}-{{item.four}}
               i.iconfont.icon-Rubbish.fr(@tap="deleteArr(index)")
       .button-group
-        button.add(@tap="add") 添加
+        button(@tap="add") 添加资质
+        button(@tap="submitBack") 完成选择
     .typeGroup(v-if="selectFlag")
       .typeItem(v-for="(item,key) in qualifyList", :class="{active:qualifyFlag === key}", @tap="changeQualify(key)") {{item === '建筑业施工企业资质'? '施工资质' : item}}
 

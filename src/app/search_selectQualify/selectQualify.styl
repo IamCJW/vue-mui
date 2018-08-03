@@ -65,18 +65,19 @@
         color #fff
 .button-group
   position fixed
-  bottom 2rem
+  bottom 0
   width 100%
   text-align center
-  .tip
-    color $text-color-light-x
-    font-size .12rem
-    margin-top .04rem
+  button
+    width 50%
+    background-color $main-color
+    border none
+    color #fff
+    padding .1rem 0
+    font-size .16rem
     border-radius 0
-.add
-  width 40%
-  background-color $main-color
-  border none
-  color #fff
-  padding .1rem 0
-  font-size .16rem
+    border-top .01rem solid $main-color
+    &:first-child
+      background #ffffff
+      color #333333
+      border-top .01rem solid #eee
