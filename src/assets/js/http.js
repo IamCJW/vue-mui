@@ -95,11 +95,11 @@ const httpServer = (opts) => {
             return;
           }
           if (error.response) {
-            opts.connectionNone();
             mui.toast('网络开小差了，请稍候再试~');
-          } else {
             opts.connectionNone();
+          } else {
             mui.toast('请求跑到外太空了~')
+            opts.connectionNone();
           }
         }
       )
