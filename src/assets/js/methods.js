@@ -1,4 +1,6 @@
 import {plusKey} from "./locationStorage";
+import api from "./api"
+import http from "./http"
 
 const myMethods = {
   // 电话验证正则表达式，
@@ -52,7 +54,7 @@ const myMethods = {
       //重定义返回事件
       let oldBack = mui.back;
       mui.back = function () {
-        mui.plusReady(()=>{
+        mui.plusReady(() => {
           plus.key.hideSoftKeybord();
           oldBack();
         });
@@ -153,12 +155,12 @@ const myMethods = {
   },
   //muiFire异步加锁事件/////////////////////////
   muiFireLock(view, fun) {
-    if (mui.os.ios){
+    if (mui.os.ios) {
       view.addEventListener('loaded', function () {
         fun();
       });
       fun();
-    }else {
+    } else {
       fun();
     }
   },
@@ -169,10 +171,56 @@ const myMethods = {
   /*
   * domId:节点参数
   * */
-  uploadReset(domId){
+  uploadReset(domId) {
     mui(domId).pullRefresh().refresh(true);
-    mui(domId).pullRefresh().scrollTo(0,0,0);
-  }
+    mui(domId).pullRefresh().scrollTo(0, 0, 0);
+  },
+  //统计：IP、地址、操作系统、手机型号
+  statistics(flag) {
+    let ip = '';
+    let province = '';
+    let city = '';
+    let district = '';
+    let os = '';
+    let model = '';
+    let manufacturer = '';//设备厂商
+    mui.plusReady(() => {
+      ip = returnCitySN["cip"];
+      os = plus.os.name + plus.os.version;
+      model = plus.device.model;
+      manufacturer = plus.device.vendor;
+      let geolocation = new BMap.Geolocation();
+      //调用百度地图api 中的获取当前位置接口
+      geolocation.getCurrentPosition(function (r) {
+        let point = new BMap.Point(r.longitude, r.latitude);
+        let geoc = new BMap.Geocoder();
+        geoc.getLocation(point, function (rs) {
+          let address = rs.addressComponents;
+          province = address.province;
+          city = address.city;
+          district = address.district;
+        })
+      });
+      http({
+        url:api.common_client_gather_inform,
+        data:{
+          ip:ip,
+          province:province,
+          city:city,
+          district:district,
+          os:os,
+          model:model,
+          manufacturer:manufacturer,
+          flag: flag,
+        },
+        method:'post',
+        dataType:true,
+        success:()=>{
+          console.log('信息采集成功');
+        }
+      });
+    });
+  },
 };
 
 export default myMethods

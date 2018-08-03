@@ -2,33 +2,33 @@ const mixin = {
   data() {
     return {
       shares: null,//分享列表
-      connectionState:false,//网络连接状态
+      connectionState: false,//网络连接状态
     }
   },
   filters: {
     moneyConversion: (mon) => {
       if (!mon) return;
-      let money = mon/1000000;
+      let money = mon / 1000000;
       money = money.toFixed(6);
       money = parseFloat(money);
       return money;
     }
   },
   methods: {
-    connectionOnline(){
-      if(this.$refs.loading){
+    connectionOnline() {
+      if (this.$refs.loading) {
         this.$refs.loading.hide();
       }
-      if(this.dataLock !== null){
+      if (this.dataLock !== null) {
         this.dataLock = true
       }
       this.connectionState = false;
     },
-    connectionUnline(){
-      if(this.$refs.loading){
+    connectionUnline() {
+      if (this.$refs.loading) {
         this.$refs.loading.hide();
       }
-      if(this.dataLock !== null){
+      if (this.dataLock !== null) {
         this.dataLock = false
       }
       this.connectionState = true;

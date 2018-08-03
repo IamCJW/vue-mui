@@ -173,13 +173,16 @@
                 let registView = plus.webview.getWebviewById('regist');
                 loginView.close();
                 registView.close();
+                myMethods.statistics(2);
               },
               error:()=>{
                 mui.toast('登录出错，请自行登录~');
                 let registView = plus.webview.getWebviewById('regist');
                 registView.close();
+                myMethods.statistics(2);
               }
             });
+            myMethods.statistics(1);
           },
           error:(data)=>{
             mui.toast(data.msg)

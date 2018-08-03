@@ -72,5 +72,6 @@ export default (config => {
   member_logout: '/member/logout',//退出登录
   common_wx_qrcode: '/common/wx_qrcode',//获取带参公众号二维码
   member_security_bind: '/member/security/bind',//获取第三方绑定信息
-  member_security_unbind:'/member/security/unbind',//解除绑定
+  member_security_unbind: '/member/security/unbind',//解除绑定
+  common_client_gather_inform: '/common/client/gather_inform',//信息采集
 })

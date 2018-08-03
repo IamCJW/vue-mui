@@ -151,6 +151,7 @@
           method: 'post',
           success:(data)=> {
             this.successDo(data);
+            myMethods.statistics(1);
           }
         })
       },
@@ -192,6 +193,7 @@
         let login_otherView = plus.webview.getWebviewById('login_other');
         loginView.close();
         login_otherView.close();
+        myMethods.statistics(2);
       }
     }
   }

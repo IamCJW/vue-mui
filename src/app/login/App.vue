@@ -144,6 +144,7 @@
             method: 'post',
             success: (data) => {
               mui.plusReady(() => {
+                myMethods.statistics();
                 plus.storage.setItem(plusKey.token, data);
                 plus.storage.setItem(plusKey.state, "true");
                 let view = plus.webview.getWebviewById('me');
@@ -252,6 +253,7 @@
                     });
                   });
                   plus.webview.currentWebview().close();
+                  myMethods.statistics(2);
                 },
                 noFind(data) {
                   mui.preload({
@@ -289,6 +291,7 @@
                 });
               });
               plus.webview.currentWebview().close();
+              myMethods.statistics(2);
             },
             noFind(data) {
               mui.preload({

@@ -198,6 +198,7 @@
               mui.fire(view, 'readed', {});
             }
           });
+          vueThis.warnStatus = false;
           return true;
         }
       });
