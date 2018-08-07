@@ -20,6 +20,14 @@ const myMethods = {
       return false
     }
   },
+  regexPwd(pwd){
+    let regex = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+    if (regex.test(pwd)) {
+      return true
+    } else {
+      return false
+    }
+  },
   // 验证码定时器
   timeClock(text, time, flag) {
     text = `${time}s后获取`;

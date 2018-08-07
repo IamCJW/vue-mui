@@ -22,11 +22,12 @@
           .input-item.other
             span(@tap="changType") {{loginType ? '短信验证码登录': '账号密码登录'}}
             span(@tap="openWindow('regist')") 新用户注册
-        .login-third
-          .title 其他登录方式
-          .content
-            i.iconfont.icon-WECHAT(@tap="otherLogin('weixin')")
-            i.iconfont.icon-QQFRIENDS(@tap="otherLogin('qq')")
+        transition(name="domItem")
+          .login-third(v-show="weixinHad || qqHad")
+            .title 其他登录方式
+            .content
+              i.iconfont.icon-WECHAT(@tap="otherLogin('weixin')", v-show="weixinHad")
+              i.iconfont.icon-QQFRIENDS(@tap="otherLogin('qq')", v-show="qqHad")
         .tip 登录代表您已经同意
           a(@tap="openNViewPreload('legal_user_agreement')") 《用户协议》
           | 和
@@ -56,10 +57,23 @@
         totalTime: '60',
         clientid: '',
         os_type: '',
+        qqHad: false,
+        weixinHad: false,
       }
     },
     mounted() {
+      let vueThis = this;
       mui.os.ios ? this.os_type = 1 : this.os_type = 2;
+      mui.plusReady(() => {
+        plus.runtime.isApplicationExist({
+          pname: 'com.tencent.mm',
+          action: 'weixin://'
+        }) ? vueThis.weixinHad = true : vueThis.weixinHad = false;
+        plus.runtime.isApplicationExist({
+          pname: 'com.tencent.mobileqq',
+          action: 'mqq://'
+        }) ? vueThis.qqHad = true : vueThis.qqHad = false;
+      });
     },
     created() {
 
@@ -223,52 +237,41 @@
           os_type: this.os_type,
         };
         if (type === 'qq') {
+          opts['openid'] = sever.authResult.openid;
           http({
-            url: 'https://graph.qq.com/oauth2.0/me',
-            data: {
-              access_token: sever.authResult.access_token,
-            },
-            error(data) {
-              let str = data.replace('callback(', '');
-              str = str.replace(');', '');
-              str = str.trim();
-              opts['openid'] = JSON.parse(str).openid;
-              http({
-                url: api.user_auth,
-                data: opts,
-                method: 'post',
-                success(data) {
-                  plus.storage.setItem(plusKey.token, data);
-                  plus.storage.setItem(plusKey.state, "true");
-                  let view = plus.webview.getWebviewById('me');
-                  let viewMes = plus.webview.getWebviewById('message');
-                  myMethods.muiFireLock(view, () => {
-                    mui.fire(view, 'loginSuccess', {
-                      msg: '登录成功'
-                    });
-                  });
-                  myMethods.muiFireLock(viewMes, () => {
-                    mui.fire(viewMes, 'loginSuccess', {
-                      msg: '登录成功'
-                    });
-                  });
-                  plus.webview.currentWebview().close();
-                  myMethods.statistics(2);
-                },
-                noFind(data) {
-                  mui.preload({
-                    url: './login_other.html',
-                    id: 'login_other'
-                  });
-                  let detailPage = plus.webview.getWebviewById('login_other');
-                  myMethods.muiFireLock(detailPage, () => {
-                    mui.fire(detailPage, 'getData', opts);
-                  });
-                  mui.openWindow('login_other');
-                }
+            url: api.user_auth,
+            data: opts,
+            method: 'post',
+            success(data) {
+              plus.storage.setItem(plusKey.token, data);
+              plus.storage.setItem(plusKey.state, "true");
+              let view = plus.webview.getWebviewById('me');
+              let viewMes = plus.webview.getWebviewById('message');
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'loginSuccess', {
+                  msg: '登录成功'
+                });
               });
+              myMethods.muiFireLock(viewMes, () => {
+                mui.fire(viewMes, 'loginSuccess', {
+                  msg: '登录成功'
+                });
+              });
+              plus.webview.currentWebview().close();
+              myMethods.statistics(2);
+            },
+            noFind(data) {
+              mui.preload({
+                url: './login_other.html',
+                id: 'login_other'
+              });
+              let detailPage = plus.webview.getWebviewById('login_other');
+              myMethods.muiFireLock(detailPage, () => {
+                mui.fire(detailPage, 'getData', opts);
+              });
+              mui.openWindow('login_other');
             }
-          })
+          });
         } else {
           opts['openid'] = sever.userInfo.openid;
           http({

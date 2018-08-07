@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text" placeholder="请输入建造师姓名或证书号" v-model="message")
+        input#search(type="search" placeholder="请输入建造师姓名或证书号" v-model="message")
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -82,6 +82,11 @@
           this.historyList = JSON.parse(localStorage.getItem(lsKey.historySearchBuilder));
         }
       });
+      document.getElementById("search").addEventListener("keypress",(event)=>{
+        if(event.keyCode == "13") {
+          this.search();
+        }
+      });
       mui.init({
         pullRefresh: [{
           container: '#companyGroup',
@@ -147,6 +152,7 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
+        document.activeElement.blur();
         myMethods.uploadReset('#companyGroup');
         this.builderData.cur_page = 1;
         let message = this.message;

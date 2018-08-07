@@ -9,11 +9,11 @@
             span.code(:class="{disabled:codeFlag}", @tap="getCode") {{codeText}}
           .input-item
             i.iconfont.icon-yanzhengma
-            input(placeholder="请输入密码", type="password" , minlength="6", v-model="passwordOne")
+            input(placeholder="请输入密码", type="password" , minlength="6", v-model="passwordOne", maxlength="16")
           .input-item
             i.iconfont.icon-yanzhengma
-            input(placeholder="请再次输入", type="password" , minlength="6", v-model="passwordTwo")
-        button.mid-btn(@tap="next" :disabled="btnDisable" :class="{disabled:btnDisable}") 确认修改
+            input(placeholder="请再次输入", type="password" , minlength="6", v-model="passwordTwo", maxlength="16")
+        button.mid-btn(@tap="next") 确认修改
 </template>
 <style lang="stylus" scoped>
   @import "changePwd.styl"
@@ -23,6 +23,7 @@
   /* global mui plus */
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
+  import myMethods from '../../assets/js/methods'
   import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
@@ -85,8 +86,14 @@
         }
       },//下一步
       next() {
+        let vueThis = this;
         if(this.passwordOne === '' || this.passwordTwo === ''){
           mui.toast('密码不能为空');
+          return
+        }
+        console.log(myMethods.regexPwd(vueThis.passwordOne));
+        if(!myMethods.regexPwd(vueThis.passwordOne)){
+          mui.toast('请输入8到16位包含字母与数字的密码~');
           return
         }
         if(this.passwordOne !== this.passwordTwo){

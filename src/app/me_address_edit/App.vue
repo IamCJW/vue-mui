@@ -9,7 +9,7 @@
           .media-content.iconfont
             .media-lable 收货人
             .media-value
-              input(placeholder='请输入名字', v-model="contact_name")
+              input(type="text",placeholder='请输入名字', v-model="contact_name")
         li.media
           .media-content.iconfont
             .media-lable 手机号码
@@ -23,7 +23,7 @@
           .media-content
             .media-lable 详细地址
             .media-value
-              input(placeholder='请输入详细地址', v-model="street")
+              input(type="text",placeholder='请输入详细地址', v-model="street")
       .setDefult
         .setDefult-msg
           .title 设置默认地址

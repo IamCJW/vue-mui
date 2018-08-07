@@ -309,8 +309,8 @@
         this.tenderSuccessData.pageNum = 1;
         myMethods.uploadReset('#builder');
         this.builderData.pageNum = 1;
+        e.detail.pageNum === 1 ? this.jumpTo(1) : this.jumpTo(0);
       });
-      this.jumpTo(this.pageKey);
       mui.init({
         pullRefresh: [{
           container: '#tenderSuccess',
@@ -335,7 +335,7 @@
                 noFind: () => {
                   this.endPullupToRefresh(true);
                 },
-                connectionNone:()=>{
+                connectionNone: () => {
                   this.endPullupToRefresh(false);
                   vueThis.tenderSuccessData.pageNum -= 1;
                 }
@@ -393,7 +393,7 @@
                   noFind: () => {
                     this.endPullupToRefresh(true);
                   },
-                  connectionNone:()=>{
+                  connectionNone: () => {
                     vueThis.builderData.pageNum -= 1;
                     this.endPullupToRefresh(false);
                   }
@@ -443,7 +443,7 @@
             this.dataLock = false;
             this.warnState = true;
           },
-          connectionNone: ()=>{
+          connectionNone: () => {
             this.connectionUnline();
           }
         })

@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text",placeholder="请输入企业名称或统一信用代码" v-model="message")
+        input#search(type="search",placeholder="请输入企业名称或统一信用代码" v-model="message")
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -26,7 +26,7 @@
           .scroll-box
             .search-result(v-if="total") 共收录该词条建筑企业{{companyData.total}}家
             .com-group
-              .com-item(v-for="item in companyData.result", @tap="openDetail('companyDetail',{rid:item.rid})")
+              .com-item(v-for="item in companyData.result", @tap="openDetail('companyDetail',{rid:item.rid,pageNum:1})")
                 .com-name {{item.company_name}}
                 .com-sign
                   span 资质:{{item.qualify_num}}
@@ -122,6 +122,11 @@
           return true;
         }
       });
+      document.getElementById("search").addEventListener("keypress",(event)=>{
+        if(event.keyCode == "13") {
+          this.search();
+        }
+      });
     },
     methods: {
       //清除历史记录
@@ -140,6 +145,7 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
+        document.activeElement.blur();
         myMethods.uploadReset('#companyGroup');
         this.companyData.cur_page = 1;
         let message = this.message;

@@ -129,43 +129,32 @@
           nick_name: sever.userInfo.nickname,
         };
         if (type === 'qq') {
+          opts['openid'] = sever.authResult.openid;
           http({
-            url: 'https://graph.qq.com/oauth2.0/me',
-            data: {
-              access_token: sever.authResult.access_token,
+            url: api.member_security_bind,
+            data: opts,
+            method: 'post',
+            success: () => {
+              mui.toast('绑定QQ成功');
+              vueThis.getData();
             },
-            error(data) {
-              let str = data.replace('callback(', '');
-              str = str.replace(');', '');
-              str = str.trim();
-              opts['openid'] = JSON.parse(str).openid;
-              http({
-                url: api.member_security_bind,
-                data: opts,
-                method: 'post',
-                success: () => {
-                  mui.toast('绑定QQ成功');
-                  vueThis.getData();
-                },
-                error() {
-                  plus.oauth.getServices(function (services) {
-                    for (let i in services) {
-                      let s = services[i];
-                      if (s.authResult) {
-                        s.logout(function (e) {
-                          console.log('清除授权列表成功~')
-                        }, function (e) {
-                          console.log('清除授权列表失败~')
-                        });
-                      }
-                    }
-                  }, function (e) {
-                    console.log('获取授权列表失败~')
-                  });
+            error() {
+              plus.oauth.getServices(function (services) {
+                for (let i in services) {
+                  let s = services[i];
+                  if (s.authResult) {
+                    s.logout(function (e) {
+                      console.log('清除授权列表成功~')
+                    }, function (e) {
+                      console.log('清除授权列表失败~')
+                    });
+                  }
                 }
+              }, function (e) {
+                console.log('获取授权列表失败~')
               });
             }
-          })
+          });
         } else {
           opts['openid'] = sever.userInfo.openid;
           http({

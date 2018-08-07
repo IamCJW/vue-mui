@@ -31,6 +31,7 @@
       border-right $border-default
       padding-right $cell-padding
       div
+        position relative
         height .3rem
         line-height .3rem
         font-size .12rem
@@ -38,8 +39,15 @@
         display-flex()
         flex-align-item(baseline)
         flex-justify-content(center)
-        &:last-child
-          border-top $border-default
+        text-align center
+        &:after
+          content ''
+          left 0
+          right 0
+          top .3rem
+          height .01rem
+          position absolute
+          background $border-color-default
         .iconfont
           font-size .14rem
           margin-right .05rem

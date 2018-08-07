@@ -401,6 +401,7 @@
               data: {rid: rid},
               success: (data) => {
                 this.pushMsg = data;
+                this.tender_info = data.tender_info;
               }
             });
             break;
@@ -410,6 +411,7 @@
               data: {rid: rid},
               success: (data) => {
                 this.pullMsg = data;
+                this.tender_info = data.tender_info;
               }
             });
             break;
@@ -420,6 +422,7 @@
               success: (data) => {
                 this.otherMsg = data;
                 this.navigate_list = data.navigate_list;
+                this.tender_info = data.tender_info;
               }
             });
             break;

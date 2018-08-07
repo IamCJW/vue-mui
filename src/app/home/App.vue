@@ -751,7 +751,7 @@
             },
             up: {
               contentrefresh: "正在加载...",
-              contentnomore: '再拉也没有数据~',
+              contentnomore: ' ',
               callback: function () {
                 vueThis.pageIndex0.pageNum += 1;
                 http({
@@ -804,7 +804,7 @@
             },
             up: {
               contentrefresh: "正在加载...",
-              contentnomore: '再拉也没有数据~',
+              contentnomore: ' ',
               callback: function () {
                 vueThis.pageIndex1.pageNum += 1;
                 http({
@@ -855,7 +855,7 @@
             },
             up: {
               contentrefresh: "正在加载...",
-              contentnomore: '再拉也没有数据~',
+              contentnomore: ' ',
               callback: function () {
                 vueThis.pageIndex2.pageNum += 1;
                 http({
@@ -906,7 +906,7 @@
             },
             up: {
               contentrefresh: "正在加载...",
-              contentnomore: '再拉也没有数据~',
+              contentnomore: ' ',
               callback: function () {
                 vueThis.pageIndex3.pageNum += 1;
                 http({

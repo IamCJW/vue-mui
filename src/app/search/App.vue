@@ -20,7 +20,7 @@
                 warn(v-if="connectionState", :remakeDo="true")
                 .com-group(v-show="!connectionState")
                   transition-group(name="domItem")
-                    .com-item(v-for="item in companyData.result", :key="item.rid" ,@tap="openDetail('companyDetail',{rid:item.rid})")
+                    .com-item(v-for="item in companyData.result", :key="item.rid" ,@tap="openDetail('companyDetail',{rid:item.rid,pageNum:1})")
                       .com-name {{item.company_name}}
                       .com-sign
                         span 资质:{{item.qualify_num}}
@@ -101,10 +101,10 @@
                   div.media-value.select-group
                     div(@tap="qualifyFilterTypeSelect(2)")
                       i.iconfont(:class="[qualify_filter_type===2?'icon-selectss':'icon-CIRCLE']")
-                      span 包含本级以上
+                      span 符合所选等级(含以上)
                     div(@tap="qualifyFilterTypeSelect(1)")
                       i.iconfont(:class="[qualify_filter_type===1?'icon-selectss':'icon-CIRCLE']")
-                      span 符合本级
+                      span 符合所选等级
             button.search(@tap="search") 查询
 </template>
 <style lang="stylus" scoped>
@@ -164,7 +164,7 @@
           container: '#page1',
           up: {
             contentrefresh: "正在加载...",
-            contentnomore: '再拉也没有数据~',
+            contentnomore: ' ',
             callback: function () {
               vueThis.companyData.cur_page += 1;
               http({
@@ -191,7 +191,7 @@
           container: '#page2',
           up: {
             contentrefresh: "正在加载...",
-            contentnomore: '再拉也没有数据~',
+            contentnomore: ' ',
             callback: function () {
               vueThis.builderData.cur_page += 1;
               http({
@@ -295,11 +295,11 @@
           qualify_filter: [],
         };
         if (data.province === '') {
-          mui.toast('请选择筛选城市');
+          mui.toast('请选择需要查询的区域');
           return
         }
         if (this.categoryData.length === 0) {
-          mui.toast('请选择资质条件');
+          mui.toast('请选择需要查询的资质');
           return
         }
         let categoryData = this.categoryData;

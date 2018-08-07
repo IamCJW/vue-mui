@@ -85,7 +85,16 @@
       mui('body').on('tap', '.mui-poppicker-btn-cancel,.mui-backdrop', () => {
         vueThis.selectFlag = false;
       });
-      mui.init({});
+      mui.init({
+        beforeback:()=>{
+          let view = plus.webview.getWebviewById('userData');
+          if(!view)return true;
+          myMethods.muiFireLock(view,()=>{
+            mui.fire(view, 'chooseQualification', {msg:'修改资质成功'});
+          });
+          return true;
+        }
+      });
       mui.plusReady(() => {
         plus.key.addEventListener('backbutton', function () {
             vueThis.selectFlag = false;

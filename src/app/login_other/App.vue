@@ -20,10 +20,10 @@
           template(v-if="loginType")
             .input-item
               i.iconfont.icon-yanzhengma
-              input(placeholder="请输入密码" type="password" v-model="pwd")
+              input(placeholder="请输入密码" type="password" v-model="pwd", maxlength="16")
             .input-item
               i.iconfont.icon-yanzhengma
-              input(placeholder="请确认密码" type="password" v-model="pwd1")
+              input(placeholder="请确认密码" type="password" v-model="pwd1", maxlength="16")
             .input-item
               button(@tap="register") 注册
 </template>
@@ -126,8 +126,13 @@
       },
       // 注册////////////////////////////////
       register() {
+        let vueThis = this;
         if (this.pwd === '' || this.pwd1 === '') {
           mui.toast('密码不能为空');
+          return
+        }
+        if(!myMethods.regexPwd(vueThis.passwordOne)){
+          mui.toast('请输入8到16位包含字母与数字的密码~');
           return
         }
         if (this.pwd !== this.pwd1) {

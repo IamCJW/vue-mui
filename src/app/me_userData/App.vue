@@ -63,8 +63,6 @@
   import http from '../../assets/js/http.js'
   import api from '../../assets/js/api.js'
   import Cropper from 'vue-cropper'
-  import axios from 'axios'
-  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'userData',
@@ -104,6 +102,9 @@
         this.getData();
       });
       window.addEventListener('changeCompanyData', (e) => {
+        this.getData();
+      });
+      window.addEventListener('chooseQualification',()=>{
         this.getData();
       });
       mui.plusReady(() => {
@@ -190,7 +191,7 @@
         let vueThis = this;
         let changSex = new mui.PopPicker();
         changSex.setData([{value: '1', text: '男'}, {value: '0', text: '女'}]);
-        changSex.pickers[0].setSelectedValue(vueThis.gender === '男' ? 1 : 0);
+        changSex.pickers[0].setSelectedValue(vueThis.gender === '女' ? 0 : 1);
         changSex.show(function (items) {
           vueThis.gender = items[0].text;
         });

@@ -14,7 +14,7 @@
               switchBox.fr(:status="qualificationSelected[item.rid]", :keyName="item.rid", @changeStatus="upStatus")
         .fixed-bottom-btn(@tap="selectBack") 确定
 </template>
-<style lang="stylus" scoped>
+<style lang="stylus">
   @import "subscription_selectQualification.styl"
 </style>
 <script>

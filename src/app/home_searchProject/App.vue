@@ -4,7 +4,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text",placeholder="请输入要查询的项目",v-model='searchMsg',)
+        input#search(type="search", placeholder="请输入要查询的项目", v-model='searchMsg',)
         i(v-show="searchMsg.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="searchPro") 搜索
     .mui-content
@@ -115,7 +115,7 @@
                   vueThis.proData.pageNum -= 1;
                   this.endPullupToRefresh(false);
                 },
-                connectionNone:()=>{
+                connectionNone: () => {
                   vueThis.proData.pageNum -= 1;
                   this.endPullupToRefresh(false);
                 }
@@ -132,7 +132,12 @@
           };
           return true;
         }
-      },)
+      },);
+      document.getElementById("search").addEventListener("keypress",(event)=>{
+        if(event.keyCode == "13") {
+          this.searchPro();
+        }
+      });
     },
     methods: {
       //清除历史记录
@@ -150,6 +155,7 @@
           mui.toast('请输入要搜索的关键字~');
           return
         }
+        document.activeElement.blur();
         myMethods.uploadReset('#page1');
         this.proData.pageNum = 1;
         let searchMsg = this.searchMsg;
@@ -190,8 +196,8 @@
             };
             this.connectionOnline();
           },
-          connectionNone:()=>{
-           this.connectionUnline();
+          connectionNone: () => {
+            this.connectionUnline();
           }
         })
       },

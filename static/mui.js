@@ -3488,7 +3488,7 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
           contentinit: '看不够，上拉试试',
           contentdown: '看不够，上拉试试',
           contentrefresh: '正在加载...',
-          contentnomore: '再拉也没有数据了~',
+          contentnomore: '',
           duration: 300
         }
       }, options));

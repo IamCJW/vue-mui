@@ -5,7 +5,7 @@
       span.mui-action-back.iconfont.icon-return
       .search-input
         i.iconfont.icon-SEARCH
-        input(type="text" placeholder="请输入企业名称" v-model="message")
+        input#search(type="search" placeholder="请输入企业名称" v-model="message")
         i(v-show="message.length !==0" @tap="clearMessage").iconfont.icon-shutdown
       span.search(@tap="search()") 搜索
     .mui-content
@@ -115,6 +115,11 @@
           return true;
         }
       });
+      document.getElementById("search").addEventListener("keypress",(event)=>{
+        if(event.keyCode == "13") {
+          this.search();
+        }
+      });
     },
     methods: {
       //清除历史记录
@@ -133,6 +138,7 @@
           mui.toast('请输入关键字~');
           return
         }
+        document.activeElement.blur();
         this.$refs.loading.show();
         this.dataLock = false;
         this.companyData.cur_page = 1;
