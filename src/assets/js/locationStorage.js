@@ -15,6 +15,8 @@ let lsKey = {
   historySearchCompanyOwn:'localStorage_history_search_company_own',//业主历史搜索
   historySearchBuilder:'localStorage_history_search_builder',//建筑师历史搜索
   historySearchProject:'localStorage_history_search_project',//项目历史搜索
+  BadgeNumber:'BadgeNumber',//通知角标数量
+  isMessage:'isMessage',//id
 };
 let ssKey = {
   locationProvince: 'localStorage_location_province',//定位的省

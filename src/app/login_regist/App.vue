@@ -190,7 +190,7 @@
             myMethods.statistics(1);
           },
           error:(data)=>{
-            mui.toast(data.msg)
+
           }
         })
       },

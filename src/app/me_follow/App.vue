@@ -84,7 +84,7 @@
                         i.iconfont.icon-ren-copy
                       .content
                         .mui-ellipsis {{item.name}}
-                        .mui-ellipsis.tip {{item.name}}
+                        .mui-ellipsis.tip {{item.company_name}}
                       button(@tap.stop="follow(item.code,4)") 取消关注
 </template>
 <style lang="stylus" scoped>

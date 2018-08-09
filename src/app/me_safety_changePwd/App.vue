@@ -112,7 +112,7 @@
             mui.toast('修改密码成功~');
           },
           error:(data)=>{
-            mui.toast(data.msg)
+
           }
         })
       },

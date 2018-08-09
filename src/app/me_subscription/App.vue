@@ -149,7 +149,7 @@
             this.$set(this.switchData, switchData.key, switchData.value);
           },
           error:(data)=>{
-            mui.toast(data.msg)
+
           }
         });
       },

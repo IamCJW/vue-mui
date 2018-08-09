@@ -3456,7 +3456,7 @@ Function.prototype.bind = Function.prototype.bind || function (to) {
 
   var CLASS_ICON = 'mui-icon';
   var CLASS_SPINNER = 'mui-spinner';
-  var CLASS_ICON_PULLDOWN = 'mui-icon-pulldown';
+  var CLASS_ICON_PULLDOWN = 'iconfont icon-down';
 
   var CLASS_BLOCK = 'mui-block';
   var CLASS_HIDDEN = 'mui-hidden';

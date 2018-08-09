@@ -530,84 +530,121 @@
       },
       //自动定位
       location(first) {
-        if (localStorage.getItem(lsKey.locationProvince) === null) {
-          let _this = this;
-          //全局的this在方法中不能使用，需要重新定义一下
-          let geolocation = new BMap.Geolocation();
-          //调用百度地图api 中的获取当前位置接口
-          geolocation.getCurrentPosition(function (r) {
-            let point = new BMap.Point(r.longitude, r.latitude);
-            let geoc = new BMap.Geocoder();
-            geoc.getLocation(point, function (rs) {
-              let address = rs.addressComponents;
-              address.province = address.province.replace('省', '');
-              address.province = address.province.replace('市', '');
-              switch (address.province) {
-                case "广西壮族自治区":
-                  address.province = '广西';
-                  break;
-                case "宁夏回族自治区":
-                  address.province = '广西';
-                  break;
-                case "新疆维吾尔自治区":
-                  address.province = '广西';
-                  break;
-                default:
-                  address.province = address.province.replace('自治区', '');
-                  break;
-              }
-              if (address.province !== '江西') {
-                address.province = '江西';
-                address.city = '';
-                address.district = '';
-                mui.toast('您所在位置暂未开通服务，为您跳转江西省~')
-              }
-              if (address.city === '') {
-                _this.localLocation = `${address.province}`;
-              } else {
-                _this.localLocation = `${address.city}-${address.district}`;
-              }
-              //将定位存入本地缓存
-              localStorage.setItem(lsKey.locationProvince, address.province);
-              localStorage.setItem(lsKey.locationCity, address.city);
-              localStorage.setItem(lsKey.locationDistrict, address.district);
-              _this.province = localStorage.getItem(lsKey.locationProvince);
-              _this.city = localStorage.getItem(lsKey.locationCity);
-              _this.district = localStorage.getItem(lsKey.locationDistrict);
-              _this.filterSelect1 = {
-                province: _this.province, city: _this.city, district: _this.district,
-                amount_dict: '',
-                construction_dict: '',
-                info_type: '',
-                tender_dict: ''
-              };
-              _this.filterSelect2 = {
-                province: _this.province, city: _this.city, district: _this.district,
-                amount_dict: '',
-                construction_dict: '',
-                info_type: '',
-                tender_dict: ''
-              };
-              _this.filterSelect3 = {
-                province: _this.province, city: _this.city, district: _this.district,
-                amount_dict: '',
-                construction_dict: '',
-                info_type: '',
-                tender_dict: ''
-              };
-              if (first) {
-                _this.getData(function () {
-                  if (_this.pageIndex0.data.length) {
-                    _this.jumpTo(0);
-                  } else {
-                    _this.jumpTo(1);
-                  }
-                });
-              }else {
-                _this.getData();
-              }
-            });
-          });
+        let _this = this;
+        if (!localStorage.getItem(lsKey.locationProvince)) {
+          mui.plusReady(() => {
+            plus.geolocation.getCurrentPosition((p) => {
+                let address = p.address;
+                address.province = address.province.replace('省', '');
+                address.province = address.province.replace('市', '');
+                switch (address.province) {
+                  case "广西壮族自治区":
+                    address.province = '广西';
+                    break;
+                  case "宁夏回族自治区":
+                    address.province = '广西';
+                    break;
+                  case "新疆维吾尔自治区":
+                    address.province = '广西';
+                    break;
+                  default:
+                    address.province = address.province.replace('自治区', '');
+                    break;
+                }
+                if (address.province !== '江西') {
+                  address.province = '江西';
+                  address.city = '';
+                  address.district = '';
+                  mui.toast('您所在位置暂未开通服务，为您跳转江西省~')
+                }
+                if (address.city === '') {
+                  _this.localLocation = `${address.province}`;
+                } else {
+                  _this.localLocation = `${address.city}-${address.district}`;
+                }
+                //将定位存入本地缓存
+                localStorage.setItem(lsKey.locationProvince, address.province);
+                localStorage.setItem(lsKey.locationCity, address.city);
+                localStorage.setItem(lsKey.locationDistrict, address.district);
+                _this.province = localStorage.getItem(lsKey.locationProvince);
+                _this.city = localStorage.getItem(lsKey.locationCity);
+                _this.district = localStorage.getItem(lsKey.locationDistrict);
+                _this.filterSelect1 = {
+                  province: _this.province, city: _this.city, district: _this.district,
+                  amount_dict: '',
+                  construction_dict: '',
+                  info_type: '',
+                  tender_dict: ''
+                };
+                _this.filterSelect2 = {
+                  province: _this.province, city: _this.city, district: _this.district,
+                  amount_dict: '',
+                  construction_dict: '',
+                  info_type: '',
+                  tender_dict: ''
+                };
+                _this.filterSelect3 = {
+                  province: _this.province, city: _this.city, district: _this.district,
+                  amount_dict: '',
+                  construction_dict: '',
+                  info_type: '',
+                  tender_dict: ''
+                };
+                if (first) {
+                  _this.getData(function () {
+                    if (_this.pageIndex0.data.length) {
+                      _this.jumpTo(0);
+                    } else {
+                      _this.jumpTo(1);
+                    }
+                  });
+                } else {
+                  _this.getData();
+                }
+              },
+              (e) => {
+                mui.toast('您已拒绝提供定位，可在设置中开启，服务地区为您自动跳转江西~');
+                _this.localLocation = `江西`;
+                localStorage.setItem(lsKey.locationProvince, '江西');
+                localStorage.setItem(lsKey.locationCity, '');
+                localStorage.setItem(lsKey.locationDistrict, '');
+                _this.province = localStorage.getItem(lsKey.locationProvince);
+                _this.city = localStorage.getItem(lsKey.locationCity);
+                _this.district = localStorage.getItem(lsKey.locationDistrict);
+                _this.filterSelect1 = {
+                  province: _this.province, city: _this.city, district: _this.district,
+                  amount_dict: '',
+                  construction_dict: '',
+                  info_type: '',
+                  tender_dict: ''
+                };
+                _this.filterSelect2 = {
+                  province: _this.province, city: _this.city, district: _this.district,
+                  amount_dict: '',
+                  construction_dict: '',
+                  info_type: '',
+                  tender_dict: ''
+                };
+                _this.filterSelect3 = {
+                  province: _this.province, city: _this.city, district: _this.district,
+                  amount_dict: '',
+                  construction_dict: '',
+                  info_type: '',
+                  tender_dict: ''
+                };
+                if (first) {
+                  _this.getData(function () {
+                    if (_this.pageIndex0.data.length) {
+                      _this.jumpTo(0);
+                    } else {
+                      _this.jumpTo(1);
+                    }
+                  });
+                } else {
+                  _this.getData();
+                }
+              });
+          },{provider: 'baidu'});
         } else {
           this.province = localStorage.getItem(lsKey.locationProvince);
           this.city = localStorage.getItem(lsKey.locationCity) || '';
@@ -648,7 +685,7 @@
                 this.jumpTo(1);
               }
             });
-          }else {
+          } else {
             this.getData();
           }
         }

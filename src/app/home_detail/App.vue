@@ -101,7 +101,7 @@
           tr
             td.th(colspan="4") 原文内容
         .orContent(v-html="otherMsg.content") {{otherMsg.content}}
-    footer(v-show="dataLock")
+    footer(v-show="(dataLock && tender_info.tel) || (dataLock && zbRid)")
       .btn-group
         .btn-item(v-if="tender_info.tel")
           a(:href="'tel:'+ tender_info.tel")
@@ -110,7 +110,7 @@
         <!--.btn-item(@tap="ysf")-->
         <!--i.iconfont.icon-CUSTOMERSERVICE-->
         <!--span 联系客服-->
-        .btn-item.buy(@tap="follow")
+        .btn-item.buy(@tap="follow", v-if="zbRid")
           i.iconfont.icon-attention(:class="{active: followStatus}")
           span {{followStatus ? '已关注' : '关注项目' }}
         .btn-item.buy(@tap="buy",v-if="false") {{!buyType.show ? '购买投标保函':''}}{{buyType.show&&buyType.type === 0 ? '选择投标保函':''}}{{buyType.show&&buyType.type !== 0 ? '购买':''}}
@@ -190,18 +190,7 @@
     },
     mounted() {
       let vueThis = this;
-      mui.init({
-        beforeback: () => {
-          let view = plus.webview.getWebviewById('message');
-          myMethods.muiFireLock(view, () => {
-            if (plus.storage.getItem('station')) {
-              mui.fire(view, 'readed', {});
-            }
-          });
-          vueThis.warnStatus = false;
-          return true;
-        }
-      });
+      vueThis.warnStatus = false;
       window.addEventListener('getData', (e) => {
         vueThis.dataLock = false;
         vueThis.tender_info = {
@@ -251,11 +240,13 @@
                   }
                 });
                 this.followStatus = data.tender_info.followed;
+                console.log(data.tender_info.followed);
                 this.shareData = {
                   title: data.tender_info.name,
                   type: 1,
                   id: this.zbRid
                 };
+                console.log(this.zbRid);
                 if (data.navigate_list) {
                   let errList = {};
                   data.navigate_list.forEach((item) => {
@@ -328,8 +319,10 @@
                   }
                 });
                 this.followStatus = data.tender_info.followed;
+                console.log(data.tender_info.followed);
                 this.tender_info = data.tender_info;
                 this.zbRid = data.tender_info.tender_id;
+                console.log(this.zbRid);
                 this.shareData = {
                   title: data.tender_info.name,
                   type: 1,

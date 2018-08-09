@@ -122,7 +122,7 @@
             mui.toast('修改手机号成功~');
           },
           error:(data)=>{
-            mui.toast(data.msg)
+
           }
         })
       },

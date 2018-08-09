@@ -301,6 +301,9 @@
     },
     mounted() {
       let vueThis = this;
+      mui('.scroll-wrapper').scroll({
+        indicators: false
+      });
       window.addEventListener('getData', (e) => {
         vueThis.dataLock = false;
         vueThis.rid = e.detail.rid;
@@ -309,6 +312,7 @@
         this.tenderSuccessData.pageNum = 1;
         myMethods.uploadReset('#builder');
         this.builderData.pageNum = 1;
+        mui('.scroll-wrapper').scrollTo(0,0,0);
         e.detail.pageNum === 1 ? this.jumpTo(1) : this.jumpTo(0);
       });
       mui.init({
@@ -401,9 +405,6 @@
               }
             }
           }]
-      });
-      mui('.scroll-wrapper').scroll({
-        indicators: false
       });
       mui.plusReady(() => {
         this.updateSerivces();

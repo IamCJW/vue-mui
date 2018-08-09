@@ -114,7 +114,7 @@
             this[switchData.key] = switchData.value;
           },
           error: (data) => {
-            mui.toast(data.msg);
+
           }
         });
       },
@@ -214,7 +214,7 @@
             plus.webview.currentWebview().close();
           },
           error(data) {
-            mui.toast(data.msg);
+
           }
         })
       },
@@ -253,7 +253,7 @@
               mui.toast('修改频率成功~')
             },
             error: (data) => {
-              mui.toast(data.msg);
+
             }
           });
         });
@@ -270,7 +270,7 @@
               this.codeShow();
             },
             error: (data) => {
-              mui.toast(data.msg)
+
             }
           })
         }

@@ -98,7 +98,6 @@ const httpServer = (opts) => {
             mui.toast('网络开小差了，请稍候再试~');
             opts.connectionNone();
           } else {
-            alert(JSON.stringify(error));
             mui.toast('请求跑到外太空了~');
             opts.connectionNone();
           }

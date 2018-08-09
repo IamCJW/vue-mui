@@ -20,7 +20,7 @@ const myMethods = {
       return false
     }
   },
-  regexPwd(pwd){
+  regexPwd(pwd) {
     let regex = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
     if (regex.test(pwd)) {
       return true
@@ -197,33 +197,31 @@ const myMethods = {
       os = plus.os.name + plus.os.version;
       model = plus.device.model;
       manufacturer = plus.device.vendor;
-      let geolocation = new BMap.Geolocation();
-      //调用百度地图api 中的获取当前位置接口
-      geolocation.getCurrentPosition(function (r) {
-        let point = new BMap.Point(r.longitude, r.latitude);
-        let geoc = new BMap.Geocoder();
-        geoc.getLocation(point, function (rs) {
-          let address = rs.addressComponents;
-          province = address.province;
-          city = address.city;
-          district = address.district;
-        })
+      plus.geolocation.getCurrentPosition((p) => {
+        let address = p.address;
+        province = address.province;
+        city = address.city;
+        district = address.district;
+      },()=>{
+        province = '';
+        city = '';
+        district = '';
       });
       http({
-        url:api.common_client_gather_inform,
-        data:{
-          ip:ip,
-          province:province,
-          city:city,
-          district:district,
-          os:os,
-          model:model,
-          manufacturer:manufacturer,
+        url: api.common_client_gather_inform,
+        data: {
+          ip: ip,
+          province: province,
+          city: city,
+          district: district,
+          os: os,
+          model: model,
+          manufacturer: manufacturer,
           flag: flag,
         },
-        method:'post',
-        dataType:true,
-        success:()=>{
+        method: 'post',
+        dataType: true,
+        success: () => {
           console.log('信息采集成功');
         }
       });

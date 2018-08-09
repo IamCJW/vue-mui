@@ -180,7 +180,7 @@
               mui.toast('账号不存在~')
             },
             error: (data) => {
-              mui.toast(data.msg);
+
             }
           })
         });

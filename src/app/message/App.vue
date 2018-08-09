@@ -11,7 +11,7 @@
     .mui-content
       loading(ref="loading")
       warn(v-if="connectionState", :remakeDo="true")
-      template(v-if="unToken")
+      template(v-if="dataLock && unToken")
         warn(icon="icon-news-copy", msg="该功能需登录才能使用~")
         button.mid-btn(@tap="openWindow('login')") 前往登录
       .content-wrapper(v-show="dataLock && !unToken")
@@ -63,13 +63,15 @@
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
   import Warn from "../../components/warn"
+  import {lsKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'message',
     data() {
       return {
-        unToken:true,
+        unToken: true,
         dataLock: false,
+        initMessage: true,
         pageFlag: 0,
         filterMsg: {
           flag: false,
@@ -94,15 +96,12 @@
       }
     },
     components: {
-      Warn,
+      Warn: Warn,
       loading: loading
     },
     mounted() {
       let vueThis = this;
-      window.addEventListener('changeTabNav',()=>{
-        this.getData();
-      });
-      window.addEventListener('readed',()=>{
+      window.addEventListener('changeTabNav', () => {
         this.getData();
       });
       window.addEventListener('getData', () => {
@@ -123,6 +122,12 @@
         },
         pullRefresh: [{
           container: '#page1',
+          down: {
+            callback: function () {
+              vueThis.getData();
+              mui('#page1').pullRefresh().endPulldownToRefresh();
+            }
+          },
           up: {
             contentrefresh: "正在加载...",
             callback: function () {
@@ -141,9 +146,9 @@
                   }
                 },
                 noFind: () => {
-                  this.endPullupToRefresh(true);
+                  this.endPullupToRefresh(false);
                 },
-                connectionNone:()=>{
+                connectionNone: () => {
                   vueThis.subscribeData.pageNum -= 1;
                   this.endPullupToRefresh(true);
                 }
@@ -152,6 +157,12 @@
           }
         }, {
           container: '#page2',
+          down: {
+            callback: function () {
+              vueThis.getData();
+              mui('#page2').pullRefresh().endPulldownToRefresh();
+            }
+          },
           up: {
             contentrefresh: "正在加载...",
             callback: function () {
@@ -171,9 +182,9 @@
                   }
                 },
                 noFind: () => {
-                  this.endPullupToRefresh(true);
+                  this.endPullupToRefresh(false);
                 },
-                connectionNone:()=>{
+                connectionNone: () => {
                   vueThis.systemData.pageNum -= 1;
                   this.endPullupToRefresh(true);
                 }
@@ -194,6 +205,7 @@
     methods: {
       //数据请求
       getData() {
+        localStorage.removeItem(lsKey.BadgeNumber);
         this.$refs.loading.show();
         http({
           url: api.message_subscribe_notify,
@@ -207,11 +219,11 @@
             this.connectionOnline();
             this.unToken = false;
           },
-          unToken:()=>{
+          unToken: () => {
             this.connectionOnline();
             this.unToken = true;
           },
-          connectionNone:()=>{
+          connectionNone: () => {
             this.connectionUnline();
           }
         });
@@ -253,7 +265,7 @@
             http({
               url: api.message_del,
               data: {code: id},
-              method:'post',
+              method: 'post',
               success: (data) => {
                 if (type === 1) {
                   vueThis.subscribeData.data.splice(index, 1)
@@ -316,31 +328,34 @@
       openWindow: myMethods.openWindow,//消息跳转详情
       openTabNav: myMethods.openTabNav,
       goToDetail(type, baseData) {
+        this.getData();
         let data = baseData;
-        if (data.type){
-          if (data.type === '中标' ){
+        if (data.type) {
+          if (data.type === 1) {
             data.type = 2;
           } else {
             data.type = 3;
           }
+        } else {
+          data.type = 0;
         }
         switch (type) {
           case 1:
-            this.openDetail('detail',data);
+            this.openDetail('detail', data);
             break;
           case 2:
-            this.openDetail('companyDetail',data);
+            this.openDetail('companyDetail', data);
             break;
           case 3:
-            this.openDetail('builderDetail',data);
+            this.openDetail('builderDetail', data);
             break;
           case 4:
-            this.openDetail('companyDetail_own',data);
+            this.openDetail('companyDetail_own', data);
             break;
         }
       },
       openTabNav: myMethods.openTabNav,
-      openDetail:myMethods.openDetail,
+      openDetail: myMethods.openDetail,
     }
   }
 </script>

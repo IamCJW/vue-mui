@@ -140,7 +140,7 @@
               localStorage.setItem(lsKey.qualify, JSON.stringify(data));
             },
             error: (data) => {
-              mui.toast(data.msg)
+
             }
           });
         }
@@ -191,7 +191,7 @@
                 vueThis.getData();
                 mui.toast('资质删除成功');
               }, error: (data) => {
-                mui.toast(data.msg);
+
               }
             })
           }
@@ -218,7 +218,7 @@
             });
           },
           error: (data) => {
-            mui.toast(data.msg);
+
           }
         })
       }

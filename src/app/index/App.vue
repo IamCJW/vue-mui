@@ -23,7 +23,7 @@
 <script>
   /* global mui */
   import myMethods from '../../assets/js/methods'
-  import {plusKey} from "../../assets/js/locationStorage";
+  import {lsKey, plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'index',
@@ -50,9 +50,10 @@
       }
     },
     mounted() {
-      if(mui.os.ios){
-        let ws=plus.webview.currentWebview();
-        ws.setStyle({'popGesture':'none'});
+      let vueThis = this;
+      if (mui.os.ios) {
+        let ws = plus.webview.currentWebview();
+        ws.setStyle({'popGesture': 'none'});
       }
       window.addEventListener('changeTabNav', (e) => {
         this.activeIndex = e.detail.index;
@@ -67,18 +68,27 @@
           let subWebview = plus.webview.create(item.url, item.id, styles);
           main.append(subWebview);
           subWebview.show();
-          if(index === 3){
-              let view = plus.webview.getWebviewById('home');
-              view.addEventListener('loaded',()=>{
-                mui.fire(view,'openInit',{})
-              });
-              plus.webview.getWebviewById('home').show();
+          if (index === 1) {
+            let view = plus.webview.getWebviewById('message');
+            view.addEventListener('show', () => {
+              localStorage.setItem(lsKey.isMessage, '1');
+            });
+            view.addEventListener('hide', () => {
+              mui.fire(view, 'openInit', {});
+              localStorage.removeItem(lsKey.isMessage);
+            });
           }
-        })
+          if (index === 3) {
+            let view = plus.webview.getWebviewById('home');
+            view.addEventListener('loaded', () => {
+              mui.fire(view, 'openInit', {})
+            });
+            plus.webview.getWebviewById('home').show();
+          }
+        });
+        this.pushMsg();
       };
       mui.plusReady(() => {
-        plus.runtime.setBadgeNumber(0);
-        this.pushMsg();
         if (plus.storage.getItem(plusKey.firstOpen)) {
           setTimeout(function () {
             preload();
@@ -105,7 +115,7 @@
     methods: {
       openTabPage: function (index) {
         if (index === 1) {
-          this.news = false
+          this.news = false;
         }
         // 如果当前 tab 已被激活，则返回
         if (index === this.activeIndex) return;
@@ -131,20 +141,45 @@
       // 推送消息处理
       pushMsg() {
         let vueThis = this;
-        plus.push.addEventListener("receive", function (msg) {
-          if (msg.aps) {
-            vueThis.news = true;
-          } else {
-            vueThis.news = true;
+        plus.push.addEventListener("receive", (msg) => {
+          if (msg.payload.msgType) return;
+          vueThis.news = true;
+          if (!msg.aps) {
+            let BadgeNumber;
+            if (localStorage.getItem(lsKey.BadgeNumber)) {
+              BadgeNumber = localStorage.getItem(lsKey.BadgeNumber) + 1
+            } else {
+              BadgeNumber = 1;
+            }
+            plus.runtime.setBadgeNumber(BadgeNumber);
+            if (mui.os.ios) {
+              plus.push.createMessage(msg.payload.content, {"msgType": 1});
+            }
+            if (localStorage.getItem(lsKey.isMessage)) {
+              let view = plus.webview.getWebviewById('message');
+              myMethods.muiFireLock(view, () => {
+                mui.fire(view, 'getData', {});
+              });
+            }
           }
         }, false);
-        plus.push.addEventListener("click", function (msg) {
-          if (msg.aps) {
-            vueThis.news = true;
-          } else {
-            vueThis.news = true;
-          }
+        plus.push.addEventListener("click", (msg) => {
+          vueThis.news = false;
+          vueThis.messageShow();
+          plus.push.clear();
         }, false);
+      },
+      messageShow() {
+        let view = plus.webview.getWebviewById('message');
+        if (view) {
+          myMethods.muiFireLock(view, () => {
+            mui.fire(view, 'getData', {});
+          });
+          view.show('message', 'fade-in', 300);
+          this.activeIndex = 1;
+        } else {
+          this.messageShow();
+        }
       },
     }
   }
