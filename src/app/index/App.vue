@@ -1,6 +1,6 @@
 <template lang="pug">
   nav.mui-bar.mui-bar-tab
-    a.mui-tab-item(v-for='tab in tabs', :class='{ "mui-active": activeIndex === tab.index,"news-item": tab.index === 1 && news}', v-on:tap='openTabPage(tab.index)')
+    a.mui-tab-item(v-for='tab in tabs', :class='{ "mui-active": activeIndex == tab.index,"news-item": tab.index == 1 && news}', v-on:tap='openTabPage(tab.index)')
       span.mui-icon.iconfont(:class='tab.icon')
       span.mui-tab-label {{ tab.name }}
 </template>
@@ -22,13 +22,17 @@
 
 <script>
   /* global mui */
+  /* global mui plus */
   import myMethods from '../../assets/js/methods'
-  import {lsKey, plusKey} from "../../assets/js/locationStorage";
+  import http from '../../assets/js/http'
+  import api from '../../assets/js/api'
+  import {plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'index',
     data() {
       return {
+        events:'pause',////pause转换到后台resume转到前台
         // 当前激活的 tab 序号
         activeIndex: 0,
         tabs: [
@@ -50,7 +54,6 @@
       }
     },
     mounted() {
-      let vueThis = this;
       if (mui.os.ios) {
         let ws = plus.webview.currentWebview();
         ws.setStyle({'popGesture': 'none'});
@@ -68,16 +71,20 @@
           let subWebview = plus.webview.create(item.url, item.id, styles);
           main.append(subWebview);
           subWebview.show();
+          //判断是否有新消息//////////////////////////////////////
           if (index === 1) {
-            let view = plus.webview.getWebviewById('message');
-            view.addEventListener('show', () => {
-              localStorage.setItem(lsKey.isMessage, '1');
-            });
-            view.addEventListener('hide', () => {
-              mui.fire(view, 'openInit', {});
-              localStorage.removeItem(lsKey.isMessage);
-            });
+            if(mui.os.ios){
+              this.isNewsMsg();
+            }
+            document.addEventListener('resume', () => {
+              this.isNewsMsg();
+              this.events = 'resume';
+            }, false);
+            document.addEventListener('pause', () => {
+              this.events = 'pause';
+            }, false)
           }
+          //预加载完最后一个页面，重新加载首页//////////////////////////////////////////////////
           if (index === 3) {
             let view = plus.webview.getWebviewById('home');
             view.addEventListener('loaded', () => {
@@ -114,11 +121,13 @@
     },
     methods: {
       openTabPage: function (index) {
-        if (index === 1) {
-          this.news = false;
-        }
         // 如果当前 tab 已被激活，则返回
         if (index === this.activeIndex) return;
+        if (index === 1 || this.activeIndex === 1) {
+          this.readDo();
+        }
+        // 设置当前 tab index
+        this.activeIndex = index;
         let styles = {top: this.changeRem(0), bottom: this.changeRem(0.49), zindex: 1};
         mui.plusReady(() => {
           let main = plus.webview.currentWebview();
@@ -133,54 +142,82 @@
           });
           // 显示要打开的子 webview
           plus.webview.show(this.tabs[index].id, 'fade-in', 300);
-          // 设置当前 tab index
-          this.activeIndex = index;
         });
       },
       changeRem: myMethods.changeRem,
       // 推送消息处理
       pushMsg() {
         let vueThis = this;
+        //监听receive事件///
         plus.push.addEventListener("receive", (msg) => {
-          if (msg.payload.msgType) return;
-          vueThis.news = true;
-          if (!msg.aps) {
-            let BadgeNumber;
-            if (localStorage.getItem(lsKey.BadgeNumber)) {
-              BadgeNumber = localStorage.getItem(lsKey.BadgeNumber) + 1
-            } else {
-              BadgeNumber = 1;
-            }
-            plus.runtime.setBadgeNumber(BadgeNumber);
-            if (mui.os.ios) {
-              plus.push.createMessage(msg.payload.content, {"msgType": 1});
-            }
-            if (localStorage.getItem(lsKey.isMessage)) {
-              let view = plus.webview.getWebviewById('message');
-              myMethods.muiFireLock(view, () => {
-                mui.fire(view, 'getData', {});
-              });
+          if (mui.os.ios) {
+            if (msg.payload.msgType) return;
+            vueThis.news = true;
+            plus.push.createMessage(msg.payload.content, {"msgType": "local"});
+            if(vueThis.events = 'resume'){
+              vueThis.refreshMsg();
             }
           }
         }, false);
+        //监听click事件///
         plus.push.addEventListener("click", (msg) => {
-          vueThis.news = false;
           vueThis.messageShow();
-          plus.push.clear();
+          vueThis.readDo();
         }, false);
       },
+      ///新消息展示
       messageShow() {
         let view = plus.webview.getWebviewById('message');
         if (view) {
-          myMethods.muiFireLock(view, () => {
-            mui.fire(view, 'getData', {});
-          });
-          view.show('message', 'fade-in', 300);
           this.activeIndex = 1;
+          view.show('message', 'fade-in', 300);
         } else {
           this.messageShow();
         }
       },
+      ///消息刷新////////////
+      refreshMsg() {
+        let view = plus.webview.getWebviewById('message');
+        if (view) {
+          myMethods.muiFireLock(view, () => {
+            mui.fire(view, 'newMessage', {});
+          });
+        } else {
+          this.refreshMsg();
+        }
+      },
+      ///判断是否有新的消息////////////////////////////////
+      isNewsMsg() {
+        if (plus.storage.getItem(plusKey.token)) {
+          http({
+            url: api.message_exists_unread,
+            success: (data) => {
+              if (data) {
+                this.news = true;
+                if(!mui.os.ios){
+                  this.refreshMsg();
+                }
+              }else {
+                this.news = false;
+              }
+            }
+          })
+        } else {
+          this.news = false;
+        }
+      },
+      //清空消息已读///////////////////////////////////////////
+      readDo(){
+        this.news = false;
+        mui.plusReady(()=>{
+          plus.push.clear();
+          plus.runtime.setBadgeNumber(0);
+          if(mui.os.ios){
+            let GeTuiSdk = plus.ios.importClass('GeTuiSdk');
+            GeTuiSdk.setBadge(0);
+          }
+        })
+      }
     }
   }
 </script>

@@ -63,7 +63,7 @@
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
   import Warn from "../../components/warn"
-  import {lsKey} from "../../assets/js/locationStorage";
+  import {lsKey,plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'message',
@@ -101,13 +101,26 @@
     },
     mounted() {
       let vueThis = this;
+      mui.plusReady(()=>{
+        if(plus.storage.getItem(plusKey.token)){
+          vueThis.getData();
+        }else {
+          this.dataLock = true;
+          this.unToken = true;
+        }
+      });
       window.addEventListener('changeTabNav', () => {
         this.getData();
       });
-      window.addEventListener('getData', () => {
-        this.getData();
-        myMethods.uploadReset('#page1');
-        this.subscribeData.pageNum = 1;
+      window.addEventListener('newMessage', () => {
+        mui.plusReady(()=>{
+          if(plus.storage.getItem(plusKey.token)){
+            vueThis.getData();
+          }else {
+            this.dataLock = true;
+            this.unToken = true;
+          }
+        });
       });
       window.addEventListener('loginSuccess', () => {
         this.getData();
@@ -205,8 +218,11 @@
     methods: {
       //数据请求
       getData() {
-        localStorage.removeItem(lsKey.BadgeNumber);
+        this.subscribeData.pageNum = 1;
+        this.systemData.pageNum = 1;
         this.$refs.loading.show();
+        myMethods.uploadReset('#page1');
+        myMethods.uploadReset('#page2');
         http({
           url: api.message_subscribe_notify,
           success: (data) => {

@@ -192,6 +192,7 @@ const myMethods = {
     let os = '';
     let model = '';
     let manufacturer = '';//设备厂商
+    let flagData = flag;
     mui.plusReady(() => {
       ip = returnCitySN["cip"];
       os = plus.os.name + plus.os.version;
@@ -217,7 +218,7 @@ const myMethods = {
           os: os,
           model: model,
           manufacturer: manufacturer,
-          flag: flag,
+          flag: flagData,
         },
         method: 'post',
         dataType: true,

@@ -158,7 +158,7 @@
             method: 'post',
             success: (data) => {
               mui.plusReady(() => {
-                myMethods.statistics();
+                myMethods.statistics(2);
                 plus.storage.setItem(plusKey.token, data);
                 plus.storage.setItem(plusKey.state, "true");
                 let view = plus.webview.getWebviewById('me');
