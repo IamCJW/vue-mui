@@ -301,19 +301,15 @@
     },
     mounted() {
       let vueThis = this;
-      mui('.scroll-wrapper').scroll({
-        indicators: false
-      });
+      mui('.scroll-wrapper').scroll();
       window.addEventListener('getData', (e) => {
-        vueThis.dataLock = false;
-        vueThis.rid = e.detail.rid;
-        vueThis.getData();
-        myMethods.uploadReset('#tenderSuccess');
-        this.tenderSuccessData.pageNum = 1;
-        myMethods.uploadReset('#builder');
-        this.builderData.pageNum = 1;
-        mui('.scroll-wrapper').scrollTo(0,0,0);
+        this.dataLock = false;
+        this.rid = e.detail.rid;
+        this.getData();
         e.detail.pageNum === 1 ? this.jumpTo(1) : this.jumpTo(0);
+        mui('.scroll-wrapper').scroll().forEach((item)=>{
+          item.scrollTo(0,0,100);
+        });
       });
       mui.init({
         pullRefresh: [{
@@ -418,6 +414,10 @@
       getData() {
         this.$refs.loading.show();
         this.warnState = false;
+        myMethods.uploadReset('#tenderSuccess');
+        this.tenderSuccessData.pageNum = 1;
+        myMethods.uploadReset('#builder');
+        this.builderData.pageNum = 1;
         http({
           url: api.search_company_detail,
           data: {code: this.rid},

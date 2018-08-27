@@ -63,7 +63,7 @@
   import api from '../../assets/js/api.js'
   import loading from '../../components/loading'
   import Warn from "../../components/warn"
-  import {lsKey,plusKey} from "../../assets/js/locationStorage";
+  import {lsKey, plusKey} from "../../assets/js/locationStorage";
 
   export default {
     name: 'message',
@@ -101,10 +101,10 @@
     },
     mounted() {
       let vueThis = this;
-      mui.plusReady(()=>{
-        if(plus.storage.getItem(plusKey.token)){
+      mui.plusReady(() => {
+        if (plus.storage.getItem(plusKey.token)) {
           vueThis.getData();
-        }else {
+        } else {
           this.dataLock = true;
           this.unToken = true;
         }
@@ -113,10 +113,10 @@
         this.getData();
       });
       window.addEventListener('newMessage', () => {
-        mui.plusReady(()=>{
-          if(plus.storage.getItem(plusKey.token)){
+        mui.plusReady(() => {
+          if (plus.storage.getItem(plusKey.token)) {
             vueThis.getData();
-          }else {
+          } else {
             this.dataLock = true;
             this.unToken = true;
           }
@@ -218,40 +218,42 @@
     methods: {
       //数据请求
       getData() {
-        this.subscribeData.pageNum = 1;
-        this.systemData.pageNum = 1;
-        this.$refs.loading.show();
-        myMethods.uploadReset('#page1');
-        myMethods.uploadReset('#page2');
-        http({
-          url: api.message_subscribe_notify,
-          success: (data) => {
-            this.subscribeData.data = data.result;
-            this.connectionOnline();
-            this.unToken = false;
-          },
-          noFind: () => {
-            this.subscribeData.data = [];
-            this.connectionOnline();
-            this.unToken = false;
-          },
-          unToken: () => {
-            this.connectionOnline();
-            this.unToken = true;
-          },
-          connectionNone: () => {
-            this.connectionUnline();
-          }
-        });
-        http({
-          url: api.message_system_notify,
-          success: (data) => {
-            this.systemData.data = data.result;
-          },
-          noFind: () => {
-            this.systemData.data = [];
-          }
-        })
+        if (plus.storage.getItem(plusKey.token)) {
+          this.subscribeData.pageNum = 1;
+          this.systemData.pageNum = 1;
+          this.$refs.loading.show();
+          myMethods.uploadReset('#page1');
+          myMethods.uploadReset('#page2');
+          http({
+            url: api.message_subscribe_notify,
+            success: (data) => {
+              this.subscribeData.data = data.result;
+              this.connectionOnline();
+              this.unToken = false;
+            },
+            noFind: () => {
+              this.subscribeData.data = [];
+              this.connectionOnline();
+              this.unToken = false;
+            },
+            unToken: () => {
+              this.connectionOnline();
+              this.unToken = true;
+            },
+            connectionNone: () => {
+              this.connectionUnline();
+            }
+          });
+          http({
+            url: api.message_system_notify,
+            success: (data) => {
+              this.systemData.data = data.result;
+            },
+            noFind: () => {
+              this.systemData.data = [];
+            }
+          })
+        }
       }
       ,
       //页面切换
