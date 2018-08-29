@@ -21,6 +21,14 @@ axios.interceptors.response.use(function (response) {
 });
 const httpServer = (opts) => {
   mui.plusReady(() => {
+    if (plus.networkinfo.getCurrentType() === 1) {
+      console.log('当前网络状态不可用~');
+      if (opts.connectionNone === undefined) {
+        return
+      }
+      opts.connectionNone();
+      return;
+    }
     if (plus.storage.getItem(plusKey.token) === null && plus.storage.getItem(plusKey.temporaryToken) === null) {
       axios.get(api.system_token).then((res) => {
         let data = res.data;
@@ -29,10 +37,9 @@ const httpServer = (opts) => {
           httpServer(opts);
         } else {
           mui.toast('服务器异常');
-          return;
         }
       }).catch(() => {
-        mui.toast('请求失败？？？');
+        console.log('请求失败');
       })
     } else {
       opts['method'] = opts.method || 'get';
@@ -50,8 +57,6 @@ const httpServer = (opts) => {
         data: opts.dataType ? opts.data : qs.stringify(opts.data),
         headers: Object.assign(publicHeaders, opts.headers),
       };
-      console.log(opts.url);
-      console.log(JSON.stringify(httpDefaultOpts.data));
       if (opts.method === 'post') {
         delete httpDefaultOpts.params
       } else {
@@ -59,7 +64,11 @@ const httpServer = (opts) => {
       }
       axios(httpDefaultOpts).then((res) => {
           let data = res.data;
+          console.log('---------------------------');
+          console.log(opts.url);
+          console.log(JSON.stringify(httpDefaultOpts.data));
           console.log(JSON.stringify(res.data));
+          console.log('---------------------------');
           switch (data.code) {
             case '00000':
               opts.success(data.data);
@@ -83,17 +92,11 @@ const httpServer = (opts) => {
               opts.error(data);
           }
         }
-      ).catch((error) => {
+      ).catch((error,res) => {
+          console.log(error);
+          console.log(res);
           if (JSON.stringify(error) === '{}') return;
           if (!error.config) return;
-          if (plus.networkinfo.getCurrentType() === 1) {
-            mui.toast('您的网络突然就断了~');
-            if (opts.connectionNone === undefined) {
-              return
-            }
-            opts.connectionNone();
-            return;
-          }
           if (error.response) {
             mui.toast('网络开小差了，请稍候再试~');
             opts.connectionNone();

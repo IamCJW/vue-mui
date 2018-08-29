@@ -603,7 +603,7 @@
                 }
               },
               (e) => {
-                mui.toast('您已拒绝提供定位，可在设置中开启，服务地区为您自动跳转江西~');
+                mui.toast('定位异常，请检查网络或设置服务，服务地区为您自动跳转江西~');
                 _this.localLocation = `江西`;
                 localStorage.setItem(lsKey.locationProvince, '江西');
                 localStorage.setItem(lsKey.locationCity, '');

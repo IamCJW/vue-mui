@@ -30,7 +30,7 @@
       },
       msg: {
         type: String,
-        default:'服务突然抽风了，请查看网络设置或稍候重试~'
+        default:'当前网络状态不可用'
       },
       remakeDo: {
         type: Boolean,

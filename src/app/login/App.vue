@@ -157,24 +157,7 @@
             data: data,
             method: 'post',
             success: (data) => {
-              mui.plusReady(() => {
-                myMethods.statistics(2);
-                plus.storage.setItem(plusKey.token, data);
-                plus.storage.setItem(plusKey.state, "true");
-                let view = plus.webview.getWebviewById('me');
-                let viewMes = plus.webview.getWebviewById('message');
-                myMethods.muiFireLock(view, () => {
-                  mui.fire(view, 'loginSuccess', {
-                    msg: '登录成功'
-                  });
-                });
-                myMethods.muiFireLock(viewMes, () => {
-                  mui.fire(viewMes, 'loginSuccess', {
-                    msg: '登录成功'
-                  });
-                });
-                plus.webview.currentWebview().close();
-              });
+              this.loginSuccessDo(data);
             },
             noFind: () => {
               mui.toast('账号不存在~')
@@ -186,6 +169,7 @@
         });
 
       },
+      //第三方登录
       otherLogin(type) {
         let vueThis = this;
         mui.plusReady(function () {
@@ -243,22 +227,7 @@
             data: opts,
             method: 'post',
             success(data) {
-              plus.storage.setItem(plusKey.token, data);
-              plus.storage.setItem(plusKey.state, "true");
-              let view = plus.webview.getWebviewById('me');
-              let viewMes = plus.webview.getWebviewById('message');
-              myMethods.muiFireLock(view, () => {
-                mui.fire(view, 'loginSuccess', {
-                  msg: '登录成功'
-                });
-              });
-              myMethods.muiFireLock(viewMes, () => {
-                mui.fire(viewMes, 'loginSuccess', {
-                  msg: '登录成功'
-                });
-              });
-              plus.webview.currentWebview().close();
-              myMethods.statistics(2);
+              this.loginSuccessDo(data);
             },
             noFind(data) {
               mui.preload({
@@ -279,22 +248,7 @@
             data: opts,
             method: 'post',
             success(data) {
-              plus.storage.setItem(plusKey.token, data);
-              plus.storage.setItem(plusKey.state, "true");
-              let view = plus.webview.getWebviewById('me');
-              let viewMes = plus.webview.getWebviewById('message');
-              myMethods.muiFireLock(view, () => {
-                mui.fire(view, 'loginSuccess', {
-                  msg: '登录成功'
-                });
-              });
-              myMethods.muiFireLock(viewMes, () => {
-                mui.fire(viewMes, 'loginSuccess', {
-                  msg: '登录成功'
-                });
-              });
-              plus.webview.currentWebview().close();
-              myMethods.statistics(2);
+              this.loginSuccessDo(data);
             },
             noFind(data) {
               mui.preload({
@@ -309,7 +263,26 @@
             }
           });
         }
-      }
+      },
+      //登录成功执行
+      loginSuccessDo(data) {
+        plus.storage.setItem(plusKey.token, data);
+        plus.storage.setItem(plusKey.state, "true");
+        let view = plus.webview.getWebviewById('me');
+        let viewMes = plus.webview.getWebviewById('message');
+        myMethods.muiFireLock(view, () => {
+          mui.fire(view, 'loginSuccess', {
+            msg: '登录成功'
+          });
+        });
+        myMethods.muiFireLock(viewMes, () => {
+          mui.fire(viewMes, 'loginSuccess', {
+            msg: '登录成功'
+          });
+        });
+        plus.webview.currentWebview().close();
+        myMethods.statistics(2);
+      },
     }
   }
 </script>
